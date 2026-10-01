@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anatomy Viewer</title>
+
+<!-- Google's <model-viewer> web component -->
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+
+<link rel="stylesheet" href="style.css?v=6">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============================================================ Sidebar -->
+  <aside class="sidebar">
+
+    <div class="sidebar__header">
+      <span class="sidebar__eyebrow">Specimen</span>
+      <h1 class="sidebar__title" id="modelTitle">Loading&hellip;</h1>
+      <label class="specimen-picker">
+        <span>Choose model</span>
+        <select id="modelPicker" aria-label="Choose anatomy model">
+          <option value="skeleton">Skeleton</option>
+          <option value="skull">Colored skull</option>
+          <option value="skull-exploded">Exploded skull</option>
+          <option value="skull-base">Base of skull</option>
+          <option value="upper-limb">Upper limbs</option>
+          <option value="lower-limb">Lower limbs</option>
+        </select>
+      </label>
+    </div>
+
+    <!-- ----------------------------------------------- Current selection -->
+    <div class="sidebar__section selection">
+      <h2>Selected</h2>
+      <div class="selection__name selection__name--empty" id="selectionName">Click a bone in the model</div>
+      <div class="selection__actions">
+        <button class="btn btn--sm" id="isolateBtn" type="button" disabled>Isolate</button>
+        <button class="btn btn--sm" id="ghostBtn" type="button" disabled>Ghost Others</button>
+      </div>
+      <button class="btn btn--sm btn--wide" id="showAllBtn" type="button" disabled>Show All</button>
+    </div>
+
+    <!-- --------------------------------------------------- Camera presets -->
+    <div class="sidebar__section">
+      <h2>Views</h2>
+      <ul class="preset-list" id="presetList"></ul>
+    </div>
+
+    <!-- ------------------------------------------------------- Bone index -->
+    <div class="sidebar__section sidebar__section--grow">
+      <h2>Bone Index <span class="count" id="boneCount"></span></h2>
+      <input
+        type="search"
+        class="search"
+        id="boneSearch"
+        placeholder="Search bones&hellip;"
+        autocomplete="off"
+        aria-label="Search bones">
+      <ul class="bone-list" id="boneList"></ul>
+    </div>
+
+    <!-- ------------------------------------------------------- Annotations -->
+    <div class="sidebar__section">
+      <h2>Annotations</h2>
+      <div class="annotation-filters" id="annotationFilters" aria-label="Annotation filters">
+        <button class="annotation-filter annotation-filter--landmark is-active" type="button" data-annotation-filter="landmark" aria-pressed="true">Landmarks</button>
+        <button class="annotation-filter annotation-filter--origin is-active" type="button" data-annotation-filter="origin" aria-pressed="true">Origins</button>
+        <button class="annotation-filter annotation-filter--insertion is-active" type="button" data-annotation-filter="insertion" aria-pressed="true">Insertions</button>
+        <button class="annotation-filter annotation-filter--note is-active" type="button" data-annotation-filter="note" aria-pressed="true">Notes</button>
+      </div>
+      <ul class="hotspot-list" id="hotspotList"></ul>
+    </div>
+
+    <div class="sidebar__footer">
+      <button class="btn" id="resetBtn" type="button">Reset View</button>
+      <button class="btn" id="downloadViewBtn" type="button">Download View</button>
+      <button class="btn btn--student" id="markupModeBtn" type="button" aria-pressed="false" disabled>Freeze &amp; Mark Up</button>
+      <button class="btn btn--accent" id="authorModeBtn" type="button">Author Mode</button>
+      <a class="btn btn--link" href="ATTRIBUTION.html" target="_blank" rel="noopener">Model Credits</a>
+    </div>
+
+  </aside>
+
+  <!-- =============================================================== Stage -->
+  <main class="stage">
+
+    <model-viewer
+      id="viewer"
+      camera-controls
+      min-camera-orbit="auto auto 0.05m"
+      touch-action="pan-y"
+      shadow-intensity="0.6"
+      exposure="1.05"
+      environment-image="neutral"
+      interaction-prompt="none"
+      ar
+    >
+    </model-viewer>
+
+    <section class="markup-workspace" id="markupWorkspace" aria-label="Student screen markup tools" hidden>
+      <canvas
+        class="markup-canvas"
+        id="markupCanvas"
+        role="img"
+        aria-label="Frozen anatomy view markup canvas. Use Pen to draw or Text to place a typed note.">
+      </canvas>
+
+      <div class="markup-toolbar" role="toolbar" aria-label="Markup controls">
+        <div class="markup-toolbar__heading">
+          <strong>Frozen view</strong>
+          <span>Draw or place text, then download before resuming 3D.</span>
+        </div>
+
+        <div class="markup-toolbar__tools">
+          <button class="markup-tool is-active" id="markupPenBtn" type="button" aria-pressed="true">Pen</button>
+          <button class="markup-tool" id="markupTextBtn" type="button" aria-pressed="false">Text</button>
+
+          <label class="markup-field markup-field--color">
+            <span>Color</span>
+            <input id="markupColor" type="color" value="#ffd166">
+          </label>
+
+          <label class="markup-field markup-field--size">
+            <span>Size</span>
+            <input id="markupSize" type="range" min="2" max="12" value="5">
+          </label>
+
+          <label class="markup-field markup-field--text">
+            <span>Text to place</span>
+            <input id="markupText" type="text" maxlength="80" placeholder="Type a label, then click the view" autocomplete="off">
+          </label>
+
+          <button class="markup-tool" id="markupUndoBtn" type="button" disabled>Undo</button>
+          <button class="markup-tool" id="markupClearBtn" type="button" disabled>Clear</button>
+          <button class="markup-tool markup-tool--download" id="downloadMarkupBtn" type="button">Download Marked View</button>
+          <button class="markup-tool markup-tool--resume" id="resume3dBtn" type="button">Resume 3D</button>
+        </div>
+
+        <div class="markup-status" id="markupStatus" role="status" aria-live="polite">Pen ready. Draw directly on the frozen view.</div>
+      </div>
+    </section>
+
+    <div class="stage__hint" id="stageHint">Click any bone to select it</div>
+
+    <div class="author-banner" id="authorBanner">
+      Author Mode &mdash; complete the details, then click the model to place the annotation
+    </div>
+
+    <div class="author-panel" id="authorPanel">
+      <h3>Annotation Authoring</h3>
+      <div class="author-panel__hint">Choose the annotation type and enter its teaching text. Click the model to capture the exact surface point.</div>
+
+      <div class="author-form">
+        <label class="author-field">
+          <span>Type</span>
+          <select id="annotationType">
+            <option value="landmark">Bone landmark</option>
+            <option value="origin">Muscle origin</option>
+            <option value="insertion">Muscle insertion</option>
+            <option value="note">General note</option>
+          </select>
+        </label>
+        <label class="author-field">
+          <span>Label</span>
+          <input id="annotationLabel" type="text" placeholder="e.g. Greater tubercle" autocomplete="off">
+        </label>
+        <label class="author-field" id="muscleField">
+          <span>Muscle <small>(for origin / insertion)</small></span>
+          <input id="annotationMuscle" type="text" placeholder="e.g. Supraspinatus" autocomplete="off">
+        </label>
+        <label class="author-field">
+          <span>Description <small>(optional)</small></span>
+          <textarea id="annotationDescription" rows="2" placeholder="Short instructional note"></textarea>
+        </label>
+      </div>
+
+      <div class="author-snippet" id="authorSnippet">// click the model to begin</div>
+      <div class="author-actions">
+        <button class="btn btn--sm" id="previewAnnotationBtn" type="button" disabled>Add to View</button>
+        <button class="btn btn--sm" id="copySnippetBtn" type="button" disabled>Copy JSON</button>
+      </div>
+      <button class="btn btn--sm btn--wide" id="downloadAnnotationsBtn" type="button" disabled>Download Annotations JSON</button>
+      <div class="author-panel__hint">“Add to View” previews the annotation in this session. Download the JSON when it is ready to merge into the model config.</div>
+    </div>
+
+    <div id="loadingOverlay">
+      <div class="spinner"></div>
+      <span id="loadingText">Loading specimen&hellip;</span>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="app.js?v=7"></script>
+</body>
+</html>
