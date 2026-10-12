@@ -8,7 +8,7 @@
 <!-- Google's <model-viewer> web component -->
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
@@ -24,6 +24,7 @@
         <span>Choose model</span>
         <select id="modelPicker" aria-label="Choose anatomy model">
           <option value="skeleton">Skeleton</option>
+          <option value="muscular">Muscular system (review preview)</option>
           <option value="skull">Colored skull</option>
           <option value="skull-exploded">Exploded skull</option>
           <option value="skull-base">Base of skull</option>
@@ -37,11 +38,19 @@
     <div class="sidebar__section selection">
       <h2>Selected</h2>
       <div class="selection__name selection__name--empty" id="selectionName">Click a bone in the model</div>
+      <p class="empty-note" id="attachmentStatus" role="status" hidden></p>
       <div class="selection__actions">
         <button class="btn btn--sm" id="isolateBtn" type="button" disabled>Isolate</button>
         <button class="btn btn--sm" id="ghostBtn" type="button" disabled>Ghost Others</button>
       </div>
       <button class="btn btn--sm btn--wide" id="showAllBtn" type="button" disabled>Show All</button>
+      <button class="btn btn--sm btn--wide is-hidden" id="attachmentViewBtn" type="button" disabled>View Attachments on Skeleton</button>
+    </div>
+
+    <div class="sidebar__section is-hidden" id="structureLayers">
+      <h2>Anatomy Layers</h2>
+      <div class="annotation-filters" id="layerButtons" aria-label="Anatomy layers"></div>
+      <p class="empty-note" id="modelReviewNote"></p>
     </div>
 
     <!-- --------------------------------------------------- Camera presets -->
@@ -52,7 +61,7 @@
 
     <!-- ------------------------------------------------------- Bone index -->
     <div class="sidebar__section sidebar__section--grow">
-      <h2>Bone Index <span class="count" id="boneCount"></span></h2>
+      <h2><span id="structureIndexLabel">Bone Index</span> <span class="count" id="boneCount"></span></h2>
       <input
         type="search"
         class="search"
@@ -196,6 +205,7 @@
 
 </div>
 
-<script src="app.js?v=7"></script>
+<script src="mesh-visibility.js?v=1"></script>
+<script src="app.js?v=11"></script>
 </body>
 </html>

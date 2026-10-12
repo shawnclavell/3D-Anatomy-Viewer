@@ -21,7 +21,7 @@
   --accent-soft: rgba(79, 158, 147, 0.16);
   --brass:       #c9a227;
   --landmark:    #c9a227;
-  --origin:      #55b89f;
+  --origin:      #e55353;
   --insertion:   #63a9dc;
   --note:        #a98bd4;
   --select:      #c0392b;
@@ -251,6 +251,12 @@ body {
 .annotation-filter--origin { --annotation-color: var(--origin); }
 .annotation-filter--insertion { --annotation-color: var(--insertion); }
 .annotation-filter--note { --annotation-color: var(--note); }
+.annotation-filter--muscles { --annotation-color: #ca6c65; }
+.annotation-filter--skeleton { --annotation-color: #ddd8c8; }
+.annotation-filter--fascia { --annotation-color: #d9c99a; }
+.annotation-filter--tendons { --annotation-color: #e9e3cb; }
+.annotation-filter--sheaths { --annotation-color: #62b4b8; }
+.annotation-filter--bursae { --annotation-color: #879cd5; }
 
 .annotation-filter.is-active {
   background: color-mix(in srgb, var(--annotation-color) 12%, transparent);
@@ -761,6 +767,8 @@ model-viewer {
 }
 
 .btn--wide { width: 100%; }
+#structureLayers.is-hidden,
+#attachmentViewBtn.is-hidden { display: none; }
 
 .btn:disabled {
   opacity: 0.35;

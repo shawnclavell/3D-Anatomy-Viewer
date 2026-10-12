@@ -47,6 +47,12 @@
   // it falls into shadow. Keep this low or the colour washes out.
   var HIGHLIGHT_EMISSIVE = [0.10, 0.005, 0.0];
 
+  // Surface colours for Z-Anatomy's attachment-area meshes. These mirror the
+  // origin/insertion colours already used by the annotation controls.
+  var ORIGIN_COLOR = [0.72, 0.055, 0.055];
+  var INSERTION_COLOR = [0.125, 0.40, 0.72];
+  var ATTACHMENT_EMISSIVE = [0.018, 0.035, 0.035];
+
   // Alpha applied to non-selected bones in "Ghost Others" mode.
   var GHOST_ALPHA = 0.07;
 
@@ -71,6 +77,7 @@
   var isolateBtn     = document.getElementById("isolateBtn");
   var ghostBtn       = document.getElementById("ghostBtn");
   var showAllBtn     = document.getElementById("showAllBtn");
+  var attachmentViewBtn = document.getElementById("attachmentViewBtn");
   var resetBtn       = document.getElementById("resetBtn");
   var downloadViewBtn = document.getElementById("downloadViewBtn");
   var markupModeBtn  = document.getElementById("markupModeBtn");
@@ -104,6 +111,8 @@
   /* ---------------------------------------------------------------- State */
 
   var config         = null;
+  var layerVisibility = {};
+  var meshVisibility = null;
   var defaultOrbit   = null;
   var defaultTarget  = null;
   var defaultPresetButton = null;
@@ -191,6 +200,37 @@
     document.title = cfg.label ? cfg.label + " — Anatomy Viewer" : "Anatomy Viewer";
 
     viewer.setAttribute("alt", cfg.alt || cfg.label || "3D anatomical model");
+    if (cfg.structureGroups) {
+      viewer.setAttribute("disable-tap", "");
+      if (cfg.attachmentsByStructure) attachmentViewBtn.classList.remove("is-hidden");
+      document.getElementById("structureIndexLabel").textContent = "Structure Index";
+      boneSearch.placeholder = "Search structures…";
+      boneSearch.setAttribute("aria-label", "Search anatomical structures");
+      selectionName.textContent = "Choose a structure in the model or index";
+      stageHint.textContent = "Click a structure to select it";
+      document.getElementById("structureLayers").classList.remove("is-hidden");
+      document.getElementById("modelReviewNote").textContent = cfg.reviewNote || "";
+      cfg.structureGroups.forEach(function (group) {
+        layerVisibility[group.id] = group.visible !== false;
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "annotation-filter annotation-filter--" + group.id;
+        button.textContent = group.label;
+        if (group.description) button.title = group.description;
+        button.setAttribute("aria-pressed", String(layerVisibility[group.id]));
+        button.classList.toggle("is-active", layerVisibility[group.id]);
+        button.addEventListener("click", function () {
+          layerVisibility[group.id] = !layerVisibility[group.id];
+          button.setAttribute("aria-pressed", String(layerVisibility[group.id]));
+          button.classList.toggle("is-active", layerVisibility[group.id]);
+          if (selectedName && !isStructureVisible(findState(selectedName))) clearSelection();
+          restoreAll();
+          if (selectedName) selectByName(selectedName, { scrollIntoView: false });
+          filterStructureList();
+        });
+        document.getElementById("layerButtons").appendChild(button);
+      });
+    }
 
     viewer.addEventListener("load", onModelLoaded, { once: true });
     viewer.addEventListener("error", onModelError, { once: true });
@@ -212,7 +252,15 @@
       : (viewer.getCameraTarget ? viewer.getCameraTarget().toString() : viewer.cameraTarget);
 
     snapshotMaterials();
+    if (config && config.structureGroups && window.AnatomyMeshVisibility) {
+      meshVisibility = window.AnatomyMeshVisibility.bind(viewer, materialStates);
+      if (!meshVisibility) {
+        document.getElementById("modelReviewNote").textContent += " Surface selection adapter unavailable; use the structure index.";
+      }
+    }
     buildBoneList();
+    restoreAll();
+    filterStructureList();
 
     markupModeBtn.disabled = false;
     loadingOverlay.classList.add("is-hidden");
@@ -720,6 +768,7 @@
   }
 
   function prettifyName(raw) {
+    raw = config && config.structureLabels && config.structureLabels[raw] || raw;
     return raw
       .replace(/\.\d{3}$/, "")            // strip Blender's .001 suffix
       .replace(/_/g, " ")
@@ -752,17 +801,78 @@
         state.material.setAlphaMode(state.alphaMode);
       }
       pbr.setBaseColorFactor([c[0], c[1], c[2], alpha]);
+      if (meshVisibility) meshVisibility.apply(state, alpha > 0);
     } catch (e) { /* ignore */ }
   }
 
   function highlight(state) {
-    applyLook(state, HIGHLIGHT_COLOR, 1);
+    // Retain the ivory tendon region while highlighting its parent muscle.
+    applyLook(state, materialOwner(state.name) !== state.name ? null : HIGHLIGHT_COLOR, 1);
     setEmissive(state, HIGHLIGHT_EMISSIVE);
   }
 
+  function materialOwner(name) {
+    return config && config.materialOwners && config.materialOwners[name] || name;
+  }
+
+  function highlightStructure(name) {
+    materialStates.forEach(function (state) {
+      if (materialOwner(state.name) === name) highlight(state);
+    });
+  }
+
+  function layerOpacity(state) {
+    var groups = config && config.structureGroups || [];
+    var id = structureGroupId(state);
+    var group = groups.find(function (item) { return item.id === id; });
+    return group && typeof group.opacity === "number" ? group.opacity : 1;
+  }
+
   function restoreMaterial(state) {
+    var groupId = structureGroupId(state);
+    if (isAttachmentGroup(groupId) && isStructureVisible(state)) {
+      setEmissive(state, ATTACHMENT_EMISSIVE);
+      applyLook(state, groupId === "origin" ? ORIGIN_COLOR : INSERTION_COLOR, 1);
+      return;
+    }
     setEmissive(state, state.emissive);
-    applyLook(state, null, state.baseColor.length > 3 ? state.baseColor[3] : 1);
+    applyLook(state, null, isStructureVisible(state) ? layerOpacity(state) * (state.baseColor.length > 3 ? state.baseColor[3] : 1) : 0);
+  }
+
+  function structureGroupId(state) {
+    if (!state || !config || !config.structureMembership) return null;
+    return config.structureMembership[state.name] || null;
+  }
+
+  function isAttachmentGroup(groupId) {
+    return groupId === "origin" || groupId === "insertion";
+  }
+
+  function selectedAttachments(groupId) {
+    if (!selectedName || !config || !config.attachmentsByStructure) return [];
+    var record = config.attachmentsByStructure[selectedName];
+    return record && Array.isArray(record[groupId]) ? record[groupId] : [];
+  }
+
+  function isStructureVisible(state) {
+    if (!state || !config || !config.structureMembership) return true;
+    var groupId = structureGroupId(state);
+    if (isAttachmentGroup(groupId)) {
+      return layerVisibility[groupId] !== false && selectedAttachments(groupId).indexOf(state.name) !== -1;
+    }
+    return layerVisibility[groupId] !== false;
+  }
+
+  function isIndexedStructure(state) {
+    if (materialOwner(state.name) !== state.name) return false;
+    var groupId = structureGroupId(state);
+    if (!groupId || !config || !Array.isArray(config.structureGroups)) return true;
+    for (var i = 0; i < config.structureGroups.length; i++) {
+      if (config.structureGroups[i].id === groupId) {
+        return config.structureGroups[i].index !== false;
+      }
+    }
+    return true;
   }
 
   function restoreAll() {
@@ -773,6 +883,14 @@
 
   function selectByName(name, options) {
     options = options || {};
+    name = materialOwner(name);
+
+    // Attachment patches are intentionally not separate study-list entries.
+    // If a visible patch receives the click, keep the related muscle selected.
+    if (config && config.attachmentOwners && config.attachmentOwners[name]) {
+      var patchOwners = config.attachmentOwners[name];
+      name = patchOwners.indexOf(selectedName) !== -1 ? selectedName : patchOwners[0];
+    }
 
     selectedName = name;
 
@@ -781,18 +899,35 @@
 
     var state = findState(name);
 
-    if (!state) {
+    if (!state || !isStructureVisible(state)) {
       clearSelection();
       return;
     }
 
-    highlight(state);
+    highlightStructure(name);
 
     selectionName.textContent = prettifyName(state.name);
     selectionName.classList.remove("selection__name--empty");
 
+    var attachmentStatus = document.getElementById("attachmentStatus");
+    var group = config && config.structureMembership && config.structureMembership[name];
+    attachmentStatus.hidden = ["muscles", "tendons", "fascia"].indexOf(group) === -1;
+    if (!attachmentStatus.hidden) {
+      var attachments = config.attachmentsByStructure && config.attachmentsByStructure[name];
+      var origins = attachments ? attachments.origin.length : 0;
+      var insertions = attachments ? attachments.insertion.length : 0;
+      var sharedSurface = attachments && attachments.origin.concat(attachments.insertion).some(function (patch) {
+        return config.attachmentOwners && config.attachmentOwners[patch] && config.attachmentOwners[patch].length > 1;
+      });
+      attachmentStatus.textContent = origins || insertions
+        ? "Source surfaces: " + origins + " origin, " + insertions + " insertion. " +
+          (sharedSurface ? "Includes shared group surfaces. " : "") + "Placement review pending."
+        : "No attachment surfaces linked in this build. Review pending.";
+    }
+
     isolateBtn.disabled = false;
     ghostBtn.disabled = false;
+    attachmentViewBtn.disabled = !config || !config.attachmentsByStructure || !config.attachmentsByStructure[name];
     showAllBtn.disabled = false;
 
     markBoneListActive(name);
@@ -800,6 +935,7 @@
     // Re-apply isolate/ghost around the NEW selection if one was active.
     if (viewMode === "isolate") applyIsolate(false);
     else if (viewMode === "ghost") applyIsolate(true);
+    else if (viewMode === "attachments") applyAttachmentView();
 
     if (options.scrollIntoView !== false) {
       var el = boneList.querySelector('[data-mat="' + cssEscape(name) + '"]');
@@ -820,10 +956,18 @@
 
   function clearSelection() {
     selectedName = null;
-    selectionName.textContent = "Click a bone in the model";
+    viewMode = "all";
+    isolateBtn.classList.remove("btn--active");
+    ghostBtn.classList.remove("btn--active");
+    attachmentViewBtn.classList.remove("btn--active");
+    restoreAll();
+    selectionName.textContent = config && config.structureGroups ? "Choose a structure in the model or index" : "Click a bone in the model";
     selectionName.classList.add("selection__name--empty");
+    document.getElementById("attachmentStatus").hidden = true;
+    document.getElementById("attachmentStatus").textContent = "";
     isolateBtn.disabled = true;
     ghostBtn.disabled = true;
+    attachmentViewBtn.disabled = true;
     markBoneListActive(null);
   }
 
@@ -831,14 +975,17 @@
     if (!selectedName) return;
 
     materialStates.forEach(function (state) {
-      if (state.name === selectedName) {
+      if (materialOwner(state.name) === selectedName) {
         highlight(state);
+      } else if (isAttachmentGroup(structureGroupId(state)) && isStructureVisible(state)) {
+        restoreMaterial(state);
       } else {
-        applyLook(state, null, ghost ? GHOST_ALPHA : 0);
+        applyLook(state, null, ghost && isStructureVisible(state) ? GHOST_ALPHA : 0);
       }
     });
 
     viewMode = ghost ? "ghost" : "isolate";
+    attachmentViewBtn.classList.remove("btn--active");
     isolateBtn.classList.toggle("btn--active", viewMode === "isolate");
     ghostBtn.classList.toggle("btn--active", viewMode === "ghost");
     showAllBtn.disabled = false;
@@ -850,12 +997,33 @@
 
     if (selectedName) {
       var state = findState(selectedName);
-      if (state) highlight(state);
+      if (state) highlightStructure(selectedName);
     }
 
     isolateBtn.classList.remove("btn--active");
     ghostBtn.classList.remove("btn--active");
+    attachmentViewBtn.classList.remove("btn--active");
   }
+
+  function applyAttachmentView() {
+    if (!selectedName) return;
+    materialStates.forEach(function (state) {
+      var group = structureGroupId(state);
+      if ((group === "skeleton" || isAttachmentGroup(group)) && isStructureVisible(state)) {
+        restoreMaterial(state);
+      } else {
+        applyLook(state, null, 0);
+      }
+    });
+    viewMode = "attachments";
+    attachmentViewBtn.classList.add("btn--active");
+    isolateBtn.classList.remove("btn--active");
+    ghostBtn.classList.remove("btn--active");
+  }
+  attachmentViewBtn.addEventListener("click", function () {
+    if (viewMode === "attachments") showAll();
+    else applyAttachmentView();
+  });
 
   isolateBtn.addEventListener("click", function () {
     if (viewMode === "isolate") showAll();
@@ -882,9 +1050,10 @@
       return;
     }
 
-    boneCount.textContent = "(" + materialStates.length + ")";
+    var indexed = materialStates.filter(isIndexedStructure);
+    boneCount.textContent = "(" + indexed.length + ")";
 
-    var sorted = materialStates.slice().sort(function (a, b) {
+    var sorted = indexed.slice().sort(function (a, b) {
       return prettifyName(a.name).localeCompare(prettifyName(b.name));
     });
 
@@ -912,20 +1081,21 @@
     );
   }
 
-  boneSearch.addEventListener("input", function () {
+  function filterStructureList() {
     var q = boneSearch.value.trim().toLowerCase();
     var shown = 0;
 
     Array.prototype.forEach.call(boneList.children, function (li) {
       var btn = li.querySelector(".bone-btn");
       if (!btn) return;
-      var match = btn.textContent.toLowerCase().indexOf(q) !== -1;
+      var match = btn.textContent.toLowerCase().indexOf(q) !== -1 && isStructureVisible(findState(btn.dataset.mat));
       li.style.display = match ? "" : "none";
       if (match) shown++;
     });
 
-    boneCount.textContent = q ? "(" + shown + ")" : "(" + materialStates.length + ")";
-  });
+    boneCount.textContent = "(" + shown + ")";
+  }
+  boneSearch.addEventListener("input", filterStructureList);
 
   /* ------------------------------------------------- Click-to-select logic
      camera-controls means dragging orbits the model. We only treat a pointer
