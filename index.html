@@ -8,7 +8,7 @@
 <!-- Google's <model-viewer> web component -->
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
 
@@ -96,6 +96,18 @@
 
   <!-- =============================================================== Stage -->
   <main class="stage">
+
+    <button
+      class="stage__fullscreen-btn"
+      id="fullscreenBtn"
+      type="button"
+      aria-controls="viewer"
+      aria-pressed="false"
+      aria-label="Enter full screen model view">
+      <span class="stage__fullscreen-icon" aria-hidden="true">&#x26F6;</span>
+      <span id="fullscreenLabel">Full screen</span>
+    </button>
+    <div class="visually-hidden" id="fullscreenStatus" role="status" aria-live="polite"></div>
 
     <model-viewer
       id="viewer"
@@ -206,6 +218,6 @@
 </div>
 
 <script src="mesh-visibility.js?v=1"></script>
-<script src="app.js?v=11"></script>
+<script src="app.js?v=12"></script>
 </body>
 </html>

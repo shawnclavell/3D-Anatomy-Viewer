@@ -16,6 +16,7 @@
      * Author Mode with live preview and JSON export
      * PNG download of the current camera view
      * Student Freeze & Mark Up mode with drawing, text, undo, and PNG export
+     * Full-screen model stage with accessible enter/exit state
 
    HOW SELECTION WORKS (and its one limitation)
      <model-viewer> exposes materials, not individual meshes. Selection uses
@@ -80,6 +81,9 @@
   var attachmentViewBtn = document.getElementById("attachmentViewBtn");
   var resetBtn       = document.getElementById("resetBtn");
   var downloadViewBtn = document.getElementById("downloadViewBtn");
+  var fullscreenBtn  = document.getElementById("fullscreenBtn");
+  var fullscreenLabel = document.getElementById("fullscreenLabel");
+  var fullscreenStatus = document.getElementById("fullscreenStatus");
   var markupModeBtn  = document.getElementById("markupModeBtn");
   var authorModeBtn  = document.getElementById("authorModeBtn");
   var authorBanner   = document.getElementById("authorBanner");
@@ -340,6 +344,59 @@
     );
     if (activeBtn) activeBtn.classList.add("is-active");
   }
+
+  /* --------------------------------------------------------- Full screen */
+
+  function getFullscreenElement() {
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  }
+
+  function isStageFullscreen() {
+    return getFullscreenElement() === stage;
+  }
+
+  function updateFullscreenUi() {
+    var active = isStageFullscreen();
+    fullscreenBtn.setAttribute("aria-pressed", active ? "true" : "false");
+    fullscreenBtn.setAttribute("aria-label", active ? "Exit full screen model view" : "Enter full screen model view");
+    fullscreenLabel.textContent = active ? "Exit full screen" : "Full screen";
+    fullscreenStatus.textContent = active
+      ? "Full screen model view opened. Press Escape or use Exit full screen to return."
+      : "Full screen model view closed.";
+
+    if (markupModeOn) window.setTimeout(resizeMarkupCanvas, 0);
+  }
+
+  function requestStageFullscreen() {
+    if (stage.requestFullscreen) return stage.requestFullscreen();
+    if (stage.webkitRequestFullscreen) return stage.webkitRequestFullscreen();
+    return null;
+  }
+
+  function exitStageFullscreen() {
+    if (document.exitFullscreen) return document.exitFullscreen();
+    if (document.webkitExitFullscreen) return document.webkitExitFullscreen();
+    return null;
+  }
+
+  function handleFullscreenError() {
+    fullscreenStatus.textContent = "Full screen is unavailable here. Open the viewer in a new tab and try again.";
+    fullscreenLabel.textContent = "Full screen unavailable";
+    window.setTimeout(updateFullscreenUi, 1800);
+  }
+
+  fullscreenBtn.hidden = !(stage.requestFullscreen || stage.webkitRequestFullscreen);
+  fullscreenBtn.addEventListener("click", function () {
+    try {
+      var result = isStageFullscreen() ? exitStageFullscreen() : requestStageFullscreen();
+      if (result && typeof result.catch === "function") result.catch(handleFullscreenError);
+    } catch (error) {
+      handleFullscreenError();
+    }
+  });
+
+  document.addEventListener("fullscreenchange", updateFullscreenUi);
+  document.addEventListener("webkitfullscreenchange", updateFullscreenUi);
 
   resetBtn.addEventListener("click", function () {
     applyCamera(defaultOrbit, defaultTarget);
