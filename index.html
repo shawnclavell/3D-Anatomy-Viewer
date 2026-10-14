@@ -8,7 +8,7 @@
 <!-- Google's <model-viewer> web component -->
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 
@@ -106,6 +106,13 @@
       aria-label="Enter full screen model view">
       <span class="stage__fullscreen-icon" aria-hidden="true">&#x26F6;</span>
       <span id="fullscreenLabel">Full screen</span>
+    </button>
+    <button
+      class="stage__markup-btn"
+      id="fullscreenMarkupBtn"
+      type="button"
+      disabled>
+      Freeze &amp; Mark Up
     </button>
     <div class="visually-hidden" id="fullscreenStatus" role="status" aria-live="polite"></div>
 
@@ -218,6 +225,6 @@
 </div>
 
 <script src="mesh-visibility.js?v=1"></script>
-<script src="app.js?v=12"></script>
+<script src="app.js?v=13"></script>
 </body>
 </html>

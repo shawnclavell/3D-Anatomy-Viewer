@@ -84,6 +84,7 @@
   var fullscreenBtn  = document.getElementById("fullscreenBtn");
   var fullscreenLabel = document.getElementById("fullscreenLabel");
   var fullscreenStatus = document.getElementById("fullscreenStatus");
+  var fullscreenMarkupBtn = document.getElementById("fullscreenMarkupBtn");
   var markupModeBtn  = document.getElementById("markupModeBtn");
   var authorModeBtn  = document.getElementById("authorModeBtn");
   var authorBanner   = document.getElementById("authorBanner");
@@ -267,6 +268,7 @@
     filterStructureList();
 
     markupModeBtn.disabled = false;
+    fullscreenMarkupBtn.disabled = false;
     loadingOverlay.classList.add("is-hidden");
   }
 
@@ -463,6 +465,8 @@
     if (markupModeOn) exitMarkupMode();
     else enterMarkupMode();
   });
+
+  fullscreenMarkupBtn.addEventListener("click", enterMarkupMode);
 
   resume3dBtn.addEventListener("click", exitMarkupMode);
 

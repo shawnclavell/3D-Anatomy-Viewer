@@ -387,9 +387,49 @@ body {
   line-height: 1;
 }
 
+.stage__markup-btn {
+  position: absolute;
+  top: 16px;
+  right: 156px;
+  z-index: 40;
+  display: none;
+  min-height: 38px;
+  padding: 8px 11px;
+  border: 1px solid rgba(79, 169, 184, 0.72);
+  border-radius: var(--radius);
+  background: rgba(27, 31, 35, 0.9);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.24);
+  color: #a7e6ee;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+.stage__markup-btn:hover {
+  border-color: #83cfda;
+  background: rgba(32, 37, 42, 0.97);
+}
+
+.stage__markup-btn:disabled {
+  opacity: 0.45;
+  cursor: wait;
+}
+
+.stage:fullscreen .stage__markup-btn,
+.stage:-webkit-full-screen .stage__markup-btn {
+  display: inline-flex;
+  align-items: center;
+}
+
 .stage.is-markup .stage__fullscreen-btn {
   top: auto;
   bottom: 16px;
+}
+
+.stage.is-markup .stage__markup-btn {
+  display: none;
 }
 
 .stage:fullscreen {
@@ -954,6 +994,8 @@ model-viewer {
 }
 
 @media (max-width: 480px) {
+  .stage__fullscreen-btn { top: 8px; right: 8px; }
+  .stage__markup-btn { top: 8px; left: 8px; right: auto; }
   .markup-toolbar__heading span { display: none; }
   .markup-tool--download,
   .markup-tool--resume { flex: 1 1 45%; }
