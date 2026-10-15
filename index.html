@@ -8,21 +8,28 @@
 <!-- Google's <model-viewer> web component -->
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=11">
+<link rel="stylesheet" href="accessibility.css?v=1">
 </head>
 <body>
+<nav class="skip-links" aria-label="Keyboard shortcuts">
+  <a href="#boneSearch">Skip to structure search</a>
+  <a href="#viewer">Skip to 3D model</a>
+  <a href="#resetBtn">Skip to study tools</a>
+  <a href="#openStudyBtn">Skip to text study and keyboard help</a>
+</nav>
 
 <div class="app">
 
   <!-- ============================================================ Sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="Anatomy study controls">
 
     <div class="sidebar__header">
       <span class="sidebar__eyebrow">Specimen</span>
       <h1 class="sidebar__title" id="modelTitle">Loading&hellip;</h1>
       <label class="specimen-picker">
         <span>Choose model</span>
-        <select id="modelPicker" aria-label="Choose anatomy model">
+        <select id="modelPicker" aria-label="Choose anatomy model" aria-describedby="modelPickerHelp">
           <option value="skeleton">Skeleton</option>
           <option value="muscular">Muscular system (review preview)</option>
           <option value="skull">Colored skull</option>
@@ -31,13 +38,14 @@
           <option value="upper-limb">Upper limbs</option>
           <option value="lower-limb">Lower limbs</option>
         </select>
+        <small id="modelPickerHelp">Choosing a model loads a new page.</small>
       </label>
     </div>
 
     <!-- ----------------------------------------------- Current selection -->
     <div class="sidebar__section selection">
       <h2>Selected</h2>
-      <div class="selection__name selection__name--empty" id="selectionName">Click a bone in the model</div>
+      <div class="selection__name selection__name--empty" id="selectionName" role="status" aria-live="polite" aria-atomic="true">Choose a structure in the model or index</div>
       <p class="empty-note" id="attachmentStatus" role="status" hidden></p>
       <div class="selection__actions">
         <button class="btn btn--sm" id="isolateBtn" type="button" disabled>Isolate</button>
@@ -69,7 +77,8 @@
         placeholder="Search bones&hellip;"
         autocomplete="off"
         aria-label="Search bones">
-      <ul class="bone-list" id="boneList"></ul>
+      <p class="visually-hidden" id="searchStatus" role="status" aria-atomic="true"></p>
+      <ul class="bone-list" id="boneList" aria-label="Anatomical structures"></ul>
     </div>
 
     <!-- ------------------------------------------------------- Annotations -->
@@ -88,14 +97,14 @@
       <button class="btn" id="resetBtn" type="button">Reset View</button>
       <button class="btn" id="downloadViewBtn" type="button">Download View</button>
       <button class="btn btn--student" id="markupModeBtn" type="button" aria-pressed="false" disabled>Freeze &amp; Mark Up</button>
-      <button class="btn btn--accent" id="authorModeBtn" type="button">Author Mode</button>
+      <button class="btn btn--accent" id="authorModeBtn" type="button" aria-pressed="false">Author Mode</button>
       <a class="btn btn--link" href="ATTRIBUTION.html" target="_blank" rel="noopener">Model Credits</a>
     </div>
 
   </aside>
 
   <!-- =============================================================== Stage -->
-  <main class="stage">
+  <main class="stage" aria-label="Anatomy model and text study">
 
     <button
       class="stage__fullscreen-btn"
@@ -103,7 +112,7 @@
       type="button"
       aria-controls="viewer"
       aria-pressed="false"
-      aria-label="Enter full screen model view">
+      aria-label="Full screen model view">
       <span class="stage__fullscreen-icon" aria-hidden="true">&#x26F6;</span>
       <span id="fullscreenLabel">Full screen</span>
     </button>
@@ -118,6 +127,7 @@
 
     <model-viewer
       id="viewer"
+      tabindex="0"
       camera-controls
       min-camera-orbit="auto auto 0.05m"
       touch-action="pan-y"
@@ -137,7 +147,7 @@
         aria-label="Frozen anatomy view markup canvas. Use Pen to draw or Text to place a typed note.">
       </canvas>
 
-      <div class="markup-toolbar" role="toolbar" aria-label="Markup controls">
+      <div class="markup-toolbar" role="group" aria-label="Markup controls">
         <div class="markup-toolbar__heading">
           <strong>Frozen view</strong>
           <span>Draw or place text, then download before resuming 3D.</span>
@@ -162,6 +172,9 @@
             <input id="markupText" type="text" maxlength="80" placeholder="Type a label, then click the view" autocomplete="off">
           </label>
 
+          <label class="markup-field markup-position"><span>Horizontal position (%)</span><input id="markupX" type="number" min="0" max="100" value="50"></label>
+          <label class="markup-field markup-position"><span>Vertical position (%)</span><input id="markupY" type="number" min="0" max="100" value="65"></label>
+          <button class="markup-tool" id="placeMarkupTextBtn" type="button">Place typed label</button>
           <button class="markup-tool" id="markupUndoBtn" type="button" disabled>Undo</button>
           <button class="markup-tool" id="markupClearBtn" type="button" disabled>Clear</button>
           <button class="markup-tool markup-tool--download" id="downloadMarkupBtn" type="button">Download Marked View</button>
@@ -169,6 +182,7 @@
         </div>
 
         <div class="markup-status" id="markupStatus" role="status" aria-live="polite">Pen ready. Draw directly on the frozen view.</div>
+        <details class="markup-labels"><summary>Typed labels in this view</summary><ul id="markupLabelList"></ul></details>
       </div>
     </section>
 
@@ -215,7 +229,7 @@
       <div class="author-panel__hint">“Add to View” previews the annotation in this session. Download the JSON when it is ready to merge into the model config.</div>
     </div>
 
-    <div id="loadingOverlay">
+    <div id="loadingOverlay" role="status" aria-live="polite">
       <div class="spinner"></div>
       <span id="loadingText">Loading specimen&hellip;</span>
     </div>
@@ -225,6 +239,7 @@
 </div>
 
 <script src="mesh-visibility.js?v=1"></script>
-<script src="app.js?v=13"></script>
+<script src="accessibility.js?v=1"></script>
+<script src="app.js?v=14"></script>
 </body>
 </html>

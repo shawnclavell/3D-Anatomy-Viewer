@@ -201,10 +201,11 @@
   /* ---------------------------------------------------------- Apply config */
 
   function applyConfig(cfg) {
+    if (window.AnatomyAccessibility) window.AnatomyAccessibility.configure(cfg);
     modelTitle.textContent = cfg.label || "Untitled Specimen";
     document.title = cfg.label ? cfg.label + " — Anatomy Viewer" : "Anatomy Viewer";
 
-    viewer.setAttribute("alt", cfg.alt || cfg.label || "3D anatomical model");
+    viewer.setAttribute("alt", cfg.alt || (cfg.label || "Anatomy") + ": interactive 3D anatomy specimen. Select named structures using the structure index; use Text study & help for available descriptions.");
     if (cfg.structureGroups) {
       viewer.setAttribute("disable-tap", "");
       if (cfg.attachmentsByStructure) attachmentViewBtn.classList.remove("is-hidden");
@@ -220,6 +221,7 @@
         var button = document.createElement("button");
         button.type = "button";
         button.className = "annotation-filter annotation-filter--" + group.id;
+        button.dataset.layer = group.id;
         button.textContent = group.label;
         if (group.description) button.title = group.description;
         button.setAttribute("aria-pressed", String(layerVisibility[group.id]));
@@ -270,6 +272,7 @@
     markupModeBtn.disabled = false;
     fullscreenMarkupBtn.disabled = false;
     loadingOverlay.classList.add("is-hidden");
+    if (window.AnatomyAccessibility) window.AnatomyAccessibility.loaded();
   }
 
   function onModelError() {
@@ -287,6 +290,7 @@
       viewer.setAttribute("camera-target", target);
       viewer.cameraTarget = target;
     }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches && viewer.jumpCameraToGoal) viewer.jumpCameraToGoal();
   }
 
   function applyConfiguredDefaultPreset() {
@@ -318,6 +322,7 @@
       var btn = document.createElement("button");
       btn.className = "preset-btn";
       btn.type = "button";
+      btn.setAttribute("aria-pressed", "false");
 
       var num = document.createElement("span");
       num.className = "preset-btn__index";
@@ -342,9 +347,12 @@
   function setActivePreset(activeBtn) {
     Array.prototype.forEach.call(
       presetList.querySelectorAll(".preset-btn"),
-      function (b) { b.classList.remove("is-active"); }
+      function (b) { b.classList.remove("is-active"); b.setAttribute("aria-pressed", "false"); }
     );
-    if (activeBtn) activeBtn.classList.add("is-active");
+    if (activeBtn) {
+      activeBtn.classList.add("is-active");
+      activeBtn.setAttribute("aria-pressed", "true");
+    }
   }
 
   /* --------------------------------------------------------- Full screen */
@@ -360,7 +368,7 @@
   function updateFullscreenUi() {
     var active = isStageFullscreen();
     fullscreenBtn.setAttribute("aria-pressed", active ? "true" : "false");
-    fullscreenBtn.setAttribute("aria-label", active ? "Exit full screen model view" : "Enter full screen model view");
+    fullscreenBtn.setAttribute("aria-label", active ? "Exit full screen model view" : "Full screen model view");
     fullscreenLabel.textContent = active ? "Exit full screen" : "Full screen";
     fullscreenStatus.textContent = active
       ? "Full screen model view opened. Press Escape or use Exit full screen to return."
@@ -495,6 +503,7 @@
     resizeMarkupCanvas();
     updateMarkupControls();
     setMarkupStatus("View frozen. Pen ready — draw directly on the anatomy view.");
+    document.dispatchEvent(new CustomEvent("anatomy-markup", { detail: { active: true } }));
   }
 
   function exitMarkupMode() {
@@ -516,6 +525,7 @@
     markupModeBtn.setAttribute("aria-pressed", "false");
     markupModeBtn.textContent = "Freeze & Mark Up";
     updateMarkupControls();
+    document.dispatchEvent(new CustomEvent("anatomy-markup", { detail: { active: false } }));
   }
 
   var frozenControlStates = [];
@@ -646,7 +656,22 @@
     setMarkupStatus('Placed “' + text + '”. Click again to repeat it, or type a new label.');
   }
 
+  document.getElementById("placeMarkupTextBtn").addEventListener("click", function () {
+    var x = document.getElementById("markupX");
+    var y = document.getElementById("markupY");
+    if (!x.reportValidity() || !y.reportValidity()) return;
+    if (!x.value || !y.value) { setMarkupStatus("Enter both position percentages."); return; }
+    placeMarkupText({ x: Number(x.value) / 100, y: Number(y.value) / 100 });
+  });
+
   function renderMarkup() {
+    var labelList = document.getElementById("markupLabelList");
+    labelList.textContent = "";
+    markupOperations.filter(function (op) { return op.type === "text"; }).forEach(function (op) {
+      var item = document.createElement("li");
+      item.textContent = op.text + " — horizontal " + Math.round(op.point.x * 100) + "%, vertical " + Math.round(op.point.y * 100) + "%";
+      labelList.appendChild(item);
+    });
     var context = markupCanvas.getContext("2d");
     var ratio = window.devicePixelRatio || 1;
     var cssWidth = markupCanvas.width / ratio;
@@ -788,7 +813,7 @@
   });
 
   document.addEventListener("keydown", function (event) {
-    if (markupModeOn && event.key === "Escape") exitMarkupMode();
+    if (markupModeOn && event.key === "Escape" && !document.querySelector("dialog[open]")) exitMarkupMode();
   });
 
   /* ====================================================================
@@ -1124,6 +1149,7 @@
       btn.className = "bone-btn";
       btn.type = "button";
       btn.dataset.mat = state.name;
+      btn.setAttribute("aria-pressed", "false");
       btn.textContent = prettifyName(state.name);
       btn.addEventListener("click", function () {
         selectByName(state.name, { scrollIntoView: false });
@@ -1138,6 +1164,7 @@
       boneList.querySelectorAll(".bone-btn"),
       function (b) {
         b.classList.toggle("is-active", name !== null && b.dataset.mat === name);
+        b.setAttribute("aria-pressed", String(name !== null && b.dataset.mat === name));
       }
     );
   }
@@ -1155,6 +1182,7 @@
     });
 
     boneCount.textContent = "(" + shown + ")";
+    document.getElementById("searchStatus").textContent = shown + " matching structures" + (q ? " for " + boneSearch.value.trim() : "") + ".";
   }
   boneSearch.addEventListener("input", filterStructureList);
 
@@ -1257,7 +1285,9 @@
   }
 
   function addHotspotToScene(h) {
-    var wrapper = document.createElement("div");
+    var wrapper = document.createElement("button");
+    wrapper.type = "button";
+    wrapper.setAttribute("aria-label", annotationTypeLabel(h.type) + ": " + h.label + (h.description ? ". " + h.description : ""));
     wrapper.className = "hotspot hotspot--" + h.type;
     wrapper.dataset.hotspotId = h.id;
     wrapper.dataset.annotationType = h.type;
@@ -1330,6 +1360,12 @@
     detail.className = "hotspot-btn__detail";
     detail.textContent = detailText;
     text.appendChild(detail);
+    if (h.description) {
+      var description = document.createElement("span");
+      description.className = "hotspot-btn__description";
+      description.textContent = h.description;
+      text.appendChild(description);
+    }
 
     btn.appendChild(marker);
     btn.appendChild(text);
@@ -1396,6 +1432,7 @@
 
   function setAuthorMode(enabled) {
     authorModeOn = enabled;
+    authorModeBtn.setAttribute("aria-pressed", String(enabled));
     authorModeBtn.classList.toggle("btn--active", authorModeOn);
     authorBanner.classList.toggle("is-active", authorModeOn);
     authorPanel.classList.toggle("is-active", authorModeOn);

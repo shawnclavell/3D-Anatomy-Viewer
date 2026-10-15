@@ -1,0 +1,54 @@
+/* Interface remediation toward WCAG 2.2 AA. See ACCESSIBILITY-REVIEW.md. */
+.skip-links { position: fixed; top: 8px; left: 8px; z-index: 1000; }
+.skip-links a { position: absolute; transform: translateY(-200%); width: max-content; max-width: calc(100vw - 24px); padding: 12px; background: var(--panel); color: var(--ink); border: 2px solid var(--focus-ring); }
+.skip-links a:focus { position: relative; display: block; transform: none; }
+button, input, select, summary { min-height: 36px; }
+button, input, select, textarea, summary { scroll-margin: 12px; }
+input, select, textarea { border-color: #7d8992; }
+:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+.bone-list { padding: 5px; }
+.bone-btn[aria-pressed="true"]::before { content: "Selected: "; }
+.hotspot { font: inherit; text-align: left; color: inherit; background: transparent; border: 0; padding: 7px; min-width: 24px; min-height: 24px; }
+.hotspot:focus-visible .hotspot__label { opacity: 1; }
+#loadingOverlay.is-hidden { visibility: hidden; }
+.hotspot-btn__description { display: block; color: var(--ink); font-size: 0.875rem; line-height: 1.5; text-transform: none; letter-spacing: normal; }
+.access-controls { position: absolute; top: 12px; left: 12px; z-index: 41; display: flex; flex-direction: column; gap: 8px; max-width: min(290px, calc(100% - 24px)); }
+.access-controls[hidden] { display: none; }
+.access-controls button, .access-controls summary, .study-dialog button { padding: 8px 12px; background: var(--panel); border: 1px solid #7d8992; border-radius: 4px; color: var(--ink); font: inherit; font-size: 0.875rem; cursor: pointer; }
+.access-controls summary { list-style-position: inside; }
+.camera-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 8px; background: var(--panel); max-height: 45vh; overflow: auto; }
+.camera-controls button:disabled { opacity: 0.5; }
+.study-dialog { width: min(850px, calc(100% - 24px)); max-width: calc(100% - 24px); max-height: calc(100dvh - 24px); box-sizing: border-box; overflow: auto; padding: 24px; background: var(--panel); color: var(--ink); border: 2px solid #7d8992; border-radius: 6px; line-height: 1.6; }
+.study-dialog::backdrop { background: rgba(0, 0, 0, 0.75); }
+.study-dialog h2 { font-size: 1.5rem; }
+.study-dialog h3 { font-size: 1.25rem; }
+.study-dialog h4 { font-size: 1.125rem; }
+.study-dialog label { display: block; font-weight: 600; }
+.study-dialog input { width: 100%; padding: 10px; background: var(--bg); color: var(--ink); border: 1px solid #7d8992; font: inherit; }
+.study-dialog li { margin-block: 8px; }
+.study-dialog button[aria-pressed="true"]::before { content: "Selected: "; }
+.study-dialog article { border-top: 1px solid #7d8992; }
+.study-dialog button:disabled { color: var(--ink-dim); }
+.markup-position { flex: 1 1 120px; }
+.markup-position input { width: 100%; padding: 6px; }
+.markup-labels { margin-top: 8px; font-size: 0.875rem; }
+.markup-labels ul { max-height: 120px; overflow-y: auto; }
+.markup-toolbar { max-height: calc(100% - 86px); overflow: auto; }
+.stage.is-markup .stage__fullscreen-btn { z-index: 42; }
+@media (max-width: 760px) {
+  body { overflow: auto; }
+  .app { height: auto; min-height: 100dvh; width: 100%; }
+  .sidebar { max-height: none; overflow: visible; }
+  .sidebar__footer { position: static; }
+  .stage { flex: none; height: 70dvh; min-height: 420px; }
+  .access-controls { top: 62px; }
+  .stage:fullscreen .access-controls, .stage:-webkit-full-screen .access-controls { top: 62px; }
+  .study-dialog { padding: 16px; }
+  .bone-list { max-height: none; overflow: visible; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+@media (forced-colors: active) {
+  button, input, select, textarea, summary, .study-dialog { border: 1px solid ButtonText; }
+  :focus-visible { outline-color: Highlight; }
+  .bone-btn[aria-pressed="true"], button[aria-pressed="true"] { border: 3px solid Highlight; }
+}
