@@ -185,7 +185,7 @@
   loadModelBtn.className = "btn";
   loadModelBtn.id = "loadModelBtn";
   loadModelBtn.textContent = "Load model";
-  modelPicker.parentElement.appendChild(loadModelBtn);
+  modelPicker.parentElement.insertAdjacentElement("afterend", loadModelBtn);
   document.getElementById("modelPickerHelp").textContent = "Choose a model, then use Load model to open it.";
   loadModelBtn.addEventListener("click", function () {
     var url = new URL(window.location.href);
