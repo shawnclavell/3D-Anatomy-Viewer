@@ -44,6 +44,16 @@
     '<label for="studySearch">Search text study</label><input id="studySearch" type="search" autocomplete="off" placeholder="Search names and teaching notes">' +
     '<p id="studyCount" role="status" aria-atomic="true"></p><section id="studySelectedDetails" aria-label="Selected structure information"></section><div id="studyContent"></div>';
   stage.appendChild(dialog);
+  if (document.documentElement.dataset.skullBaseStudy === "preview" && new URLSearchParams(window.location.search).get("model") === "skull-base") {
+    var guideNote = document.createElement("p");
+    var guideLink = document.createElement("a");
+    guideLink.href = "study.html?model=skull-base";
+    guideLink.target = "_blank";
+    guideLink.rel = "noopener";
+    guideLink.textContent = "Read skull-base orientation and landmark guide (no 3D required; opens a new tab)";
+    guideNote.appendChild(guideLink);
+    dialog.insertBefore(guideNote, document.getElementById("studyCoverage"));
+  }
   var search = document.getElementById("studySearch");
   var content = document.getElementById("studyContent");
   var count = document.getElementById("studyCount");

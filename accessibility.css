@@ -28,6 +28,11 @@ input, select, textarea { border-color: #7d8992; }
 .study-dialog li { margin-block: 8px; }
 .study-dialog button[aria-pressed="true"]::before { content: "Selected: "; }
 .study-dialog article { border-top: 1px solid #7d8992; }
+.study-dialog a { color: #9ed9f5; text-decoration: underline; overflow-wrap: anywhere; }
+#closeStudyBtn { position: sticky; top: 0; z-index: 1; }
+.author-panel { max-height: calc(100% - 100px); overflow-y: auto; }
+.author-coordinate-fields { margin-block: 12px; border: 1px solid #7d8992; padding: 10px; }
+.author-coordinate-fields input { width: 100%; font: inherit; }
 .study-dialog button:disabled { color: var(--ink-dim); }
 .markup-position { flex: 1 1 120px; }
 .markup-position input { width: 100%; padding: 6px; }

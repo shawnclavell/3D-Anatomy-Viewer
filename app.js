@@ -180,7 +180,14 @@
       });
   }
 
-  modelPicker.addEventListener("change", function () {
+  var loadModelBtn = document.createElement("button");
+  loadModelBtn.type = "button";
+  loadModelBtn.className = "btn";
+  loadModelBtn.id = "loadModelBtn";
+  loadModelBtn.textContent = "Load model";
+  modelPicker.parentElement.appendChild(loadModelBtn);
+  document.getElementById("modelPickerHelp").textContent = "Choose a model, then use Load model to open it.";
+  loadModelBtn.addEventListener("click", function () {
     var url = new URL(window.location.href);
     url.searchParams.set("model", modelPicker.value);
     url.searchParams.delete("review");
@@ -1436,6 +1443,8 @@
     authorModeBtn.classList.toggle("btn--active", authorModeOn);
     authorBanner.classList.toggle("is-active", authorModeOn);
     authorPanel.classList.toggle("is-active", authorModeOn);
+    if (enabled) annotationLabel.focus();
+    else if (authorPanel.contains(document.activeElement)) authorModeBtn.focus();
   }
 
   [annotationType, annotationLabel, annotationMuscle, annotationDescription]
@@ -1443,6 +1452,47 @@
       field.addEventListener("input", updatePendingAnnotation);
       field.addEventListener("change", updatePendingAnnotation);
     });
+
+  var coordinateFields = document.createElement("fieldset");
+  coordinateFields.className = "author-coordinate-fields";
+  coordinateFields.innerHTML = '<legend>Place annotation with coordinates</legend>' +
+    '<p>Enter model-space coordinates in meters. Use an existing annotation JSON record as a reference. Placement still needs visual and anatomical review.</p>' +
+    '<label for="authorPosition">Position: X Y Z</label><input id="authorPosition" type="text" placeholder="0 1.5 0">' +
+    '<label for="authorNormal">Surface normal: X Y Z</label><input id="authorNormal" type="text" value="0 1 0">' +
+    '<button type="button" class="btn" id="useAuthorCoordinatesBtn">Use coordinates</button>' +
+    '<p id="authorCoordinateStatus" role="status"></p>';
+  authorPanel.querySelector(".author-form").appendChild(coordinateFields);
+  document.getElementById("useAuthorCoordinatesBtn").addEventListener("click", function () {
+    var position = document.getElementById("authorPosition").value.trim().split(/\s+/).map(Number);
+    var normal = document.getElementById("authorNormal").value.trim().split(/\s+/).map(Number);
+    var status = document.getElementById("authorCoordinateStatus");
+    if (position.length !== 3 || normal.length !== 3 || !position.concat(normal).every(Number.isFinite) || normal.every(function (n) { return n === 0; })) {
+      status.textContent = "Enter three finite numbers in each field and a nonzero surface normal.";
+      return;
+    }
+    var length = Math.hypot.apply(Math, normal);
+    if (!Number.isFinite(length) || length === 0) { status.textContent = "Enter a finite, nonzero surface normal."; return; }
+    pendingPoint = { id: "h" + Date.now() + (++hotspotCounter), position: position.join(" "), normal: normal.map(function (n) { return n / length; }).join(" ") };
+    updatePendingAnnotation();
+    status.textContent = "Coordinates ready. Use Add to View to preview this session annotation.";
+    previewAnnotationBtn.focus();
+  });
+
+  var downloadNotesBtn = document.createElement("button");
+  downloadNotesBtn.type = "button";
+  downloadNotesBtn.className = "markup-tool";
+  downloadNotesBtn.id = "downloadNotesBtn";
+  downloadNotesBtn.textContent = "Download typed notes";
+  downloadMarkupBtn.parentElement.insertBefore(downloadNotesBtn, downloadMarkupBtn);
+  downloadNotesBtn.addEventListener("click", function () {
+    var notes = markupOperations.filter(function (op) { return op.type === "text"; });
+    if (!notes.length) { setMarkupStatus("Add a typed label before downloading notes."); return; }
+    var lines = [config && config.label || "Anatomy model", "Typed labels in the frozen view. Percentages describe image position, not anatomical coordinates.", ""];
+    notes.forEach(function (op) { lines.push(op.text + " — horizontal " + Math.round(op.point.x * 100) + "%, vertical " + Math.round(op.point.y * 100) + "%"); });
+    lines.push("", "Freehand pen strokes are not included in this text file.");
+    downloadBlob(new Blob([lines.join("\n") + "\n"], {type:"text/plain;charset=utf-8"}), slugify(config && config.label || "anatomy-model") + "-typed-notes.txt");
+    setMarkupStatus("Typed notes downloaded as text.");
+  });
 
   function captureHotspotPoint(clientX, clientY) {
     var hit = viewer.positionAndNormalFromPoint(clientX, clientY);
