@@ -9,7 +9,7 @@
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 
 <link rel="stylesheet" href="style.css?v=11">
-<link rel="stylesheet" href="accessibility.css?v=2">
+<link rel="stylesheet" href="accessibility.css?v=9">
 </head>
 <body>
 <nav class="skip-links" aria-label="Keyboard shortcuts">
@@ -57,7 +57,7 @@
 
     <div class="sidebar__section is-hidden" id="structureLayers">
       <h2>Anatomy Layers</h2>
-      <div class="annotation-filters" id="layerButtons" aria-label="Anatomy layers"></div>
+      <div class="annotation-filters" id="layerButtons" role="group" aria-label="Anatomy layers"></div>
       <p class="empty-note" id="modelReviewNote"></p>
     </div>
 
@@ -84,7 +84,7 @@
     <!-- ------------------------------------------------------- Annotations -->
     <div class="sidebar__section">
       <h2>Annotations</h2>
-      <div class="annotation-filters" id="annotationFilters" aria-label="Annotation filters">
+      <div class="annotation-filters" id="annotationFilters" role="group" aria-label="Annotation filters">
         <button class="annotation-filter annotation-filter--landmark is-active" type="button" data-annotation-filter="landmark" aria-pressed="true">Landmarks</button>
         <button class="annotation-filter annotation-filter--origin is-active" type="button" data-annotation-filter="origin" aria-pressed="true">Origins</button>
         <button class="annotation-filter annotation-filter--insertion is-active" type="button" data-annotation-filter="insertion" aria-pressed="true">Insertions</button>
@@ -239,7 +239,7 @@
 </div>
 
 <script src="mesh-visibility.js?v=1"></script>
-<script src="accessibility.js?v=2"></script>
-<script src="app.js?v=16"></script>
+<script src="accessibility.js?v=6"></script>
+<script src="app.js?v=17"></script>
 </body>
 </html>

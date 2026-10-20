@@ -1422,6 +1422,7 @@
       function (h) { h.classList.remove("is-focused"); }
     );
     el.classList.add("is-focused");
+    if (window.AnatomyAccessibility) window.AnatomyAccessibility.prioritizeMarker(id);
 
     var pos = el.dataset.position.split(" ").map(Number);
     if (pos.length === 3 && pos.every(function (n) { return !isNaN(n); })) {

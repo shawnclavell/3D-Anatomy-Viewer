@@ -7,7 +7,46 @@
   var config = null;
   var studyReturnFocus = null;
   var markupReturnFocus = null;
+  var markupActive = false;
   var searchTimer;
+  var priorityMarker = null;
+  var layoutScheduled = false;
+  function layoutMarkers() {
+    layoutScheduled = false;
+    var bounds = stage.getBoundingClientRect();
+    var blockers = Array.prototype.slice.call(stage.querySelectorAll(".access-controls, .stage__fullscreen-btn, .stage__markup-btn, .author-panel"));
+    var occupied = blockers.filter(function (e) { return e.getClientRects().length && !e.hidden && getComputedStyle(e).display !== "none"; }).map(function (e) { return e.getBoundingClientRect(); });
+    var pins = Array.prototype.slice.call(viewer.querySelectorAll(".hotspot"));
+    var focusedPin = document.activeElement && document.activeElement.closest(".hotspot");
+    pins.sort(function (a,b) {
+      var rank = function (pin) { return pin === focusedPin ? 2 : pin.dataset.hotspotId === priorityMarker ? 1 : 0; };
+      return rank(b) - rank(a);
+    });
+    pins.forEach(function (pin) {
+      pin.classList.remove("is-crowded");
+      if (pin.classList.contains("is-filtered")) return;
+      var r = pin.getBoundingClientRect();
+      var crowded = r.width < 24 || r.height < 24 || r.left < bounds.left || r.right > bounds.right || r.top < bounds.top || r.bottom > bounds.bottom || occupied.some(function (o) { return r.left < o.right + 3 && r.right + 3 > o.left && r.top < o.bottom + 3 && r.bottom + 3 > o.top; });
+      pin.classList.toggle("is-crowded", crowded);
+      if (crowded && pin === focusedPin) {
+        studyButton.focus();
+        announce("The focused marker moved out of view. Use Text study and help to select its named annotation.");
+      }
+      if (!crowded) occupied.push(r);
+    });
+  }
+  function scheduleMarkerLayout() {
+    if (!layoutScheduled) { layoutScheduled = true; window.requestAnimationFrame(layoutMarkers); }
+  }
+  viewer.addEventListener("camera-change", scheduleMarkerLayout);
+  window.addEventListener("resize", scheduleMarkerLayout);
+  viewer.addEventListener("pointerover", function (event) { var pin=event.target.closest(".hotspot"); if(pin && !pin.contains(event.relatedTarget)) pin.classList.remove("is-label-dismissed"); });
+  viewer.addEventListener("focusin", function (event) { var pin=event.target.closest(".hotspot"); if(pin) pin.classList.remove("is-label-dismissed"); });
+  document.addEventListener("keydown", function (event) { if(event.key==="Escape") viewer.querySelectorAll(".hotspot").forEach(function (pin) { pin.classList.add("is-label-dismissed"); }); });
+  var markerHelp = document.createElement("p");
+  markerHelp.className = "empty-note";
+  markerHelp.textContent = "Crowded markers are hidden to prevent overlap. Every annotation remains available in the Annotations list and Text study & help. Press Escape to dismiss a marker label.";
+  document.getElementById("annotationFilters").insertAdjacentElement("afterend", markerHelp);
   var controls = document.createElement("div");
   controls.className = "access-controls";
   controls.innerHTML = '<button type="button" id="openStudyBtn" aria-haspopup="dialog">Text study &amp; help</button>' +
@@ -38,6 +77,13 @@
   dialog.setAttribute("aria-labelledby", "textStudyTitle");
   dialog.innerHTML = '<button type="button" id="closeStudyBtn">Close text study</button>' +
     '<h2 id="textStudyTitle">Text study and keyboard help</h2>' +
+    '<section aria-labelledby="screenReaderTipsTitle"><h3 id="screenReaderTipsTitle">Screen-reader reading tips</h3>' +
+    '<p>Tab visits controls; it does not read every paragraph. Use your screen reader to read the text and named structures below. The 3D image itself is not a complete text description.</p>' +
+    '<p>In NVDA, use your configured NVDA modifier key: Insert, or Caps Lock if enabled. These are screen-reader commands, not viewer shortcuts.</p>' +
+    '<ul><li>Read from the current position: NVDA+A with the laptop keyboard layout, or NVDA+Down Arrow with the desktop layout.</li>' +
+    '<li>Stop speech: Ctrl.</li><li>In browse mode, use the arrow keys to read content. NVDA+Space switches between browse and focus modes when needed.</li></ul>' +
+    '<p>If navigating the Canvas embed is difficult, try the separate-tab viewer link provided below the embed. <a href="https://www.nvaccess.org/get-help/accessibility-testing-with-nvda-free-sample/" target="_blank" rel="noopener">NV Access reading and navigation guide (opens a new tab)</a>.</p></section>' +
+    '<h3>Viewer keyboard controls</h3>' +
     '<p>Use Tab and Shift+Tab to move between controls, and Enter or Space to activate buttons. Search the structure index to select anatomy. Camera buttons rotate, pan and zoom without dragging. In fullscreen, this text study view provides structure selection and the available teaching notes.</p>' +
     '<p>Freeze &amp; Mark Up supports pen drawing and typed labels. Use the horizontal and vertical position fields with Place typed label to add text without a mouse. Download your work before Resume 3D clears it. Freehand drawing is visual; typed labels are also listed as text.</p>' +
     '<p id="studyCoverage">The available names and teaching notes are provided below. This is a text view of existing content; detailed spatial descriptions and an equivalent path for every course learning objective are still being reviewed.</p>' +
@@ -123,6 +169,14 @@
       el("h4", note.label, article);
       el("p", "Type: " + (note.type || "landmark") + (note.muscle ? ". Muscle: " + note.muscle : ""), article);
       el("p", note.description || "No teaching description has been supplied for this annotation.", article);
+      var focusButton = el("button", "Focus landmark: " + note.label, article);
+      focusButton.type = "button";
+      focusButton.addEventListener("click", function () {
+        var sourceItem = Array.prototype.find.call(document.querySelectorAll("#hotspotList li"), function (li) { return li.dataset.annotationId === note.id; });
+        dialog.close();
+        if (sourceItem) sourceItem.querySelector("button").click();
+        announce("Focused landmark " + note.label + ".");
+      });
     });
     if (!notes.length) el("p", "No teaching annotations have been added for this model.", content);
     count.textContent = matches + " matching structures and teaching annotations.";
@@ -172,6 +226,8 @@
   });
   document.addEventListener("anatomy-markup", function (event) {
     var active = event.detail.active;
+    markupActive = active;
+    updateBypassAvailability();
     controls.hidden = active;
     viewer.inert = active;
     if (active) {
@@ -182,13 +238,21 @@
       destination.focus();
     }
   });
-  document.addEventListener("fullscreenchange", function () {
-    var active = document.fullscreenElement === stage;
+  function updateBypassAvailability() {
+    var fullscreen = (document.fullscreenElement || document.webkitFullscreenElement) === stage;
+    // Frozen-mode targets are disabled, hidden or inert. Keep those bypass
+    // links out of the tab order until their destinations are usable again.
+    document.querySelector(".skip-links").inert = markupActive || fullscreen;
+  }
+  function handleFullscreenChange() {
+    var active = (document.fullscreenElement || document.webkitFullscreenElement) === stage;
     document.querySelector(".sidebar").inert = active;
-    document.querySelector(".skip-links").inert = active;
+    updateBypassAvailability();
     if (dialog.open) dialog.close();
     if (!active) document.getElementById("fullscreenBtn").focus();
-  });
+  }
+  document.addEventListener("fullscreenchange", handleFullscreenChange);
+  document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
   document.querySelectorAll(".skip-links a").forEach(function (link) {
     link.addEventListener("click", function () {
       var target = document.querySelector(link.getAttribute("href"));
@@ -196,8 +260,10 @@
     });
   });
   window.AnatomyAccessibility = {
+    prioritizeMarker: function (id) { priorityMarker=id; scheduleMarkerLayout(); },
     configure: function (value) { config = value; },
     loaded: function () {
+      scheduleMarkerLayout();
       controls.querySelectorAll("[data-camera]").forEach(function (button) { button.disabled = false; });
       announce((config.label || "Anatomy model") + " loaded. Structure search, text study and camera controls are ready.");
     }

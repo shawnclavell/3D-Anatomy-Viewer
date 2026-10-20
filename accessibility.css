@@ -5,11 +5,22 @@
 button, input, select, summary { min-height: 36px; }
 button, input, select, textarea, summary { scroll-margin: 12px; }
 input, select, textarea { border-color: #7d8992; }
+.annotation-filter:not(.is-active) { opacity: 1; }
+.btn { transition: none; }
+.btn--accent.btn--active:hover { background: var(--accent); }
 :focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
 .bone-list { padding: 5px; }
 .bone-btn[aria-pressed="true"]::before { content: "Selected: "; }
 .hotspot { font: inherit; text-align: left; color: inherit; background: transparent; border: 0; padding: 7px; min-width: 24px; min-height: 24px; }
 .hotspot:focus-visible .hotspot__label { opacity: 1; }
+.hotspot.is-crowded { visibility: hidden; }
+.hotspot__label { pointer-events: none; background: #14171a; }
+.hotspot:hover .hotspot__label, .hotspot:focus-visible .hotspot__label, .hotspot.is-focused .hotspot__label { pointer-events: auto; }
+.hotspot.is-label-dismissed .hotspot__label { opacity: 0; pointer-events: none; }
+.stage__fullscreen-btn, .stage__markup-btn { background: #1b1f23; }
+.stage__hint { background: #14171a; }
+.stage__hint.is-hidden { visibility: hidden; }
+.author-banner { background: #14171a; }
 #loadingOverlay.is-hidden { visibility: hidden; }
 .hotspot-btn__description { display: block; color: var(--ink); font-size: 0.875rem; line-height: 1.5; text-transform: none; letter-spacing: normal; }
 .access-controls { position: absolute; top: 12px; left: 12px; z-index: 41; display: flex; flex-direction: column; gap: 8px; max-width: min(290px, calc(100% - 24px)); }
@@ -29,8 +40,14 @@ input, select, textarea { border-color: #7d8992; }
 .study-dialog button[aria-pressed="true"]::before { content: "Selected: "; }
 .study-dialog article { border-top: 1px solid #7d8992; }
 .study-dialog a { color: #9ed9f5; text-decoration: underline; overflow-wrap: anywhere; }
+.study-dialog p, .study-dialog li, .study-dialog button, .hotspot-btn { overflow-wrap: anywhere; }
+.markup-tool { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
+.markup-field, .author-field { min-width: 0; }
 #closeStudyBtn { position: sticky; top: 0; z-index: 1; }
 .author-panel { max-height: calc(100% - 100px); overflow-y: auto; }
+.author-panel > * { flex-shrink: 0; }
+.author-form, .author-actions { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.author-field input, .author-field select, .author-field textarea { min-width: 0; }
 .author-coordinate-fields { margin-block: 12px; border: 1px solid #7d8992; padding: 10px; }
 .author-coordinate-fields input { width: 100%; font: inherit; }
 .study-dialog button:disabled { color: var(--ink-dim); }
@@ -38,7 +55,7 @@ input, select, textarea { border-color: #7d8992; }
 .markup-position input { width: 100%; padding: 6px; }
 .markup-labels { margin-top: 8px; font-size: 0.875rem; }
 .markup-labels ul { max-height: 120px; overflow-y: auto; }
-.markup-toolbar { max-height: calc(100% - 86px); overflow: auto; }
+.markup-toolbar { max-height: calc(100% - 86px); overflow: auto; background: #14171a; }
 .stage.is-markup .stage__fullscreen-btn { z-index: 42; }
 @media (max-width: 760px) {
   body { overflow: auto; }
@@ -49,11 +66,17 @@ input, select, textarea { border-color: #7d8992; }
   .access-controls { top: 62px; }
   .stage:fullscreen .access-controls, .stage:-webkit-full-screen .access-controls { top: 62px; }
   .study-dialog { padding: 16px; }
+  .author-form, .author-actions { grid-template-columns: minmax(0, 1fr); }
   .bone-list { max-height: none; overflow: visible; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
 @media (forced-colors: active) {
+  .study-dialog, .markup-toolbar, .author-panel, .author-banner, .camera-controls, .hotspot__label { background: Canvas; color: CanvasText; }
   button, input, select, textarea, summary, .study-dialog { border: 1px solid ButtonText; }
+  .hotspot__pin { background: ButtonText; border: 2px solid Canvas; outline: 1px solid ButtonText; box-shadow: none; }
+  .hotspot__label { border-color: CanvasText; }
+  .study-dialog a { color: LinkText; }
+  .camera-controls button:disabled, .markup-tool:disabled { opacity: 1; color: GrayText; border-color: GrayText; }
   :focus-visible { outline-color: Highlight; }
   .bone-btn[aria-pressed="true"], button[aria-pressed="true"] { border: 3px solid Highlight; }
 }
