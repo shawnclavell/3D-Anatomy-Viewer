@@ -149,7 +149,7 @@
   /* ------------------------------------------------------------- Bootstrap */
 
   function getModelParam() {
-    return new URLSearchParams(window.location.search).get("model") || "skeleton";
+    return new URLSearchParams(window.location.search).get("model") || "muscular";
   }
 
   function init() {

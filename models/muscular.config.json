@@ -1,5 +1,5 @@
 {
-  "label": "Muscular System \u2014 Context Preview",
+  "label": "Muscular System",
   "glb": "assets/overview-muscular.glb?v=3",
   "cameraPresets": [
     {
@@ -156,7 +156,7 @@
   "hotspots": [],
   "alt": "Full available Z-Anatomy muscular system over the bilateral skeleton. Ivory tendon regions remain part of their parent muscle. Use fascia, tendon, sheath, and bursa layers for context. Select a muscle to reveal source-model attachment surfaces.",
   "defaultPreset": 0,
-  "reviewNote": "Review preview: attachment placement is provisional. Ivory = tendon regions; fascia is translucent. Select a muscle for origin (red) and insertion (blue) surfaces. 30 unmatched attachment surfaces remain hidden.",
+  "reviewNote": "Attachment placement is provisional. Ivory = tendon regions; fascia is translucent. Select a muscle for origin (red) and insertion (blue) surfaces. 30 unmatched attachment surfaces remain hidden.",
   "structureGroups": [
     {
       "id": "muscles",
