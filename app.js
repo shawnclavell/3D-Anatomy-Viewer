@@ -145,6 +145,39 @@
   var materialStates = [];
   var selectedName   = null;
   var viewMode       = "all";   // "all" | "isolate" | "ghost"
+  var hiddenStructures = new Set();
+  var hideHistory = [];
+  resetBtn.disabled = true;
+  downloadViewBtn.disabled = true;
+  function visibilityChanged(message, selectionOnly) {
+    updateAnnotationVisibility();
+    filterStructureList();
+    document.dispatchEvent(new CustomEvent("anatomy-visibility", { detail: { message: message || "", selectionOnly: !!selectionOnly } }));
+  }
+  function hideSelectedStructure() {
+    if (!meshVisibility || !selectedName || markupModeOn) return;
+    var name = selectedName;
+    hiddenStructures.add(name); hideHistory.push(name);
+    clearSelection();
+    visibilityChanged("Hidden " + prettifyName(name) + ". " + hiddenStructures.size + " structures hidden.");
+  }
+  function restoreHiddenStructure(name) {
+    if (markupModeOn || !hiddenStructures.delete(name)) return;
+    hideHistory = hideHistory.filter(function (item) { return item !== name; });
+    restoreView();
+    visibilityChanged("Restored " + prettifyName(name) + ". Anatomy Layers switches still apply.");
+  }
+  window.AnatomyDissection = {
+    state: function () { return {
+      ready: !!meshVisibility && !markupModeOn,
+      selected: selectedName ? { name: selectedName, label: prettifyName(selectedName) } : null,
+      hidden: Array.from(hiddenStructures).map(function (name) { return { name: name, label: prettifyName(name) }; }),
+      undoName: hideHistory[hideHistory.length - 1] || null
+    }; },
+    hideSelected: hideSelectedStructure, restore: restoreHiddenStructure,
+    undo: function () { if (hideHistory.length && !markupModeOn) restoreHiddenStructure(hideHistory[hideHistory.length - 1]); },
+    restoreAll: function () { if (!markupModeOn) showAll(); }
+  };
 
   /* ------------------------------------------------------------- Bootstrap */
 
@@ -196,6 +229,8 @@
   });
 
   function showFatalError(headline, detail) {
+    resetBtn.disabled = true;
+    downloadViewBtn.disabled = true;
     loadingOverlay.classList.remove("is-hidden");
     loadingText.textContent = headline;
     modelTitle.textContent = "Error";
@@ -241,6 +276,7 @@
           restoreAll();
           if (selectedName) selectByName(selectedName, { scrollIntoView: false });
           filterStructureList();
+          visibilityChanged();
         });
         document.getElementById("layerButtons").appendChild(button);
       });
@@ -256,6 +292,8 @@
   }
 
   function onModelLoaded() {
+    resetBtn.disabled = false;
+    downloadViewBtn.disabled = false;
     var configuredDefault = applyConfiguredDefaultPreset();
 
     defaultOrbit = configuredDefault
@@ -266,7 +304,7 @@
       : (viewer.getCameraTarget ? viewer.getCameraTarget().toString() : viewer.cameraTarget);
 
     snapshotMaterials();
-    if (config && config.structureGroups && window.AnatomyMeshVisibility) {
+    if (window.AnatomyMeshVisibility) {
       meshVisibility = window.AnatomyMeshVisibility.bind(viewer, materialStates);
       if (!meshVisibility) {
         document.getElementById("modelReviewNote").textContent += " Surface selection adapter unavailable; use the structure index.";
@@ -280,6 +318,7 @@
     fullscreenMarkupBtn.disabled = false;
     loadingOverlay.classList.add("is-hidden");
     if (window.AnatomyAccessibility) window.AnatomyAccessibility.loaded();
+    visibilityChanged();
   }
 
   function onModelError() {
@@ -360,6 +399,9 @@
       activeBtn.classList.add("is-active");
       activeBtn.setAttribute("aria-pressed", "true");
     }
+    document.dispatchEvent(new CustomEvent("anatomy-viewchange", { detail: {
+      index: activeBtn ? Array.prototype.indexOf.call(presetList.querySelectorAll(".preset-btn"), activeBtn) : -1
+    } }));
   }
 
   /* --------------------------------------------------------- Full screen */
@@ -948,6 +990,7 @@
   }
 
   function isStructureVisible(state) {
+    if (state && hiddenStructures.has(materialOwner(state.name))) return false;
     if (!state || !config || !config.structureMembership) return true;
     var groupId = structureGroupId(state);
     if (isAttachmentGroup(groupId)) {
@@ -1038,6 +1081,7 @@
     }
 
     hideStageHint();
+    visibilityChanged("", true);
   }
 
   function findState(name) {
@@ -1053,6 +1097,7 @@
     isolateBtn.classList.remove("btn--active");
     ghostBtn.classList.remove("btn--active");
     attachmentViewBtn.classList.remove("btn--active");
+    attachmentViewBtn.setAttribute("aria-pressed", "false");
     restoreAll();
     selectionName.textContent = config && config.structureGroups ? "Choose a structure in the model or index" : "Click a bone in the model";
     selectionName.classList.add("selection__name--empty");
@@ -1079,12 +1124,20 @@
 
     viewMode = ghost ? "ghost" : "isolate";
     attachmentViewBtn.classList.remove("btn--active");
+    attachmentViewBtn.setAttribute("aria-pressed", "false");
     isolateBtn.classList.toggle("btn--active", viewMode === "isolate");
     ghostBtn.classList.toggle("btn--active", viewMode === "ghost");
     showAllBtn.disabled = false;
   }
 
   function showAll() {
+    hiddenStructures.clear();
+    hideHistory = [];
+    restoreView();
+    visibilityChanged("All manually hidden structures restored. Anatomy Layers switches still apply.");
+  }
+
+  function restoreView() {
     viewMode = "all";
     restoreAll();
 
@@ -1096,6 +1149,7 @@
     isolateBtn.classList.remove("btn--active");
     ghostBtn.classList.remove("btn--active");
     attachmentViewBtn.classList.remove("btn--active");
+    attachmentViewBtn.setAttribute("aria-pressed", "false");
   }
 
   function applyAttachmentView() {
@@ -1110,21 +1164,22 @@
     });
     viewMode = "attachments";
     attachmentViewBtn.classList.add("btn--active");
+    attachmentViewBtn.setAttribute("aria-pressed", "true");
     isolateBtn.classList.remove("btn--active");
     ghostBtn.classList.remove("btn--active");
   }
   attachmentViewBtn.addEventListener("click", function () {
-    if (viewMode === "attachments") showAll();
+    if (viewMode === "attachments") restoreView();
     else applyAttachmentView();
   });
 
   isolateBtn.addEventListener("click", function () {
-    if (viewMode === "isolate") showAll();
+    if (viewMode === "isolate") restoreView();
     else applyIsolate(false);
   });
 
   ghostBtn.addEventListener("click", function () {
-    if (viewMode === "ghost") showAll();
+    if (viewMode === "ghost") restoreView();
     else applyIsolate(true);
   });
 
@@ -1183,6 +1238,7 @@
     Array.prototype.forEach.call(boneList.children, function (li) {
       var btn = li.querySelector(".bone-btn");
       if (!btn) return;
+      btn.dataset.dissectionHidden = String(hiddenStructures.has(btn.dataset.mat));
       var match = btn.textContent.toLowerCase().indexOf(q) !== -1 && isStructureVisible(findState(btn.dataset.mat));
       li.style.display = match ? "" : "none";
       if (match) shown++;
@@ -1225,9 +1281,9 @@
     var mat = viewer.materialFromPoint(event.clientX, event.clientY);
 
     if (!mat) {
-      // Clicked empty space — deselect and restore the full model.
-      showAll();
+      // Deselect without restoring manually removed structures.
       clearSelection();
+      visibilityChanged();
       return;
     }
 
@@ -1397,7 +1453,7 @@
     Array.prototype.forEach.call(
       viewer.querySelectorAll(".hotspot[data-annotation-type]"),
       function (el) {
-        el.classList.toggle("is-filtered", !annotationVisibility[el.dataset.annotationType]);
+        el.classList.toggle("is-filtered", hiddenStructures.size > 0 || !annotationVisibility[el.dataset.annotationType]);
       }
     );
 
@@ -1405,6 +1461,8 @@
       hotspotList.querySelectorAll("[data-annotation-type]"),
       function (el) {
         el.hidden = !annotationVisibility[el.dataset.annotationType];
+        var button = el.querySelector("button");
+        if (button) button.disabled = hiddenStructures.size > 0;
       }
     );
   }

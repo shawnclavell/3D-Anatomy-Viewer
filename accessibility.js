@@ -5,6 +5,7 @@
   var viewer = document.getElementById("viewer");
   var stage = document.querySelector(".stage");
   var config = null;
+  var modelLoaded = false;
   var studyReturnFocus = null;
   var markupReturnFocus = null;
   var markupActive = false;
@@ -61,9 +62,16 @@
   var status = document.createElement("div");
   status.className = "visually-hidden";
   status.setAttribute("role", "status");
+  status.id = "viewerActionStatus";
   status.setAttribute("aria-atomic", "true");
   stage.appendChild(status);
-  function announce(message) { status.textContent = message; }
+  function announce(message) {
+    // Background live regions can be excluded while a modal is open.
+    var destination = dialog && dialog.open ? dialogStatus : status;
+    var other = destination === status ? dialogStatus : status;
+    if (other) other.textContent = "";
+    destination.textContent = message;
+  }
   viewer.setAttribute("aria-describedby", "viewerInstructions");
   var instructions = document.createElement("p");
   instructions.id = "viewerInstructions";
@@ -90,6 +98,12 @@
     '<label for="studySearch">Search text study</label><input id="studySearch" type="search" autocomplete="off" placeholder="Search names and teaching notes">' +
     '<p id="studyCount" role="status" aria-atomic="true"></p><section id="studySelectedDetails" aria-label="Selected structure information"></section><div id="studyContent"></div>';
   stage.appendChild(dialog);
+  var dialogStatus = document.createElement("div");
+  dialogStatus.id = "studyActionStatus";
+  dialogStatus.className = "visually-hidden";
+  dialogStatus.setAttribute("role", "status");
+  dialogStatus.setAttribute("aria-atomic", "true");
+  dialog.appendChild(dialogStatus);
   if (document.documentElement.dataset.skullBaseStudy === "preview" && new URLSearchParams(window.location.search).get("model") === "skull-base") {
     var guideNote = document.createElement("p");
     var guideLink = document.createElement("a");
@@ -104,6 +118,139 @@
   var content = document.getElementById("studyContent");
   var count = document.getElementById("studyCount");
   var studyButton = document.getElementById("openStudyBtn");
+  var dissectionPanels = [];
+  var viewPickers = [];
+  function updateViewAvailability() {
+    viewPickers.forEach(function (picker) {
+      picker.select.disabled = !modelLoaded || markupActive || !config || !config.cameraPresets || !config.cameraPresets.length;
+      picker.apply.disabled = picker.select.disabled || picker.select.value === "";
+    });
+  }
+  function buildViewPicker(parent, id, before) {
+    var section = document.createElement("section");
+    section.className = "view-picker-panel";
+    var label = document.createElement("label");
+    label.htmlFor = id; label.textContent = "Choose a view";
+    var select = document.createElement("select");
+    select.id = id;
+    var apply = document.createElement("button");
+    apply.type = "button"; apply.textContent = "Apply view";
+    var help = document.createElement("p");
+    help.className = "empty-note"; help.id = id + "Help";
+    help.textContent = "Choose a preset, then Apply view. This changes the camera, not which structures are removed.";
+    select.setAttribute("aria-describedby", help.id);
+    section.appendChild(label); section.appendChild(select); section.appendChild(apply); section.appendChild(help);
+    if (before) parent.insertBefore(section, before); else parent.appendChild(section);
+    viewPickers.push({ select: select, apply: apply });
+    select.addEventListener("change", updateViewAvailability);
+    apply.addEventListener("click", function () {
+      if (select.disabled || select.value === "") return;
+      var button = document.getElementById("presetList").querySelectorAll(".preset-btn")[Number(select.value)];
+      if (!button || button.disabled) return;
+      button.click();
+      announce("View applied: " + config.cameraPresets[Number(select.value)].name + ".");
+    });
+  }
+  function configureViewPickers() {
+    viewPickers.forEach(function (picker) {
+      picker.select.textContent = "";
+      var placeholder = document.createElement("option");
+      placeholder.value = ""; placeholder.textContent = "Choose a view";
+      picker.select.appendChild(placeholder);
+      (config && config.cameraPresets || []).forEach(function (preset, index) {
+        var option = document.createElement("option");
+        option.value = String(index); option.textContent = preset.name;
+        picker.select.appendChild(option);
+      });
+    });
+    updateViewAvailability();
+  }
+  var presetListElement = document.getElementById("presetList");
+  presetListElement.hidden = true;
+  buildViewPicker(presetListElement.parentElement, "sidebarViewPicker", presetListElement);
+  buildViewPicker(dialog, "studyViewPicker", dialog.querySelector('section[aria-labelledby="screenReaderTipsTitle"]'));
+  document.addEventListener("anatomy-viewchange", function (event) {
+    viewPickers.forEach(function (picker) { picker.select.value = event.detail.index >= 0 ? String(event.detail.index) : ""; });
+    updateViewAvailability();
+  });
+  configureViewPickers();
+  function buildDissectionPanel(parent, id) {
+    var section = document.createElement("section");
+    section.className = "dissection-panel";
+    section.setAttribute("aria-labelledby", id + "Title");
+    var title = document.createElement("h3");
+    title.id = id + "Title";
+    title.textContent = "Remove and restore structures";
+    section.appendChild(title);
+    var help = document.createElement("p");
+    help.className = "empty-note";
+    help.textContent = "Select a named bone or muscle, then hide it to reveal anatomy already in this model. Shared-material pieces hide together; linked tendon pieces follow their muscle. Scene markers pause while any structure is hidden; annotation descriptions remain in Text Study. Restoring respects Anatomy Layers switches. Hidden structures reset when you load another model.";
+    section.appendChild(help);
+    var actions = document.createElement("div");
+    actions.className = "dissection-actions";
+    section.appendChild(actions);
+    var hide = document.createElement("button");
+    hide.type = "button"; hide.id = id + "Hide";
+    var undo = document.createElement("button");
+    undo.type = "button"; undo.textContent = "Undo last hide";
+    var all = document.createElement("button");
+    all.type = "button"; all.textContent = "Restore all hidden";
+    actions.appendChild(hide); actions.appendChild(undo); actions.appendChild(all);
+    var status = document.createElement("p");
+    status.id = id + "Status"; status.tabIndex = -1;
+    section.appendChild(status);
+    var list = document.createElement("ul");
+    list.setAttribute("aria-label", "Hidden structures");
+    section.appendChild(list);
+    var panel = { section: section, hide: hide, undo: undo, all: all, status: status, list: list };
+    dissectionPanels.push(panel);
+    hide.addEventListener("click", function () {
+      window.AnatomyDissection.hideSelected();
+      (undo.disabled ? status : undo).focus();
+    });
+    undo.addEventListener("click", function () {
+      window.AnatomyDissection.undo();
+      if (undo.disabled) status.focus();
+    });
+    all.addEventListener("click", function () {
+      window.AnatomyDissection.restoreAll();
+      status.focus();
+    });
+    parent.appendChild(section);
+  }
+  buildDissectionPanel(document.querySelector(".selection"), "sidebarDissection");
+  buildDissectionPanel(dialog, "studyDissection");
+  dialog.insertBefore(dissectionPanels[1].section, dialog.querySelector('label[for="studySearch"]'));
+  function renderDissection() {
+    var api = window.AnatomyDissection;
+    var state = api ? api.state() : { ready: false, selected: null, hidden: [] };
+    dissectionPanels.forEach(function (panel) {
+      panel.hide.textContent = state.selected ? "Remove selected: " + state.selected.label : "Remove selected structure";
+      panel.hide.disabled = !state.ready || !state.selected;
+      panel.undo.disabled = !state.ready || !state.undoName;
+      panel.all.disabled = !state.ready || !state.hidden.length;
+      panel.status.textContent = state.ready ? state.hidden.length + " structures hidden." :
+        "Hiding is unavailable while loading, frozen, or when this model's surface adapter is unavailable.";
+      panel.list.textContent = "";
+      state.hidden.forEach(function (item) {
+        var li = document.createElement("li");
+        var restore = document.createElement("button");
+        restore.type = "button";
+        restore.textContent = "Restore: " + item.label;
+        restore.disabled = !state.ready;
+        restore.addEventListener("click", function () { api.restore(item.name); panel.status.focus(); });
+        li.appendChild(restore); panel.list.appendChild(li);
+      });
+    });
+  }
+  document.addEventListener("anatomy-visibility", function (event) {
+    renderDissection();
+    if (dialog.open && !event.detail.selectionOnly) renderStudy();
+    if (event.detail.message) announce(event.detail.message);
+    scheduleMarkerLayout();
+  });
+  document.addEventListener("anatomy-markup", renderDissection);
+  renderDissection();
   function el(tag, text, parent) {
     var element = document.createElement(tag);
     element.textContent = text;
@@ -130,6 +277,9 @@
   var detailsPanel = document.getElementById("muscleDetails");
   if (detailsPanel) new MutationObserver(function () { if (dialog.open) updateSelectedDetails(); }).observe(detailsPanel, {childList:true,subtree:true,attributes:true});
   function renderStudy() {
+    var oldFocus = document.activeElement;
+    var hadResultFocus = content.contains(oldFocus);
+    var focusKey = hadResultFocus ? oldFocus.getAttribute("data-study-key") : null;
     content.textContent = "";
     var query = search.value.trim().toLowerCase();
     var matches = 0;
@@ -141,16 +291,18 @@
       matches++;
       var item = el("li", "", list);
       // Ignore the sidebar's search query, but respect anatomy layer visibility.
-      var available = !config || !config.structureMembership || !config.structureGroups || config.structureGroups.every(function (group) {
+      var manuallyHidden = source.dataset.dissectionHidden === "true";
+      var available = !manuallyHidden && (!config || !config.structureMembership || !config.structureGroups || config.structureGroups.every(function (group) {
         if (config.structureMembership[source.dataset.mat] !== group.id) return true;
         var layer = document.querySelector('#layerButtons [data-layer="' + group.id + '"]');
         return !layer || layer.getAttribute("aria-pressed") !== "false";
-      });
+      }));
       var button = el("button", source.textContent, item);
       button.type = "button";
+      button.setAttribute("data-study-key", "structure:" + source.dataset.mat);
       button.disabled = !available;
       button.setAttribute("aria-pressed", source.getAttribute("aria-pressed") || "false");
-      if (!available) el("span", " — layer hidden; enable it in Anatomy Layers to select", item);
+      if (!available) el("span", manuallyHidden ? " — hidden; use Hide and restore structures to select again" : " — layer hidden; enable it in Anatomy Layers to select", item);
       button.addEventListener("click", function () {
         source.click();
         list.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b === button ? "true" : "false"); });
@@ -171,6 +323,9 @@
       el("p", note.description || "No teaching description has been supplied for this annotation.", article);
       var focusButton = el("button", "Focus landmark: " + note.label, article);
       focusButton.type = "button";
+      focusButton.setAttribute("data-study-key", "annotation:" + note.id);
+      focusButton.disabled = !modelLoaded || !!(window.AnatomyDissection && window.AnatomyDissection.state().hidden.length);
+      if (!modelLoaded) el("p", "Landmark focus is unavailable until the 3D model loads. The description above remains available.", article);
       focusButton.addEventListener("click", function () {
         var sourceItem = Array.prototype.find.call(document.querySelectorAll("#hotspotList li"), function (li) { return li.dataset.annotationId === note.id; });
         dialog.close();
@@ -181,19 +336,49 @@
     if (!notes.length) el("p", "No teaching annotations have been added for this model.", content);
     count.textContent = matches + " matching structures and teaching annotations.";
     updateSelectedDetails();
+    // A delayed search rebuild must not strand focus on a removed result.
+    if (hadResultFocus && dialog.open) {
+      var replacement = Array.prototype.find.call(content.querySelectorAll("button[data-study-key]"), function (button) {
+        return focusKey && button.getAttribute("data-study-key") === focusKey && !button.disabled;
+      });
+      if (replacement) replacement.focus();
+      else {
+        search.focus();
+        announce("The focused result is no longer available. Continue from Search text study.");
+      }
+    }
   }
   studyButton.addEventListener("click", function () {
     studyReturnFocus = document.activeElement;
+    status.textContent = "";
+    dialogStatus.textContent = "";
     search.value = "";
     renderStudy();
     dialog.showModal();
     document.getElementById("closeStudyBtn").focus();
   });
   document.getElementById("closeStudyBtn").addEventListener("click", function () { dialog.close(); });
-  dialog.addEventListener("close", function () { if (studyReturnFocus && studyReturnFocus.isConnected) studyReturnFocus.focus(); });
+  dialog.addEventListener("close", function () {
+    window.clearTimeout(searchTimer);
+    searchTimer = null;
+    dialogStatus.textContent = "";
+    if (studyReturnFocus && studyReturnFocus.isConnected) studyReturnFocus.focus();
+  });
   search.addEventListener("input", function () {
     window.clearTimeout(searchTimer);
-    searchTimer = window.setTimeout(renderStudy, 180);
+    searchTimer = window.setTimeout(function () {
+      searchTimer = null;
+      renderStudy();
+    }, 180);
+  });
+  search.addEventListener("keydown", function (event) {
+    // Complete filtering before native Tab chooses its next focus target.
+    // Otherwise a delayed rebuild can remove the result the user just reached.
+    if (event.key === "Tab" && searchTimer != null) {
+      window.clearTimeout(searchTimer);
+      searchTimer = null;
+      renderStudy();
+    }
   });
   controls.querySelectorAll("[data-camera]").forEach(function (button) {
     button.disabled = true;
@@ -227,6 +412,7 @@
   document.addEventListener("anatomy-markup", function (event) {
     var active = event.detail.active;
     markupActive = active;
+    updateViewAvailability();
     updateBypassAvailability();
     controls.hidden = active;
     viewer.inert = active;
@@ -261,8 +447,10 @@
   });
   window.AnatomyAccessibility = {
     prioritizeMarker: function (id) { priorityMarker=id; scheduleMarkerLayout(); },
-    configure: function (value) { config = value; },
+    configure: function (value) { config = value; modelLoaded = false; configureViewPickers(); },
     loaded: function () {
+      modelLoaded = true;
+      updateViewAvailability();
       scheduleMarkerLayout();
       controls.querySelectorAll("[data-camera]").forEach(function (button) { button.disabled = false; });
       announce((config.label || "Anatomy model") + " loaded. Structure search, text study and camera controls are ready.");

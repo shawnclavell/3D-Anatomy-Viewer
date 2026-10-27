@@ -2,6 +2,12 @@
 .skip-links { position: fixed; top: 8px; left: 8px; z-index: 1000; }
 .skip-links a { position: absolute; transform: translateY(-200%); width: max-content; max-width: calc(100vw - 24px); padding: 12px; background: var(--panel); color: var(--ink); border: 2px solid var(--focus-ring); }
 .skip-links a:focus { position: relative; display: block; transform: none; }
+#presetList[hidden] { display: none; }
+.view-picker-panel { margin-block: 12px; min-width: 0; }
+.view-picker-panel label { display: block; margin-bottom: 6px; }
+.view-picker-panel select { display: block; width: 100%; min-width: 0; min-height: 44px; margin-bottom: 8px; padding: 8px; background: #1b1f23; color: #e9e2d0; border: 1px solid #7d8992; font: inherit; }
+.view-picker-panel button { min-height: 44px; padding: 8px 12px; border: 1px solid #7d8992; border-radius: 3px; background: #1b1f23; color: #e9e2d0; font: inherit; }
+@media (forced-colors: active) { .view-picker-panel select, .view-picker-panel button { background: ButtonFace; color: ButtonText; border-color: ButtonText; } .view-picker-panel button:disabled { color: GrayText; } }
 button, input, select, summary { min-height: 36px; }
 button, input, select, textarea, summary { scroll-margin: 12px; }
 input, select, textarea { border-color: #7d8992; }
@@ -21,6 +27,15 @@ input, select, textarea { border-color: #7d8992; }
 .stage__hint { background: #14171a; }
 .stage__hint.is-hidden { visibility: hidden; }
 .author-banner { background: #14171a; }
+.dissection-panel { margin-block: 16px; padding-block: 12px; border-top: 1px solid #7d8992; }
+.dissection-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.dissection-panel button { min-height: 44px; max-width: 100%; padding: 8px; border: 1px solid #7d8992; border-radius: 3px; background: #1b1f23; color: #e9e2d0; font: inherit; overflow-wrap: anywhere; }
+.dissection-panel button:disabled { color: #a5afb6; cursor: not-allowed; }
+.dissection-panel ul { padding-left: 20px; }
+.dissection-panel li { margin-block: 8px; }
+.dissection-panel h3, .bone-btn, .study-dialog h2, .study-dialog h3, .study-dialog h4 { overflow-wrap: anywhere; }
+.annotation-filters { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.annotation-filter { min-width: 0; overflow-wrap: anywhere; }
 #loadingOverlay.is-hidden { visibility: hidden; }
 .hotspot-btn__description { display: block; color: var(--ink); font-size: 0.875rem; line-height: 1.5; text-transform: none; letter-spacing: normal; }
 .access-controls { position: absolute; top: 12px; left: 12px; z-index: 41; display: flex; flex-direction: column; gap: 8px; max-width: min(290px, calc(100% - 24px)); }
@@ -71,6 +86,8 @@ input, select, textarea { border-color: #7d8992; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
 @media (forced-colors: active) {
+  .dissection-panel button { background: ButtonFace; color: ButtonText; border-color: ButtonText; }
+  .dissection-panel button:disabled { color: GrayText; }
   .study-dialog, .markup-toolbar, .author-panel, .author-banner, .camera-controls, .hotspot__label { background: Canvas; color: CanvasText; }
   button, input, select, textarea, summary, .study-dialog { border: 1px solid ButtonText; }
   .hotspot__pin { background: ButtonText; border: 2px solid Canvas; outline: 1px solid ButtonText; box-shadow: none; }
