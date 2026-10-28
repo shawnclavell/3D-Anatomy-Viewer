@@ -160,7 +160,7 @@
   "structureGroups": [
     {
       "id": "muscles",
-      "label": "Muscles (466)",
+      "label": "Muscles (462)",
       "visible": true
     },
     {
@@ -176,10 +176,10 @@
     },
     {
       "id": "fascia",
-      "label": "Fascia & aponeuroses (63)",
+      "label": "Fascia & connective tissues (67)",
       "visible": false,
       "opacity": 0.3,
-      "description": "Show the source fascia and aponeuroses at 30% opacity."
+      "description": "Fascia, aponeuroses and eyelid tarsal plates at 30% opacity."
     },
     {
       "id": "sheaths",
@@ -955,8 +955,8 @@
     "Inferior rectus muscle.r": "muscles",
     "Inferior subtendinous bursa of biceps femoris muscle.l": "bursae",
     "Inferior subtendinous bursa of biceps femoris muscle.r": "bursae",
-    "Inferior tarsus.l": "muscles",
-    "Inferior tarsus.r": "muscles",
+    "Inferior tarsus.l": "fascia",
+    "Inferior tarsus.r": "fascia",
     "Infraspinatus muscle.el": "insertion",
     "Infraspinatus muscle.er": "insertion",
     "Infraspinatus muscle.l": "muscles",
@@ -1675,8 +1675,8 @@
     "Superior pharyngeal constrictor.r": "muscles",
     "Superior rectus muscle.l": "muscles",
     "Superior rectus muscle.r": "muscles",
-    "Superior tarsus.l": "muscles",
-    "Superior tarsus.r": "muscles",
+    "Superior tarsus.l": "fascia",
+    "Superior tarsus.r": "fascia",
     "Supinator.el": "insertion",
     "Supinator.er": "insertion",
     "Supinator.l": "muscles",
@@ -6908,6 +6908,11 @@
     "Zygomaticus minor muscle.r::tendon": "Zygomaticus minor muscle.r"
   },
   "structureLabels": {
-    "Iliocostalis colli muscle": "Iliocostalis colli muscle (left)"
-  }
+    "Iliocostalis colli muscle": "Iliocostalis colli muscle (left)",
+    "Superior tarsus.r": "Upper eyelid tarsal plate (right)",
+    "Superior tarsus.l": "Upper eyelid tarsal plate (left)",
+    "Inferior tarsus.r": "Lower eyelid tarsal plate (right)",
+    "Inferior tarsus.l": "Lower eyelid tarsal plate (left)"
+  },
+  "sourceClassificationNote": "Four source muscle-category meshes are eyelid connective-tissue plates; displayed with fascia. Source IDs and geometry are preserved."
 }

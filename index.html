@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="accessibility.css?v=10">
 <link rel="stylesheet" href="sidebar-layout.css?v=1">
 <link rel="stylesheet" href="structure-actions.css?v=1">
+<link rel="stylesheet" href="muscle-information.css?v=1">
 </head>
 <body>
 <nav class="skip-links" aria-label="Keyboard shortcuts">
@@ -49,6 +50,12 @@
     <div class="sidebar__section selection">
       <h2>Selected</h2>
       <div class="selection__name selection__name--empty" id="selectionName" role="status" aria-live="polite" aria-atomic="true">Choose a structure in the model or index</div>
+      <section id="muscleDetails" class="muscle-details" aria-label="Selected muscle information" hidden>
+        <h3>Muscle information</h3>
+        <dl id="muscleDetailsFields"></dl>
+        <p id="muscleDetailsNote" class="empty-note"></p>
+        <ul id="muscleDetailsSources" class="muscle-details__sources"></ul>
+      </section>
       <p class="empty-note" id="attachmentStatus" role="status" hidden></p>
       <div class="selection__actions">
         <button class="btn btn--sm" id="isolateBtn" type="button" disabled>Isolate</button>
@@ -243,6 +250,7 @@
 
 <script src="mesh-visibility.js?v=1"></script>
 <script src="accessibility.js?v=12"></script>
+<script src="muscle-information.js?v=1"></script>
 <script src="app.js?v=25"></script>
 <script src="sidebar-layout.js?v=3"></script>
 </body>

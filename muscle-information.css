@@ -1,0 +1,7 @@
+.muscle-details { margin: 12px 0; padding: 12px; background: var(--panel-alt); border: 1px solid var(--border); }
+.muscle-details h3 { margin: 0 0 10px; font-size: 14px; }
+.muscle-details dl { margin: 0; font-size: 13px; line-height: 1.5; }
+.muscle-details dt { font-weight: 600; margin-top: 8px; color: var(--ink); }
+.muscle-details dd { margin: 2px 0 0; overflow-wrap: anywhere; }
+.muscle-details__sources { margin: 8px 0 0; padding-left: 16px; font-size: 12px; }
+.muscle-details a { color: var(--focus-ring); }
