@@ -15,7 +15,7 @@
   function layoutMarkers() {
     layoutScheduled = false;
     var bounds = stage.getBoundingClientRect();
-    var blockers = Array.prototype.slice.call(stage.querySelectorAll(".access-controls, .stage__fullscreen-btn, .stage__markup-btn, .author-panel, .anatomy-reveal--stage"));
+    var blockers = Array.prototype.slice.call(stage.querySelectorAll(".access-controls, .stage__fullscreen-btn, .stage__markup-btn, .author-panel"));
     var occupied = blockers.filter(function (e) { return e.getClientRects().length && !e.hidden && getComputedStyle(e).display !== "none"; }).map(function (e) { return e.getBoundingClientRect(); });
     var pins = Array.prototype.slice.call(viewer.querySelectorAll(".hotspot"));
     var focusedPin = document.activeElement && document.activeElement.closest(".hotspot");
@@ -465,7 +465,6 @@
     });
   });
   window.AnatomyAccessibility = {
-    relayout: scheduleMarkerLayout,
     prioritizeMarker: function (id) { priorityMarker=id; scheduleMarkerLayout(); },
     configure: function (value) { config = value; modelLoaded = false; configureViewPickers(); },
     loaded: function () {

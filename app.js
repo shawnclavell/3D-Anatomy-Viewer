@@ -150,7 +150,6 @@
   var materialStates = [];
   var selectedName   = null;
   var selectedNames = new Set();
-  var anatomyReveal = 0;
   var viewMode       = "all";   // "all" | "isolate" | "ghost"
   var hiddenStructures = new Set();
   var hideHistory = [];
@@ -940,9 +939,6 @@
     if (!pbr) return;
 
     var c = rgb || state.baseColor;
-    var revealGroup = config && config.structureMembership && config.structureMembership[materialOwner(state.name)];
-    // Fade configured soft tissues and attachment patches, never the skeleton.
-    if (revealGroup && revealGroup !== 'skeleton') alpha *= 1 - anatomyReveal / 100;
 
     try {
       if (alpha < 1) {
@@ -1496,58 +1492,6 @@
     if (tips) parent.insertBefore(button, tips.closest('section')); else parent.insertBefore(button, parent.querySelector('section'));
     button.addEventListener('click', function () { var r = button.getBoundingClientRect(); openStructureActions(selectedName, button, r.left, r.bottom); });
   });
-
-  var revealControls = [];
-  function buildRevealControls(parent, id, inStage) {
-    var panel = document.createElement('details');
-    panel.className = inStage ? 'anatomy-reveal anatomy-reveal--stage' : 'anatomy-reveal';
-    panel.hidden = true; panel.open = inStage;
-    var summary = document.createElement('summary'); summary.textContent = 'Reveal anatomy layers';
-    var label = document.createElement('label'); label.htmlFor = id; label.textContent = 'Soft-tissue reveal';
-    var slider = document.createElement('input'); slider.id = id; slider.type = 'range';
-    slider.min = '0'; slider.max = '100'; slider.step = '5'; slider.value = '0'; slider.disabled = true;
-    var output = document.createElement('output'); output.htmlFor = id; output.setAttribute('aria-live', 'off');
-    var help = document.createElement('p'); help.id = id + 'Help';
-    help.textContent = '0%: normal. 100%: soft tissues transparent. Skeleton visibility still follows Anatomy Layers. Removed structures stay removed. Names remain available in Text Study.';
-    slider.setAttribute('aria-describedby', help.id);
-    var buttons = document.createElement('div'); buttons.className = 'anatomy-reveal__buttons';
-    [['Less reveal',-10],['More reveal',10],['Reset reveal',null]].forEach(function (item) {
-      var b = document.createElement('button'); b.type = 'button'; b.textContent = item[0]; b.disabled = true;
-      b.addEventListener('click', function () { setAnatomyReveal(item[1] === null ? 0 : anatomyReveal + item[1]); });
-      buttons.appendChild(b);
-    });
-    var guide = document.createElement('details');
-    var guideTitle = document.createElement('summary'); guideTitle.textContent = 'How reveal works';
-    guide.append(guideTitle, help);
-    panel.append(summary,label,slider,output,buttons,guide);
-    if (inStage) parent.appendChild(panel);
-    else parent.insertBefore(panel, parent.querySelector('#screenReaderTipsTitle').closest('section'));
-    revealControls.push({panel:panel,slider:slider,output:output,buttons:buttons});
-    slider.addEventListener('input', function () { setAnatomyReveal(Number(slider.value)); });
-    panel.addEventListener('toggle', function () { if (window.AnatomyAccessibility) window.AnatomyAccessibility.relayout(); });
-  }
-  function updateRevealControls() {
-    var hasMuscles = config && config.structureMembership && Object.keys(config.structureMembership).some(function (name) { return config.structureMembership[name] === 'muscles'; });
-    revealControls.forEach(function (ui) {
-      ui.panel.hidden = !hasMuscles || (markupModeOn && ui.panel.classList.contains('anatomy-reveal--stage'));
-      ui.slider.value = String(anatomyReveal);
-      ui.slider.setAttribute('aria-valuetext', anatomyReveal + '% reveal; soft-tissue opacity ' + (100 - anatomyReveal) + '%');
-      ui.output.textContent = anatomyReveal + '% reveal';
-      ui.slider.disabled = !materialStates.length || markupModeOn;
-      ui.buttons.querySelectorAll('button').forEach(function (b) { b.disabled = ui.slider.disabled; });
-    });
-  }
-  function setAnatomyReveal(value) {
-    if (markupModeOn || !materialStates.length) return;
-    anatomyReveal = Math.max(0, Math.min(100, value));
-    if (selectedName) selectByName(selectedName, {refresh:true,scrollIntoView:false});
-    else restoreView();
-    updateRevealControls();
-  }
-  buildRevealControls(document.querySelector('.stage'), 'stageAnatomyReveal', true);
-  buildRevealControls(document.querySelector('dialog'), 'studyAnatomyReveal', false);
-  document.addEventListener('anatomy-visibility', updateRevealControls);
-  document.addEventListener('anatomy-markup', updateRevealControls);
 
   function hideStageHint() {
     if (stageHint) stageHint.classList.add("is-hidden");
