@@ -15,7 +15,7 @@
   function layoutMarkers() {
     layoutScheduled = false;
     var bounds = stage.getBoundingClientRect();
-    var blockers = Array.prototype.slice.call(stage.querySelectorAll(".access-controls, .stage__fullscreen-btn, .stage__markup-btn, .author-panel"));
+    var blockers = Array.prototype.slice.call(stage.querySelectorAll(".access-controls, .stage__fullscreen-btn, .stage__markup-btn, .author-panel, .anatomy-reveal--stage"));
     var occupied = blockers.filter(function (e) { return e.getClientRects().length && !e.hidden && getComputedStyle(e).display !== "none"; }).map(function (e) { return e.getBoundingClientRect(); });
     var pins = Array.prototype.slice.call(viewer.querySelectorAll(".hotspot"));
     var focusedPin = document.activeElement && document.activeElement.closest(".hotspot");
@@ -311,8 +311,14 @@
       button.disabled = !available;
       button.setAttribute("aria-pressed", source.getAttribute("aria-pressed") || "false");
       if (!available) el("span", manuallyHidden ? " — hidden; use Hide and restore structures to select again" : " — layer hidden; enable it in Anatomy Layers to select", item);
-      button.addEventListener("click", function () {
-        source.click();
+      button.addEventListener("keydown", function (event) {
+        if (event.ctrlKey && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          button.dispatchEvent(new MouseEvent("click", { bubbles: true, ctrlKey: true }));
+        }
+      });
+      button.addEventListener("click", function (event) {
+        source.dispatchEvent(new MouseEvent("click", { bubbles: true, ctrlKey: event.ctrlKey }));
         list.querySelectorAll("button[data-study-key]").forEach(function (b) {
           var key = b.getAttribute("data-study-key").slice("structure:".length);
           var original = Array.prototype.find.call(document.querySelectorAll("#boneList button"), function (item) { return item.dataset.mat === key; });
@@ -459,6 +465,7 @@
     });
   });
   window.AnatomyAccessibility = {
+    relayout: scheduleMarkerLayout,
     prioritizeMarker: function (id) { priorityMarker=id; scheduleMarkerLayout(); },
     configure: function (value) { config = value; modelLoaded = false; configureViewPickers(); },
     loaded: function () {

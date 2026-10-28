@@ -150,7 +150,7 @@
   var materialStates = [];
   var selectedName   = null;
   var selectedNames = new Set();
-  var multiMuscleSelection = false;
+  var anatomyReveal = 0;
   var viewMode       = "all";   // "all" | "isolate" | "ghost"
   var hiddenStructures = new Set();
   var hideHistory = [];
@@ -162,8 +162,10 @@
     document.dispatchEvent(new CustomEvent("anatomy-visibility", { detail: { message: message || "", selectionOnly: !!selectionOnly } }));
   }
   function hideSelectedStructure() {
-    if (!meshVisibility || !selectedName || markupModeOn) return;
-    var name = selectedName;
+    hideStructureByName(selectedName);
+  }
+  function hideStructureByName(name) {
+    if (!meshVisibility || !name || markupModeOn || !isStructureVisible(findState(name))) return;
     hiddenStructures.add(name); hideHistory.push(name);
     selectedNames.delete(name);
     refreshSelection();
@@ -938,6 +940,9 @@
     if (!pbr) return;
 
     var c = rgb || state.baseColor;
+    var revealGroup = config && config.structureMembership && config.structureMembership[materialOwner(state.name)];
+    // Fade configured soft tissues and attachment patches, never the skeleton.
+    if (revealGroup && revealGroup !== 'skeleton') alpha *= 1 - anatomyReveal / 100;
 
     try {
       if (alpha < 1) {
@@ -1045,39 +1050,28 @@
     var panel = document.createElement("section");
     panel.setAttribute("aria-label", "Multiple muscle selection");
     panel.hidden = true;
-    var toggle = document.createElement("button");
-    toggle.type = "button"; toggle.className = "btn";
-    toggle.textContent = "Select multiple muscles";
-    toggle.setAttribute("aria-pressed", "false");
     var help = document.createElement("p");
     help.id = id + "Help"; help.className = "empty-note";
-    help.textContent = "Turn on to add muscles by clicking the model or a named result; click again to deselect. Isolate and Ghost Others apply to the group. Details and Remove apply to the named active muscle. Selecting a bone replaces the group. Clear selection does not restore removed anatomy.";
-    toggle.setAttribute("aria-describedby", help.id);
+    help.textContent = "Click to select one muscle. Hold Ctrl while clicking to add or deselect muscles. Keyboard: Ctrl+Enter or Ctrl+Space on a named result or Select structure button. Isolate and Ghost Others apply to the group; details and Remove apply to the active muscle. Selecting a bone replaces the group. Clear selection does not restore removed anatomy.";
     var clear = document.createElement("button");
     clear.type = "button"; clear.className = "btn"; clear.textContent = "Clear selection";
     var list = document.createElement("ul");
     list.setAttribute("aria-label", "Selected muscles and structures");
-    panel.append(toggle, help, clear, list);
+    panel.append(help, clear, list);
     // Keep group controls ahead of the potentially long Text Study result list.
     var tips = parent.querySelector("#screenReaderTipsTitle");
     if (tips) parent.insertBefore(panel, tips.closest("section"));
     else parent.appendChild(panel);
-    selectionPanels.push({panel:panel,toggle:toggle,clear:clear,list:list});
-    toggle.addEventListener("click", function () {
-      multiMuscleSelection = !multiMuscleSelection;
-      if (!multiMuscleSelection && selectedName) { selectedNames.clear(); selectedNames.add(selectedName); refreshSelection(); }
-      renderSelectionPanels();
-    });
+    selectionPanels.push({panel:panel,clear:clear,list:list});
     clear.addEventListener("click", function () {
-      clearSelection(); visibilityChanged("Selection cleared.", true); toggle.focus();
+      clearSelection(); visibilityChanged("Selection cleared.", true);
+      document.getElementById(panel.closest('dialog') ? 'studySearch' : 'boneSearch').focus();
     });
   }
   function renderSelectionPanels() {
     var hasMuscles = config && config.structureMembership && Object.keys(config.structureMembership).some(function (name) { return config.structureMembership[name] === "muscles"; });
     selectionPanels.forEach(function (ui) {
       ui.panel.hidden = !hasMuscles;
-      ui.toggle.disabled = !materialStates.length || markupModeOn;
-      ui.toggle.setAttribute("aria-pressed", String(multiMuscleSelection));
       ui.clear.disabled = !selectedNames.size || markupModeOn;
       ui.list.replaceChildren();
       selectedNames.forEach(function (name) {
@@ -1088,7 +1082,7 @@
         remove.disabled = markupModeOn;
         remove.addEventListener("click", function () {
           selectedNames.delete(name); refreshSelection();
-          (selectedNames.size ? ui.clear : ui.toggle).focus();
+          (selectedNames.size ? ui.clear : document.getElementById(ui.panel.closest('dialog') ? 'studySearch' : 'boneSearch')).focus();
         });
         li.appendChild(remove); ui.list.appendChild(li);
       });
@@ -1115,7 +1109,7 @@
     if (!selectable || !isStructureVisible(selectable)) return;
     if (!options.refresh) {
       var muscle = config && config.structureMembership && config.structureMembership[name] === "muscles";
-      if (multiMuscleSelection && muscle) {
+      if (options.additive && muscle) {
         selectedNames.forEach(function (item) { if (config.structureMembership[item] !== "muscles") selectedNames.delete(item); });
         if (selectedNames.has(name)) {
           selectedNames.delete(name);
@@ -1313,8 +1307,14 @@
       btn.dataset.mat = state.name;
       btn.setAttribute("aria-pressed", "false");
       btn.textContent = prettifyName(state.name);
-      btn.addEventListener("click", function () {
-        selectByName(state.name, { scrollIntoView: false });
+      btn.addEventListener("click", function (event) {
+        selectByName(state.name, { scrollIntoView: false, additive: event.ctrlKey });
+      });
+      btn.addEventListener("keydown", function (event) {
+        if (event.ctrlKey && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          selectByName(state.name, { scrollIntoView: false, additive: true });
+        }
       });
       li.appendChild(btn);
       boneList.appendChild(li);
@@ -1359,10 +1359,12 @@
   var pointerStart = null;
 
   viewer.addEventListener("pointerdown", function (event) {
+    if (event.button !== 0) { pointerStart = null; return; }
     pointerStart = { x: event.clientX, y: event.clientY };
   });
 
   viewer.addEventListener("pointerup", function (event) {
+    if (event.button !== 0) { pointerStart = null; return; }
     if (!pointerStart) return;
 
     var dx = Math.abs(event.clientX - pointerStart.x);
@@ -1389,8 +1391,163 @@
       return;
     }
 
-    selectByName(mat.name || "(unnamed material)");
+    selectByName(mat.name || "(unnamed material)", { additive: event.ctrlKey });
   });
+
+  // Context actions share the same selection/removal logic as visible controls.
+  var structureActionButtons = [];
+  var actionTarget = null, actionOpener = null;
+  var actionPopup = document.createElement('div');
+  actionPopup.className = 'structure-action-menu'; actionPopup.hidden = true;
+  var actionCaption = document.createElement('p'); actionCaption.id = 'structureActionCaption';
+  var actionItems = document.createElement('div'); actionItems.id = 'structureActionItems';
+  actionItems.setAttribute('role', 'menu'); actionItems.setAttribute('aria-labelledby', actionCaption.id);
+  actionPopup.append(actionCaption, actionItems);
+  document.querySelector('.stage').appendChild(actionPopup);
+  function closeStructureActions(returnFocus) {
+    actionPopup.hidden = true;
+    structureActionButtons.forEach(function (b) { b.setAttribute('aria-expanded', 'false'); });
+    if (returnFocus) {
+      var opener = actionOpener;
+      if (opener && opener.isConnected && !opener.disabled && opener.getClientRects().length) opener.focus();
+      else document.getElementById(document.querySelector('dialog[open]') ? 'studySearch' : 'boneSearch').focus();
+    }
+  }
+  function resolveActionName(name) {
+    name = materialOwner(name);
+    var owners = config && config.attachmentOwners && config.attachmentOwners[name];
+    return owners ? (owners.indexOf(selectedName) !== -1 ? selectedName : owners[0]) : name;
+  }
+  function openStructureActions(name, opener, x, y) {
+    name = name && resolveActionName(name);
+    if (!name || !materialStates.length || markupModeOn || authorModeOn || !findState(name) || !isStructureVisible(findState(name))) return false;
+    actionTarget = name; actionOpener = opener;
+    var parent = document.querySelector('dialog[open]') || document.querySelector('.stage');
+    parent.appendChild(actionPopup);
+    actionCaption.textContent = 'Actions for ' + prettifyName(name);
+    actionPopup.hidden = false;
+    var box = actionPopup.getBoundingClientRect();
+    actionPopup.style.left = Math.max(12, Math.min(x, window.innerWidth - box.width - 12)) + 'px';
+    actionPopup.style.top = Math.max(12, Math.min(y, window.innerHeight - box.height - 12)) + 'px';
+    structureActionButtons.forEach(function (b) { b.setAttribute('aria-expanded', String(b === opener)); });
+    actionItems.querySelector('button').focus(); return true;
+  }
+  ['Highlight', 'Isolate', 'Remove'].forEach(function (label) {
+    var button = document.createElement('button'); button.type = 'button';
+    button.setAttribute('role', 'menuitem'); button.textContent = label;
+    actionItems.appendChild(button);
+    button.addEventListener('click', function () {
+      var name = actionTarget; closeStructureActions(false);
+      if (!name || markupModeOn || !isStructureVisible(findState(name))) return;
+      if (label === 'Remove') hideStructureByName(name);
+      else {
+        selectByName(name, {scrollIntoView:false});
+        if (label === 'Isolate') applyIsolate(false);
+        visibilityChanged(label + ': ' + prettifyName(name) + '.', true);
+      }
+      closeStructureActions(true);
+    });
+  });
+  actionItems.addEventListener('keydown', function (event) {
+    var buttons = Array.from(actionItems.querySelectorAll('button'));
+    var index = buttons.indexOf(document.activeElement);
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Home' || event.key === 'End') {
+      event.preventDefault();
+      var next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 : (index + (event.key === 'ArrowDown' ? 1 : -1) + buttons.length) % buttons.length;
+      buttons[next].focus();
+    }
+    if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeStructureActions(true); }
+    if (event.key === 'Tab') { event.preventDefault(); closeStructureActions(true); }
+  });
+  function actionNameFromElement(target) {
+    var result = target.closest('.bone-btn, [data-study-key^="structure:"]');
+    if (result) return result.dataset.mat || result.getAttribute('data-study-key').slice('structure:'.length);
+    if (target === viewer || viewer.contains(target)) return selectedName;
+    return null;
+  }
+  document.addEventListener('contextmenu', function (event) {
+    var name = actionNameFromElement(event.target);
+    if ((event.target === viewer || viewer.contains(event.target)) && !event.target.closest('.hotspot')) {
+      var material = !markupModeOn && viewer.materialFromPoint && viewer.materialFromPoint(event.clientX, event.clientY);
+      name = material && material.name;
+    }
+    if (name && openStructureActions(name, event.target, event.clientX, event.clientY)) event.preventDefault();
+  });
+  document.addEventListener('keydown', function (event) {
+    if ((event.shiftKey && event.key === 'F10') || event.key === 'ContextMenu') {
+      var name = actionNameFromElement(event.target), bounds = event.target.getBoundingClientRect();
+      if (name && openStructureActions(name, event.target, bounds.left + 12, bounds.top + 12)) event.preventDefault();
+    }
+  });
+  document.addEventListener('pointerdown', function (event) { if (!actionPopup.hidden && !actionPopup.contains(event.target)) closeStructureActions(false); });
+  window.addEventListener('resize', function () { closeStructureActions(false); });
+  document.addEventListener('anatomy-markup', function () { closeStructureActions(false); updateStructureActionButtons(); });
+  document.addEventListener('anatomy-visibility', updateStructureActionButtons);
+  document.querySelector('dialog').addEventListener('close', function () { closeStructureActions(false); });
+  function updateStructureActionButtons() {
+    structureActionButtons.forEach(function (b) { b.disabled = !selectedName || markupModeOn || authorModeOn; });
+  }
+  [selectionName.parentElement, document.querySelector('dialog')].forEach(function (parent) {
+    var button = document.createElement('button'); button.type = 'button';
+    button.className = 'btn structure-actions-button'; button.textContent = 'Structure actions';
+    button.setAttribute('aria-haspopup', 'menu'); button.setAttribute('aria-controls', actionItems.id); button.setAttribute('aria-expanded', 'false');
+    button.disabled = true; structureActionButtons.push(button);
+    var tips = parent.querySelector('#screenReaderTipsTitle');
+    if (tips) parent.insertBefore(button, tips.closest('section')); else parent.insertBefore(button, parent.querySelector('section'));
+    button.addEventListener('click', function () { var r = button.getBoundingClientRect(); openStructureActions(selectedName, button, r.left, r.bottom); });
+  });
+
+  var revealControls = [];
+  function buildRevealControls(parent, id, inStage) {
+    var panel = document.createElement('details');
+    panel.className = inStage ? 'anatomy-reveal anatomy-reveal--stage' : 'anatomy-reveal';
+    panel.hidden = true; panel.open = inStage;
+    var summary = document.createElement('summary'); summary.textContent = 'Reveal anatomy layers';
+    var label = document.createElement('label'); label.htmlFor = id; label.textContent = 'Soft-tissue reveal';
+    var slider = document.createElement('input'); slider.id = id; slider.type = 'range';
+    slider.min = '0'; slider.max = '100'; slider.step = '5'; slider.value = '0'; slider.disabled = true;
+    var output = document.createElement('output'); output.htmlFor = id; output.setAttribute('aria-live', 'off');
+    var help = document.createElement('p'); help.id = id + 'Help';
+    help.textContent = '0%: normal. 100%: soft tissues transparent. Skeleton visibility still follows Anatomy Layers. Removed structures stay removed. Names remain available in Text Study.';
+    slider.setAttribute('aria-describedby', help.id);
+    var buttons = document.createElement('div'); buttons.className = 'anatomy-reveal__buttons';
+    [['Less reveal',-10],['More reveal',10],['Reset reveal',null]].forEach(function (item) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = item[0]; b.disabled = true;
+      b.addEventListener('click', function () { setAnatomyReveal(item[1] === null ? 0 : anatomyReveal + item[1]); });
+      buttons.appendChild(b);
+    });
+    var guide = document.createElement('details');
+    var guideTitle = document.createElement('summary'); guideTitle.textContent = 'How reveal works';
+    guide.append(guideTitle, help);
+    panel.append(summary,label,slider,output,buttons,guide);
+    if (inStage) parent.appendChild(panel);
+    else parent.insertBefore(panel, parent.querySelector('#screenReaderTipsTitle').closest('section'));
+    revealControls.push({panel:panel,slider:slider,output:output,buttons:buttons});
+    slider.addEventListener('input', function () { setAnatomyReveal(Number(slider.value)); });
+    panel.addEventListener('toggle', function () { if (window.AnatomyAccessibility) window.AnatomyAccessibility.relayout(); });
+  }
+  function updateRevealControls() {
+    var hasMuscles = config && config.structureMembership && Object.keys(config.structureMembership).some(function (name) { return config.structureMembership[name] === 'muscles'; });
+    revealControls.forEach(function (ui) {
+      ui.panel.hidden = !hasMuscles || (markupModeOn && ui.panel.classList.contains('anatomy-reveal--stage'));
+      ui.slider.value = String(anatomyReveal);
+      ui.slider.setAttribute('aria-valuetext', anatomyReveal + '% reveal; soft-tissue opacity ' + (100 - anatomyReveal) + '%');
+      ui.output.textContent = anatomyReveal + '% reveal';
+      ui.slider.disabled = !materialStates.length || markupModeOn;
+      ui.buttons.querySelectorAll('button').forEach(function (b) { b.disabled = ui.slider.disabled; });
+    });
+  }
+  function setAnatomyReveal(value) {
+    if (markupModeOn || !materialStates.length) return;
+    anatomyReveal = Math.max(0, Math.min(100, value));
+    if (selectedName) selectByName(selectedName, {refresh:true,scrollIntoView:false});
+    else restoreView();
+    updateRevealControls();
+  }
+  buildRevealControls(document.querySelector('.stage'), 'stageAnatomyReveal', true);
+  buildRevealControls(document.querySelector('dialog'), 'studyAnatomyReveal', false);
+  document.addEventListener('anatomy-visibility', updateRevealControls);
+  document.addEventListener('anatomy-markup', updateRevealControls);
 
   function hideStageHint() {
     if (stageHint) stageHint.classList.add("is-hidden");

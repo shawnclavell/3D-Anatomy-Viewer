@@ -13,7 +13,7 @@
   apply.type = 'button'; apply.className = 'btn'; apply.textContent = 'Select structure';
   var help = document.createElement('p');
   help.id = 'structurePickerHelp'; help.className = 'empty-note';
-  help.textContent = 'Search to narrow the choices, then choose a structure and use Select structure. With multiple selection on, selecting an already selected muscle deselects it.';
+  help.textContent = 'Search to narrow the choices, then choose a structure and use Select structure. Hold Ctrl while clicking Select structure (or press Ctrl+Enter or Ctrl+Space) to add or deselect a muscle. Without Ctrl, selection replaces the current group.';
   section.insertBefore(label, list); section.insertBefore(picker, list); section.insertBefore(apply, list);
   function disclosure(title, contents, parent, before) {
     var details = document.createElement('details'); details.className = 'sidebar-disclosure';
@@ -44,9 +44,15 @@
     apply.disabled = picker.disabled || !picker.value;
   }
   picker.addEventListener('change', function () { apply.disabled = picker.disabled || !picker.value; });
-  apply.addEventListener('click', function () {
+  apply.addEventListener('keydown', function (event) {
+    if (event.ctrlKey && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      apply.dispatchEvent(new MouseEvent('click', {bubbles:true,ctrlKey:true}));
+    }
+  });
+  apply.addEventListener('click', function (event) {
     var button = Array.from(list.querySelectorAll('.bone-btn')).find(function (item) { return item.dataset.mat === picker.value; });
-    if (button && !picker.disabled) button.click();
+    if (button && !picker.disabled) button.dispatchEvent(new MouseEvent('click', {bubbles:true,ctrlKey:event.ctrlKey}));
     apply.focus();
   });
   new MutationObserver(sync).observe(list, {childList:true, subtree:true, attributes:true, attributeFilter:['aria-pressed','style','data-dissection-hidden']});
@@ -74,5 +80,16 @@
   function syncAttachments() { attachmentDetails.hidden = attachmentHelp.hidden; }
   new MutationObserver(syncAttachments).observe(attachmentHelp, {attributes:true, attributeFilter:['hidden']});
   syncAttachments();
+  // Requested order: model, layers, views, structures, attachments, removal.
+  var layers = document.getElementById('structureLayers');
+  var views = viewPanel.closest('.sidebar__section');
+  var selection = sidebar.querySelector('.selection');
+  sidebar.querySelector('.sidebar__header').insertAdjacentElement('afterend', layers);
+  layers.insertAdjacentElement('afterend', views);
+  views.insertAdjacentElement('afterend', section);
+  section.insertAdjacentElement('afterend', selection);
+  attachmentDetails.appendChild(document.getElementById('attachmentViewBtn'));
+  selection.appendChild(attachmentDetails);
+  selection.appendChild(removal.closest('details'));
   disclosure('Author tools and credits', [document.getElementById('authorModeBtn'),footer.querySelector('a')], footer);
 }());

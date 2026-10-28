@@ -1,0 +1,10 @@
+.anatomy-reveal { color: #e9e2d0; background: #1b1f23; border: 1px solid #7d8992; border-radius: 5px; padding: 8px; box-sizing: border-box; }
+.anatomy-reveal[hidden] { display: none; }
+.anatomy-reveal--stage { position: absolute; bottom: 12px; left: 12px; z-index: 42; width: min(290px, calc(100% - 24px)); max-height: min(45%, 280px); overflow-y: auto; }
+.anatomy-reveal summary { cursor: pointer; min-height: 44px; padding: 8px 0; box-sizing: border-box; }
+.anatomy-reveal label, .anatomy-reveal output { display: block; }
+.anatomy-reveal input[type=range] { width: 100%; min-height: 44px; accent-color: #9ed9f5; }
+.anatomy-reveal p { font-size: .8rem; line-height: 1.4; margin-bottom: 0; }
+.anatomy-reveal__buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.anatomy-reveal button { min-height: 44px; padding: 6px; border: 1px solid #7d8992; border-radius: 3px; background: #1b1f23; color: #e9e2d0; font: inherit; font-size: .8rem; }
+@media (forced-colors: active) { .anatomy-reveal, .anatomy-reveal button { background: Canvas; color: CanvasText; border-color: ButtonText; } }
