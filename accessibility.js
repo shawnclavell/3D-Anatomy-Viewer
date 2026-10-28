@@ -246,6 +246,14 @@
   document.addEventListener("anatomy-visibility", function (event) {
     renderDissection();
     if (dialog.open && !event.detail.selectionOnly) renderStudy();
+    if (dialog.open && event.detail.selectionOnly) {
+      dialog.querySelectorAll('button[data-study-key^="structure:"]').forEach(function (button) {
+        var name = button.getAttribute("data-study-key").slice("structure:".length);
+        var source = Array.prototype.find.call(document.querySelectorAll("#boneList button"), function (item) { return item.dataset.mat === name; });
+        if (source) button.setAttribute("aria-pressed", source.getAttribute("aria-pressed") || "false");
+      });
+      updateSelectedDetails();
+    }
     if (event.detail.message) announce(event.detail.message);
     scheduleMarkerLayout();
   });
@@ -305,9 +313,14 @@
       if (!available) el("span", manuallyHidden ? " — hidden; use Hide and restore structures to select again" : " — layer hidden; enable it in Anatomy Layers to select", item);
       button.addEventListener("click", function () {
         source.click();
-        list.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b === button ? "true" : "false"); });
-        announce("Selected " + source.textContent + ". Close text study to examine the model.");
-        count.textContent = "Selected " + source.textContent + ".";
+        list.querySelectorAll("button[data-study-key]").forEach(function (b) {
+          var key = b.getAttribute("data-study-key").slice("structure:".length);
+          var original = Array.prototype.find.call(document.querySelectorAll("#boneList button"), function (item) { return item.dataset.mat === key; });
+          if (original) b.setAttribute("aria-pressed", original.getAttribute("aria-pressed") || "false");
+        });
+        var selected = source.getAttribute("aria-pressed") === "true";
+        announce((selected ? "Selected " : "Deselected ") + source.textContent + ". Close text study to examine the model.");
+        count.textContent = (selected ? "Selected " : "Deselected ") + source.textContent + ".";
         updateSelectedDetails();
       });
     });

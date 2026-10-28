@@ -48,6 +48,11 @@
   // it falls into shadow. Keep this low or the colour washes out.
   var HIGHLIGHT_EMISSIVE = [0.10, 0.005, 0.0];
 
+  // Blue selection separates muscle bellies from their natural red surface.
+  // Text selection/readouts remain the non-colour indication of selection.
+  var MUSCLE_HIGHLIGHT_COLOR = [0.025, 0.32, 0.80];
+  var MUSCLE_HIGHLIGHT_EMISSIVE = [0.005, 0.045, 0.12];
+
   // Surface colours for Z-Anatomy's attachment-area meshes. These mirror the
   // origin/insertion colours already used by the annotation controls.
   var ORIGIN_COLOR = [0.72, 0.055, 0.055];
@@ -144,6 +149,8 @@
   // { name, material, baseColor:[r,g,b,a], emissive:[r,g,b], alphaMode }
   var materialStates = [];
   var selectedName   = null;
+  var selectedNames = new Set();
+  var multiMuscleSelection = false;
   var viewMode       = "all";   // "all" | "isolate" | "ghost"
   var hiddenStructures = new Set();
   var hideHistory = [];
@@ -158,7 +165,8 @@
     if (!meshVisibility || !selectedName || markupModeOn) return;
     var name = selectedName;
     hiddenStructures.add(name); hideHistory.push(name);
-    clearSelection();
+    selectedNames.delete(name);
+    refreshSelection();
     visibilityChanged("Hidden " + prettifyName(name) + ". " + hiddenStructures.size + " structures hidden.");
   }
   function restoreHiddenStructure(name) {
@@ -272,9 +280,11 @@
           layerVisibility[group.id] = !layerVisibility[group.id];
           button.setAttribute("aria-pressed", String(layerVisibility[group.id]));
           button.classList.toggle("is-active", layerVisibility[group.id]);
-          if (selectedName && !isStructureVisible(findState(selectedName))) clearSelection();
+          selectedNames.forEach(function (name) { if (!isStructureVisible(findState(name))) selectedNames.delete(name); });
+          selectedName = Array.from(selectedNames).pop() || null;
+          if (!selectedName) clearSelection();
           restoreAll();
-          if (selectedName) selectByName(selectedName, { scrollIntoView: false });
+          if (selectedName) selectByName(selectedName, { scrollIntoView: false, refresh: true });
           filterStructureList();
           visibilityChanged();
         });
@@ -942,8 +952,11 @@
 
   function highlight(state) {
     // Retain the ivory tendon region while highlighting its parent muscle.
-    applyLook(state, materialOwner(state.name) !== state.name ? null : HIGHLIGHT_COLOR, 1);
-    setEmissive(state, HIGHLIGHT_EMISSIVE);
+    var owner = materialOwner(state.name);
+    var muscle = config && config.structureMembership && config.structureMembership[owner] === "muscles";
+    var linked = owner !== state.name;
+    applyLook(state, linked ? null : (muscle ? MUSCLE_HIGHLIGHT_COLOR : HIGHLIGHT_COLOR), 1);
+    setEmissive(state, linked && muscle ? state.emissive : (muscle ? MUSCLE_HIGHLIGHT_EMISSIVE : HIGHLIGHT_EMISSIVE));
   }
 
   function materialOwner(name) {
@@ -985,8 +998,12 @@
 
   function selectedAttachments(groupId) {
     if (!selectedName || !config || !config.attachmentsByStructure) return [];
-    var record = config.attachmentsByStructure[selectedName];
-    return record && Array.isArray(record[groupId]) ? record[groupId] : [];
+    var patches = new Set();
+    selectedNames.forEach(function (name) {
+      var record = config.attachmentsByStructure[name];
+      if (record && Array.isArray(record[groupId])) record[groupId].forEach(function (patch) { patches.add(patch); });
+    });
+    return Array.from(patches);
   }
 
   function isStructureVisible(state) {
@@ -1017,8 +1034,74 @@
 
   /* -------------------------------------------------------- Selection API */
 
+  var selectionPanels = [];
+  function refreshSelection() {
+    selectedName = Array.from(selectedNames).pop() || null;
+    if (selectedName) selectByName(selectedName, { scrollIntoView: false, refresh: true });
+    else { clearSelection(); visibilityChanged("Selection cleared.", true); }
+  }
+  function buildSelectionPanel(parent, id) {
+    if (!parent) return;
+    var panel = document.createElement("section");
+    panel.setAttribute("aria-label", "Multiple muscle selection");
+    panel.hidden = true;
+    var toggle = document.createElement("button");
+    toggle.type = "button"; toggle.className = "btn";
+    toggle.textContent = "Select multiple muscles";
+    toggle.setAttribute("aria-pressed", "false");
+    var help = document.createElement("p");
+    help.id = id + "Help"; help.className = "empty-note";
+    help.textContent = "Turn on to add muscles by clicking the model or a named result; click again to deselect. Isolate and Ghost Others apply to the group. Details and Remove apply to the named active muscle. Selecting a bone replaces the group. Clear selection does not restore removed anatomy.";
+    toggle.setAttribute("aria-describedby", help.id);
+    var clear = document.createElement("button");
+    clear.type = "button"; clear.className = "btn"; clear.textContent = "Clear selection";
+    var list = document.createElement("ul");
+    list.setAttribute("aria-label", "Selected muscles and structures");
+    panel.append(toggle, help, clear, list);
+    // Keep group controls ahead of the potentially long Text Study result list.
+    var tips = parent.querySelector("#screenReaderTipsTitle");
+    if (tips) parent.insertBefore(panel, tips.closest("section"));
+    else parent.appendChild(panel);
+    selectionPanels.push({panel:panel,toggle:toggle,clear:clear,list:list});
+    toggle.addEventListener("click", function () {
+      multiMuscleSelection = !multiMuscleSelection;
+      if (!multiMuscleSelection && selectedName) { selectedNames.clear(); selectedNames.add(selectedName); refreshSelection(); }
+      renderSelectionPanels();
+    });
+    clear.addEventListener("click", function () {
+      clearSelection(); visibilityChanged("Selection cleared.", true); toggle.focus();
+    });
+  }
+  function renderSelectionPanels() {
+    var hasMuscles = config && config.structureMembership && Object.keys(config.structureMembership).some(function (name) { return config.structureMembership[name] === "muscles"; });
+    selectionPanels.forEach(function (ui) {
+      ui.panel.hidden = !hasMuscles;
+      ui.toggle.disabled = !materialStates.length || markupModeOn;
+      ui.toggle.setAttribute("aria-pressed", String(multiMuscleSelection));
+      ui.clear.disabled = !selectedNames.size || markupModeOn;
+      ui.list.replaceChildren();
+      selectedNames.forEach(function (name) {
+        var li = document.createElement("li");
+        var remove = document.createElement("button");
+        remove.type = "button"; remove.className = "btn"; remove.style.minHeight = "44px";
+        remove.textContent = "Deselect: " + prettifyName(name) + (name === selectedName ? " (active)" : "");
+        remove.disabled = markupModeOn;
+        remove.addEventListener("click", function () {
+          selectedNames.delete(name); refreshSelection();
+          (selectedNames.size ? ui.clear : ui.toggle).focus();
+        });
+        li.appendChild(remove); ui.list.appendChild(li);
+      });
+    });
+  }
+  buildSelectionPanel(selectionName.parentElement, "sidebarMultiMuscle");
+  buildSelectionPanel(document.querySelector("dialog"), "studyMultiMuscle");
+  document.addEventListener("anatomy-visibility", renderSelectionPanels);
+  document.addEventListener("anatomy-markup", renderSelectionPanels);
+
   function selectByName(name, options) {
     options = options || {};
+    if (markupModeOn) return;
     name = materialOwner(name);
 
     // Attachment patches are intentionally not separate study-list entries.
@@ -1028,6 +1111,20 @@
       name = patchOwners.indexOf(selectedName) !== -1 ? selectedName : patchOwners[0];
     }
 
+    var selectable = findState(name);
+    if (!selectable || !isStructureVisible(selectable)) return;
+    if (!options.refresh) {
+      var muscle = config && config.structureMembership && config.structureMembership[name] === "muscles";
+      if (multiMuscleSelection && muscle) {
+        selectedNames.forEach(function (item) { if (config.structureMembership[item] !== "muscles") selectedNames.delete(item); });
+        if (selectedNames.has(name)) {
+          selectedNames.delete(name);
+          refreshSelection();
+          return;
+        }
+      } else selectedNames.clear();
+      selectedNames.add(name);
+    }
     selectedName = name;
 
     // Reset every material, then re-apply the current view mode.
@@ -1040,9 +1137,11 @@
       return;
     }
 
-    highlightStructure(name);
+    selectedNames.forEach(highlightStructure);
 
-    selectionName.textContent = prettifyName(state.name);
+    selectionName.textContent = selectedNames.size > 1
+      ? selectedNames.size + " muscles selected. Active: " + prettifyName(state.name)
+      : prettifyName(state.name);
     selectionName.classList.remove("selection__name--empty");
 
     var attachmentStatus = document.getElementById("attachmentStatus");
@@ -1092,6 +1191,7 @@
   }
 
   function clearSelection() {
+    selectedNames.clear();
     selectedName = null;
     viewMode = "all";
     isolateBtn.classList.remove("btn--active");
@@ -1113,7 +1213,7 @@
     if (!selectedName) return;
 
     materialStates.forEach(function (state) {
-      if (materialOwner(state.name) === selectedName) {
+      if (selectedNames.has(materialOwner(state.name)) && isStructureVisible(state)) {
         highlight(state);
       } else if (isAttachmentGroup(structureGroupId(state)) && isStructureVisible(state)) {
         restoreMaterial(state);
@@ -1143,7 +1243,7 @@
 
     if (selectedName) {
       var state = findState(selectedName);
-      if (state) highlightStructure(selectedName);
+      if (state) selectedNames.forEach(highlightStructure);
     }
 
     isolateBtn.classList.remove("btn--active");
@@ -1225,10 +1325,12 @@
     Array.prototype.forEach.call(
       boneList.querySelectorAll(".bone-btn"),
       function (b) {
-        b.classList.toggle("is-active", name !== null && b.dataset.mat === name);
-        b.setAttribute("aria-pressed", String(name !== null && b.dataset.mat === name));
+        var active = selectedNames.has(b.dataset.mat);
+        b.classList.toggle("is-active", active);
+        b.setAttribute("aria-pressed", String(active));
       }
     );
+    renderSelectionPanels();
   }
 
   function filterStructureList() {
