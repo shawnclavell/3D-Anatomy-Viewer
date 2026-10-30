@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anatomy Viewer</title>
+
+<!-- Google's <model-viewer> web component -->
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+
+<link rel="stylesheet" href="style.css?v=13">
+<link rel="stylesheet" href="accessibility.css?v=14">
+<link rel="stylesheet" href="sidebar-layout.css?v=1">
+<link rel="stylesheet" href="structure-actions.css?v=1">
+</head>
+<body>
+<nav class="skip-links" aria-label="Keyboard shortcuts">
+  <a href="#boneSearch">Skip to structure search</a>
+  <a href="#viewer">Skip to 3D model</a>
+  <a href="#resetBtn">Skip to study tools</a>
+  <a href="#openStudyBtn">Skip to text study and keyboard help</a>
+</nav>
+
+<div class="app">
+
+  <!-- ============================================================ Sidebar -->
+  <aside class="sidebar" aria-label="Anatomy study controls">
+
+    <div class="sidebar__header">
+      <span class="sidebar__eyebrow">Specimen</span>
+      <h1 class="sidebar__title" id="modelTitle">Loading&hellip;</h1>
+      <label class="specimen-picker">
+        <span>Choose model</span>
+        <select id="modelPicker" aria-label="Choose anatomy model" aria-describedby="modelPickerHelp"><option value="layered">Combined layered anatomy (review preview)</option></select>
+        <small id="modelPickerHelp">Choosing a model loads a new page.</small>
+      </label>
+    </div>
+
+    <!-- ----------------------------------------------- Current selection -->
+    <div class="sidebar__section selection">
+      <h2>Selected</h2>
+      <div class="selection__name selection__name--empty" id="selectionName" role="status" aria-live="polite" aria-atomic="true">Choose a structure in the model or index</div>
+      <section id="muscleDetails" class="muscle-details" aria-label="Selected muscle information" hidden>
+        <h3>Muscle information</h3>
+        <dl id="muscleDetailsFields"></dl>
+        <p id="muscleDetailsNote" class="empty-note"></p>
+        <ul id="muscleDetailsSources" class="muscle-details__sources"></ul>
+      </section>
+      <p class="empty-note" id="attachmentStatus" role="status" hidden></p>
+      <div class="selection__actions">
+        <button class="btn btn--sm" id="isolateBtn" type="button" disabled>Isolate</button>
+        <button class="btn btn--sm" id="ghostBtn" type="button" disabled>Ghost Others</button>
+      </div>
+      <button class="btn btn--sm btn--wide" id="showAllBtn" type="button" disabled>Show All</button>
+      <button class="btn btn--sm btn--wide is-hidden" id="attachmentViewBtn" type="button" aria-pressed="false" disabled>View Attachments on Skeleton</button>
+    </div>
+
+    <div class="sidebar__section is-hidden" id="structureLayers">
+      <h2>Anatomy Layers</h2>
+      <div class="annotation-filters" id="layerButtons" role="group" aria-label="Anatomy layers"></div>
+      <p class="empty-note" id="modelReviewNote"></p>
+    </div>
+
+    <!-- --------------------------------------------------- Camera presets -->
+    <div class="sidebar__section">
+      <h2>Views</h2>
+      <ul class="preset-list" id="presetList"></ul>
+    </div>
+
+    <!-- ------------------------------------------------------- Bone index -->
+    <div class="sidebar__section sidebar__section--grow">
+      <h2><span id="structureIndexLabel">Bone Index</span> <span class="count" id="boneCount"></span></h2>
+      <input
+        type="search"
+        class="search"
+        id="boneSearch"
+        placeholder="Search bones&hellip;"
+        autocomplete="off"
+        aria-label="Search bones">
+      <div id="muscleInformationCoverage" hidden>
+        <p id="muscleCoverageStatus" class="empty-note" role="status">Loading muscle information coverage…</p>
+        <label class="study-coverage-filter"><input id="muscleInformationOnly" type="checkbox" disabled> Show only muscles with all four information fields</label>
+      </div>
+      <p class="visually-hidden" id="searchStatus" role="status" aria-atomic="true"></p>
+      <ul class="bone-list" id="boneList" aria-label="Anatomical structures"></ul>
+    </div>
+
+    <!-- ------------------------------------------------------- Annotations -->
+    <div class="sidebar__section">
+      <h2>Annotations</h2>
+      <div class="annotation-filters" id="annotationFilters" role="group" aria-label="Annotation filters">
+        <button class="annotation-filter annotation-filter--landmark is-active" type="button" data-annotation-filter="landmark" aria-pressed="true">Landmarks</button>
+        <button class="annotation-filter annotation-filter--origin is-active" type="button" data-annotation-filter="origin" aria-pressed="true">Origins</button>
+        <button class="annotation-filter annotation-filter--insertion is-active" type="button" data-annotation-filter="insertion" aria-pressed="true">Insertions</button>
+        <button class="annotation-filter annotation-filter--note is-active" type="button" data-annotation-filter="note" aria-pressed="true">Notes</button>
+      </div>
+      <ul class="hotspot-list" id="hotspotList"></ul>
+    </div>
+
+    <div class="sidebar__footer">
+      <button class="btn" id="resetBtn" type="button">Reset View</button>
+      <button class="btn" id="downloadViewBtn" type="button">Download View</button>
+      <button class="btn btn--student" id="markupModeBtn" type="button" aria-pressed="false" disabled>Freeze &amp; Mark Up</button>
+      <button class="btn btn--accent" id="authorModeBtn" type="button" aria-pressed="false">Author Mode</button>
+      <a class="btn btn--link" href="ATTRIBUTION.html" target="_blank" rel="noopener">Model Credits</a>
+    </div>
+
+  </aside>
+
+  <!-- =============================================================== Stage -->
+  <main class="stage" aria-label="Anatomy model and text study">
+
+    <button
+      class="stage__fullscreen-btn"
+      id="fullscreenBtn"
+      type="button"
+      aria-controls="viewer"
+      aria-pressed="false"
+      aria-label="Full screen model view">
+      <span class="stage__fullscreen-icon" aria-hidden="true">&#x26F6;</span>
+      <span id="fullscreenLabel">Full screen</span>
+    </button>
+    <button
+      class="stage__markup-btn"
+      id="fullscreenMarkupBtn"
+      type="button"
+      disabled>
+      Freeze &amp; Mark Up
+    </button>
+    <div class="visually-hidden" id="fullscreenStatus" role="status" aria-live="polite"></div>
+
+    <model-viewer
+      id="viewer"
+      tabindex="0"
+      camera-controls
+      min-camera-orbit="auto auto 0.05m"
+      touch-action="pan-y"
+      shadow-intensity="0.6"
+      exposure="1.05"
+      environment-image="neutral"
+      interaction-prompt="none"
+      ar
+    >
+    </model-viewer>
+
+    <section class="markup-workspace" id="markupWorkspace" aria-label="Student screen markup tools" hidden>
+      <canvas
+        class="markup-canvas"
+        id="markupCanvas"
+        role="img"
+        aria-label="Frozen anatomy view markup canvas. Use Pen to draw or Text to place a typed note.">
+      </canvas>
+
+      <div class="markup-toolbar" role="group" aria-label="Markup controls">
+        <div class="markup-toolbar__heading">
+          <strong>Frozen view</strong>
+          <span>Draw or place text, then download before resuming 3D.</span>
+        </div>
+
+        <div class="markup-toolbar__tools">
+          <button class="markup-tool is-active" id="markupPenBtn" type="button" aria-pressed="true">Pen</button>
+          <button class="markup-tool" id="markupTextBtn" type="button" aria-pressed="false">Text</button>
+
+          <label class="markup-field markup-field--color">
+            <span>Color</span>
+            <input id="markupColor" type="color" value="#ffd166">
+          </label>
+
+          <label class="markup-field markup-field--size">
+            <span>Size</span>
+            <input id="markupSize" type="range" min="2" max="12" value="5">
+          </label>
+
+          <label class="markup-field markup-field--text">
+            <span>Text to place</span>
+            <input id="markupText" type="text" maxlength="80" placeholder="Type a label, then click the view" autocomplete="off">
+          </label>
+
+          <label class="markup-field markup-position"><span>Horizontal position (%)</span><input id="markupX" type="number" min="0" max="100" value="50"></label>
+          <label class="markup-field markup-position"><span>Vertical position (%)</span><input id="markupY" type="number" min="0" max="100" value="65"></label>
+          <button class="markup-tool" id="placeMarkupTextBtn" type="button">Place typed label</button>
+
+          <button class="markup-tool" id="markupUndoBtn" type="button" disabled>Undo</button>
+          <button class="markup-tool" id="markupClearBtn" type="button" disabled>Clear</button>
+          <button class="markup-tool markup-tool--download" id="downloadMarkupBtn" type="button">Download Marked View</button>
+          <button class="markup-tool markup-tool--resume" id="resume3dBtn" type="button">Resume 3D</button>
+        </div>
+
+        <div class="markup-status" id="markupStatus" role="status" aria-live="polite">Pen ready. Draw directly on the frozen view.</div>
+        <details class="markup-labels"><summary>Typed labels in this view</summary><ul id="markupLabelList"></ul></details>
+      </div>
+    </section>
+
+    <div class="stage__hint" id="stageHint">Click any bone to select it</div>
+
+    <div class="author-banner" id="authorBanner">
+      Author Mode &mdash; complete the details, then click the model to place the annotation
+    </div>
+
+    <div class="author-panel" id="authorPanel">
+      <h3>Annotation Authoring</h3>
+      <div class="author-panel__hint">Choose the annotation type and enter its teaching text. Click the model to capture the exact surface point.</div>
+
+      <div class="author-form">
+        <label class="author-field">
+          <span>Type</span>
+          <select id="annotationType">
+            <option value="landmark">Bone landmark</option>
+            <option value="origin">Muscle origin</option>
+            <option value="insertion">Muscle insertion</option>
+            <option value="note">General note</option>
+          </select>
+        </label>
+        <label class="author-field">
+          <span>Label</span>
+          <input id="annotationLabel" type="text" placeholder="e.g. Greater tubercle" autocomplete="off">
+        </label>
+        <label class="author-field" id="muscleField">
+          <span>Muscle <small>(for origin / insertion)</small></span>
+          <input id="annotationMuscle" type="text" placeholder="e.g. Supraspinatus" autocomplete="off">
+        </label>
+        <label class="author-field">
+          <span>Description <small>(optional)</small></span>
+          <textarea id="annotationDescription" rows="2" placeholder="Short instructional note"></textarea>
+        </label>
+      </div>
+
+      <div class="author-snippet" id="authorSnippet">// click the model to begin</div>
+      <div class="author-actions">
+        <button class="btn btn--sm" id="previewAnnotationBtn" type="button" disabled>Add to View</button>
+        <button class="btn btn--sm" id="copySnippetBtn" type="button" disabled>Copy JSON</button>
+      </div>
+      <button class="btn btn--sm btn--wide" id="downloadAnnotationsBtn" type="button" disabled>Download Annotations JSON</button>
+      <div class="author-panel__hint">“Add to View” previews the annotation in this session. Download the JSON when it is ready to merge into the model config.</div>
+    </div>
+
+    <div id="loadingOverlay" role="status" aria-live="polite">
+      <div class="spinner"></div>
+      <span id="loadingText">Loading specimen&hellip;</span>
+    </div>
+
+  </main>
+
+</div>
+
+<link rel="stylesheet" href="layered-controls.css?v=1">
+<script src="../probe.js"></script><script src="mesh-visibility.js?v=1"></script>
+<script src="accessibility.js?v=16"></script>
+<script src="app.js?v=31"></script>
+<script src="sidebar-layout.js?v=3"></script>
+<script src="layered-controls.js?v=1"></script>
+</body>
+</html>

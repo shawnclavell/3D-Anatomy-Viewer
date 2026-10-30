@@ -1,0 +1,20 @@
+#layerButtons.layered-groups { display: block; }
+#layerButtons .layered-group {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1rem;
+  min-inline-size: 0;
+}
+#layerButtons .layered-group legend {
+  color: inherit;
+  font-size: .85rem;
+  font-weight: 600;
+  padding: 0 0 .5rem;
+}
+.layered-group__buttons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem; }
+#layerButtons .layered-group button { min-height: 44px; width: 100%; margin: 0; overflow-wrap: anywhere; }
+#layerButtons .layered-group:first-child .layered-group__buttons { grid-template-columns: 1fr; }
+@media (forced-colors: active) {
+  #layerButtons .layered-group button { border: 1px solid ButtonText; }
+  #layerButtons .layered-group button[aria-pressed="true"] { border: 3px solid Highlight; }
+}

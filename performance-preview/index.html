@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Layered anatomy performance diagnostic</title>
+<style>body{font:16px system-ui;margin:1rem;max-width:90rem}button{min-height:44px;padding:.5rem 1rem}input{max-width:100%;box-sizing:border-box;font:inherit;min-height:44px}textarea{box-sizing:border-box;width:100%;height:16rem}iframe{width:100%;height:640px;border:1px solid #777}summary{padding:.6rem}#status{min-height:1.5rem}#stop:not(:disabled){position:fixed;top:8px;right:8px;z-index:100;background:white;color:black;border:2px solid black}</style>
+<h1>Layered anatomy performance diagnostic</h1>
+<p>Instructor review tool. Start runs two loads and three 8-second camera rotations per load. No audio. Keep this page visible; do not operate other tabs during measurement. Stop cancels the test. On phones the test scrolls the viewer to the model.</p>
+<p>This measures this browser and connection, not an emulated low-end device. Render-count FPS measures scene render submissions, not GPU presentation. No automatic upload or pass/fail certification.</p>
+<label>Device and browser description <input id="device" size="45" placeholder="e.g. Chromebook model, Chrome version"></label>
+<button id="run">Start two-run baseline</button> <button id="stop" disabled>Stop</button>
+<p id="status" role="status">Ready</p>
+<iframe id="target" title="Layered anatomy under performance test" allow="fullscreen"></iframe>
+<details><summary>Measured results</summary><textarea id="results" aria-label="Performance results" readonly></textarea></details>
+<button id="download" disabled>Download results JSON</button>
+<script src="runner.js"></script></html>
