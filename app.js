@@ -1893,6 +1893,150 @@
 
   /* ------------------------------------------------------------------- Go */
 
+  // Session-only viewer undo. Editing text keeps browser-native undo, while
+  // frozen drawing uses the existing markup action stack.
+  var viewerUndoStack = [], undoButtons = [], modelResetButtons = [], undoRestoring = false;
+  var undoDepth = 0, undoBefore = null, undoLabel = '';
+  var undoEvents = new WeakSet();
+  function viewerSnapshot() {
+    return {selected:Array.from(selectedNames),primary:selectedName,hidden:Array.from(hiddenStructures),
+      hideHistory:hideHistory.slice(),layers:Object.assign({},layerVisibility),mode:viewMode,
+      orbit:viewer.getAttribute('camera-orbit'),target:viewer.getAttribute('camera-target'),
+      preset:Array.from(presetList.querySelectorAll('.preset-btn')).findIndex(function (b) { return b.classList.contains('is-active'); })};
+  }
+  function updateUndoButtons() {
+    undoButtons.forEach(function (b) {
+      b.disabled = !materialStates.length || (markupModeOn ? markupUndoBtn.disabled : !viewerUndoStack.length);
+      b.title = markupModeOn ? 'Undo the last markup action' : viewerUndoStack.length ? 'Undo: ' + viewerUndoStack[viewerUndoStack.length - 1].label : 'No viewer actions to undo';
+    });
+    modelResetButtons.forEach(function (b) { b.disabled = !materialStates.length || markupModeOn; });
+  }
+  function beginViewerAction(event) {
+    if (undoRestoring || !materialStates.length || markupModeOn || !event.target.closest('.app')) return;
+    if (event.type === 'pointerup' && event.target !== viewer && !viewer.contains(event.target)) return;
+    if (event.type === 'keydown' && (['Enter',' '].indexOf(event.key) === -1 || !event.target.closest('button'))) return;
+    if (event.target.closest('[data-viewer-undo]')) return;
+    undoEvents.add(event);
+    if (undoDepth++ === 0) {
+      undoBefore = viewerSnapshot();
+      var button = event.target.closest('button');
+      undoLabel = button ? button.textContent.trim().slice(0,100) : 'structure selection';
+    }
+  }
+  function endViewerAction(event) {
+    if (!undoEvents.has(event)) return;
+    undoEvents.delete(event);
+    if (--undoDepth !== 0) return;
+    if (JSON.stringify(undoBefore) !== JSON.stringify(viewerSnapshot())) {
+      viewerUndoStack.push({state:undoBefore,label:undoLabel});
+      if (viewerUndoStack.length > 40) viewerUndoStack.shift();
+      updateUndoButtons();
+    }
+    undoBefore = null;
+  }
+  function undoViewerAction() {
+    if (markupModeOn) { if (!markupUndoBtn.disabled) markupUndoBtn.click(); return; }
+    var entry = viewerUndoStack.pop();
+    if (!entry) return;
+    undoRestoring = true;
+    try {
+      var s = entry.state;
+      if (s.filters) {
+        boneSearch.value = s.filters.search;
+        var informationOnly = document.getElementById('muscleInformationOnly');
+        if (informationOnly) informationOnly.checked = s.filters.informationOnly;
+        var studySearch = document.getElementById('studySearch');
+        if (studySearch) { studySearch.value = s.filters.study; studySearch.dispatchEvent(new Event('input',{bubbles:true})); }
+      }
+      hiddenStructures = new Set(s.hidden); hideHistory = s.hideHistory.slice();
+      layerVisibility = Object.assign({},s.layers);
+      document.querySelectorAll('#layerButtons [data-layer]').forEach(function (b) {
+        var on = layerVisibility[b.dataset.layer] !== false;
+        b.setAttribute('aria-pressed',String(on)); b.classList.toggle('is-active',on);
+      });
+      selectedNames = new Set(s.selected); selectedName = s.primary; viewMode = s.mode;
+      if (selectedName) selectByName(selectedName,{refresh:true,scrollIntoView:false});
+      else clearSelection();
+      if (s.mode === 'all') restoreView();
+      showAllBtn.disabled = !selectedName && !hiddenStructures.size;
+      if (s.orbit === null) viewer.removeAttribute('camera-orbit');
+      if (s.target === null) viewer.removeAttribute('camera-target');
+      applyCamera(s.orbit,s.target);
+      setActivePreset(presetList.querySelectorAll('.preset-btn')[s.preset] || null);
+      closeStructureActions(false);
+      visibilityChanged('Undid ' + entry.label + '.');
+    } finally {
+      undoRestoring = false; updateUndoButtons();
+      if (document.activeElement && document.activeElement.matches('[data-viewer-undo]:disabled')) {
+        document.getElementById(document.querySelector('dialog[open]') ? 'studySearch' : 'boneSearch').focus();
+      }
+    }
+  }
+  ['click','keydown','pointerup'].forEach(function (type) {
+    document.addEventListener(type,beginViewerAction,true);
+    document.addEventListener(type,endViewerAction);
+  });
+  document.addEventListener('keydown',function (event) {
+    if (event.ctrlKey && event.altKey && !event.shiftKey && event.key.toLowerCase() === 'r' && !(event.getModifierState && event.getModifierState('AltGraph'))) {
+      if (event.target.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"])')) return;
+      if (materialStates.length && !markupModeOn) { event.preventDefault(); modelResetButtons[0].click(); }
+      return;
+    }
+    if (!(event.ctrlKey || event.metaKey) || event.shiftKey || event.altKey || event.key.toLowerCase() !== 'z') return;
+    if (event.target.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"])')) return;
+    if (markupModeOn || viewerUndoStack.length) { event.preventDefault(); undoViewerAction(); }
+  });
+  var historyRow = document.createElement('div');
+  historyRow.className = 'viewer-history-controls';
+  historyRow.setAttribute('role','group'); historyRow.setAttribute('aria-label','Undo and reset model');
+  historyRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px';
+  document.getElementById('openStudyBtn').parentElement.appendChild(historyRow);
+  [document.querySelector('.sidebar__footer'),document.querySelector('dialog'),historyRow].forEach(function (parent) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'btn';
+    b.dataset.viewerUndo = 'true'; b.textContent = parent === historyRow ? 'Go back (undo)' : 'Go back (undo last action)'; b.disabled = true;
+    b.setAttribute('aria-keyshortcuts','Control+Z Meta+Z'); b.style.minHeight = '44px';
+    if (parent.tagName === 'DIALOG') parent.insertBefore(b,parent.querySelector('#screenReaderTipsTitle').closest('section'));
+    else parent.insertBefore(b,parent.firstChild);
+    b.addEventListener('click',undoViewerAction); undoButtons.push(b);
+    var reset = document.createElement('button'); reset.type = 'button'; reset.className = 'btn';
+    reset.dataset.modelReset = 'true'; reset.textContent = 'Reset model'; reset.disabled = true;
+    reset.setAttribute('aria-keyshortcuts','Control+Alt+R'); reset.style.minHeight = '44px';
+    reset.title = 'Ctrl+Alt+R: restore starting layers, structures and camera; clear selection and search. Undo reverses the reset. Resume 3D before resetting a frozen view.';
+    b.insertAdjacentElement('afterend',reset); reset.addEventListener('click',resetModel); modelResetButtons.push(reset);
+  });
+  function resetModel() {
+    if (!materialStates.length || markupModeOn) return;
+    // Only a full reset adds filter state and the actual dragged camera to its
+    // undo entry; ordinary actions retain the established history semantics.
+    var studySearch = document.getElementById('studySearch');
+    if (undoBefore) {
+      undoBefore.filters = {search:boneSearch.value,informationOnly:!!(document.getElementById('muscleInformationOnly') && document.getElementById('muscleInformationOnly').checked),study:studySearch ? studySearch.value : ''};
+      if (viewer.getCameraOrbit) undoBefore.orbit = viewer.getCameraOrbit().toString();
+      if (viewer.getCameraTarget) undoBefore.target = viewer.getCameraTarget().toString();
+    }
+    hiddenStructures.clear(); hideHistory = [];
+    (config.structureGroups || []).forEach(function (group) { layerVisibility[group.id] = group.visible !== false; });
+    document.querySelectorAll('#layerButtons [data-layer]').forEach(function (b) {
+      var on = layerVisibility[b.dataset.layer] !== false;
+      b.setAttribute('aria-pressed',String(on)); b.classList.toggle('is-active',on);
+    });
+    boneSearch.value = '';
+    var informationOnly = document.getElementById('muscleInformationOnly');
+    if (informationOnly) informationOnly.checked = false;
+    if (studySearch) { studySearch.value = ''; studySearch.dispatchEvent(new Event('input',{bubbles:true})); }
+    clearSelection(); restoreView();
+    applyCamera(defaultOrbit,defaultTarget); setActivePreset(defaultPresetButton);
+    showAllBtn.disabled = true;
+    visibilityChanged('Model reset to its starting layers and camera. Removed structures restored; selection and search cleared. Go back or Ctrl+Z reverses this reset.');
+  }
+  var historyHelp = document.createElement('p');
+  historyHelp.textContent = 'Go back (Ctrl+Z) undoes supported model actions. Reset model (Ctrl+Alt+R) restores starting anatomy layers, removed structures and camera, and clears selection and search. Reset model can be undone. Reset View changes only the camera. While drawing, Ctrl+Z undoes marks; resume 3D before resetting the model.';
+  document.querySelector('#screenReaderTipsTitle').closest('section').appendChild(historyHelp);
+  viewer.addEventListener('load',function () { queueMicrotask(updateUndoButtons); });
+  document.addEventListener('anatomy-markup',updateUndoButtons);
+  new MutationObserver(updateUndoButtons).observe(markupUndoBtn,{attributes:true,attributeFilter:['disabled']});
+  window.AnatomyHistory = {undo:undoViewerAction,state:function () { return {count:viewerUndoStack.length,label:viewerUndoStack.length ? viewerUndoStack[viewerUndoStack.length-1].label : null}; }};
+
   init();
 
 })();
