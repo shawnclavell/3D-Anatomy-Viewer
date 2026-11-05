@@ -1428,7 +1428,7 @@
     structureActionButtons.forEach(function (b) { b.setAttribute('aria-expanded', String(b === opener)); });
     actionItems.querySelector('button').focus(); return true;
   }
-  ['Highlight', 'Isolate', 'Remove'].forEach(function (label) {
+  ['Highlight', 'Isolate', 'Ghost Others', 'Remove'].forEach(function (label) {
     var button = document.createElement('button'); button.type = 'button';
     button.setAttribute('role', 'menuitem'); button.textContent = label;
     actionItems.appendChild(button);
@@ -1439,6 +1439,7 @@
       else {
         selectByName(name, {scrollIntoView:false});
         if (label === 'Isolate') applyIsolate(false);
+        else if (label === 'Ghost Others') applyIsolate(true);
         visibilityChanged(label + ': ' + prettifyName(name) + '.', true);
       }
       closeStructureActions(true);
