@@ -1,0 +1,13 @@
+{
+  "label": "Skeleton (Overview)",
+  "glb": "assets/overview-skeleton.glb",
+
+  "cameraPresets": [
+    { "name": "Anterior (Full Body)", "orbit": "0deg 90deg 3.2m", "target": "0m 1m 0m" },
+    { "name": "Posterior (Full Body)", "orbit": "180deg 90deg 3.2m", "target": "0m 1m 0m" },
+    { "name": "Skull Close-Up", "orbit": "0deg 90deg 0.9m", "target": "0m 1.65m 0m" },
+    { "name": "Pelvis Close-Up", "orbit": "0deg 90deg 0.9m", "target": "0m 1m 0m" }
+  ],
+
+  "hotspots": []
+}

@@ -1,0 +1,413 @@
+{
+  "label": "Upper Limbs",
+  "alt": "Interactive anterior view of the left and right upper-limb skeletons, including the pectoral girdles and hand bones",
+  "glb": "assets/overview-upper-limb.glb?v=1",
+  "defaultPreset": 0,
+  "annotationScope": "Right shoulder, elbow, wrist, and hand: major bone landmarks plus selected muscle origins and insertions",
+  "annotationSources": [
+    {
+      "title": "OpenStax Anatomy and Physiology 2e — Muscles of the Pectoral Girdle and Upper Limbs",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs"
+    },
+    {
+      "title": "NCBI Bookshelf — Rotator cuff origin and insertion table",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK585754/table/ch22.Tab4/?report=objectonly"
+    },
+    {
+      "title": "NCBI Bookshelf — Forearm bones and muscle attachment sites",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK545260/"
+    },
+    {
+      "title": "NCBI Bookshelf — Bone markings of the distal humerus and proximal forearm",
+      "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK513259/"
+    },
+    {
+      "title": "NCBI Bookshelf — Hand carpal bones and palmar landmarks",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK535382/"
+    },
+    {
+      "title": "NCBI Bookshelf — Forearm muscles and distal attachment sites",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK536975/"
+    }
+  ],
+
+  "cameraPresets": [
+    { "name": "Anterior", "orbit": "0deg 90deg 1.60m", "target": "0m 1.061m -0.012m" },
+    { "name": "Posterior", "orbit": "180deg 90deg 1.60m", "target": "0m 1.061m -0.012m" },
+    { "name": "Left Anterior Oblique", "orbit": "35deg 90deg 1.65m", "target": "0m 1.061m -0.012m" },
+    { "name": "Right Anterior Oblique", "orbit": "-35deg 90deg 1.65m", "target": "0m 1.061m -0.012m" },
+    { "name": "Left Hand", "orbit": "0deg 90deg 0.42m", "target": "0.282m 0.781m 0.049m" },
+    { "name": "Right Hand", "orbit": "0deg 90deg 0.42m", "target": "-0.282m 0.781m 0.049m" },
+    { "name": "Right Shoulder — Anterior", "orbit": "0deg 90deg 0.34m", "target": "-0.100m 1.365m -0.005m" },
+    { "name": "Right Shoulder — Posterior", "orbit": "180deg 90deg 0.34m", "target": "-0.100m 1.365m -0.005m" },
+    { "name": "Right Elbow — Anterior", "orbit": "0deg 90deg 0.25m", "target": "-0.205m 1.105m -0.005m" },
+    { "name": "Right Elbow — Posterior", "orbit": "180deg 90deg 0.25m", "target": "-0.205m 1.105m -0.005m" },
+    { "name": "Right Wrist — Anterior", "orbit": "0deg 90deg 0.28m", "target": "-0.255m 0.865m 0.040m" },
+    { "name": "Right Wrist — Posterior", "orbit": "180deg 90deg 0.28m", "target": "-0.255m 0.865m 0.040m" }
+  ],
+
+  "hotspots": [
+    {
+      "id": "landmark-right-acromion",
+      "type": "landmark",
+      "label": "Acromion (right)",
+      "description": "Lateral projection of the scapular spine that forms the highest point of the shoulder.",
+      "position": "-0.161 1.410 -0.036",
+      "normal": "-0.196 -0.935 0.296"
+    },
+    {
+      "id": "landmark-right-coracoid",
+      "type": "landmark",
+      "label": "Coracoid process (right)",
+      "description": "Hook-like anterior projection of the scapula.",
+      "position": "-0.126 1.395 -0.013",
+      "normal": "0.847 -0.379 0.373"
+    },
+    {
+      "id": "landmark-right-glenoid",
+      "type": "landmark",
+      "label": "Glenoid cavity (right)",
+      "description": "Shallow lateral socket that articulates with the head of the humerus.",
+      "position": "-0.150 1.371 -0.022",
+      "normal": "0.681 -0.547 0.487"
+    },
+    {
+      "id": "landmark-right-inferior-angle",
+      "type": "landmark",
+      "label": "Inferior angle of scapula (right)",
+      "description": "Lowest point of the scapula where its medial and lateral borders meet.",
+      "position": "-0.093 1.263 -0.101",
+      "normal": "0.402 -0.063 0.914"
+    },
+    {
+      "id": "landmark-right-greater-tubercle",
+      "type": "landmark",
+      "label": "Greater tubercle of humerus (right)",
+      "description": "Large lateral prominence on the proximal humerus.",
+      "position": "-0.186 1.392 -0.015",
+      "normal": "-0.100 0.044 0.994"
+    },
+    {
+      "id": "landmark-right-lesser-tubercle",
+      "type": "landmark",
+      "label": "Lesser tubercle of humerus (right)",
+      "description": "Anterior prominence of the proximal humerus medial to the intertubercular sulcus.",
+      "position": "-0.158 1.385 -0.012",
+      "normal": "0.548 0.324 0.771"
+    },
+    {
+      "id": "landmark-right-scapular-spine",
+      "type": "landmark",
+      "label": "Spine of scapula (right)",
+      "description": "Prominent posterior ridge that divides the supraspinous and infraspinous fossae.",
+      "position": "-0.095 1.374 -0.104",
+      "normal": "-0.082 -0.009 -0.997"
+    },
+    {
+      "id": "landmark-right-supraspinous-fossa",
+      "type": "landmark",
+      "label": "Supraspinous fossa (right)",
+      "description": "Depression superior to the spine of the scapula.",
+      "position": "-0.094 1.392 -0.072",
+      "normal": "-0.643 0.440 -0.627"
+    },
+    {
+      "id": "landmark-right-infraspinous-fossa",
+      "type": "landmark",
+      "label": "Infraspinous fossa (right)",
+      "description": "Broad depression inferior to the spine of the scapula.",
+      "position": "-0.094 1.347 -0.093",
+      "normal": "-0.465 0.306 -0.831"
+    },
+    {
+      "id": "origin-right-subscapularis",
+      "type": "origin",
+      "label": "Subscapular fossa",
+      "muscle": "Subscapularis",
+      "description": "Broad origin across the anterior surface of the scapula.",
+      "position": "-0.102 1.351 -0.084",
+      "normal": "0.547 -0.132 0.826"
+    },
+    {
+      "id": "origin-right-supraspinatus",
+      "type": "origin",
+      "label": "Supraspinous fossa",
+      "muscle": "Supraspinatus",
+      "description": "Origin in the supraspinous fossa, superior to the scapular spine.",
+      "position": "-0.094 1.392 -0.072",
+      "normal": "-0.643 0.440 -0.627"
+    },
+    {
+      "id": "origin-right-infraspinatus",
+      "type": "origin",
+      "label": "Infraspinous fossa",
+      "muscle": "Infraspinatus",
+      "description": "Origin across the infraspinous fossa, inferior to the scapular spine.",
+      "position": "-0.094 1.347 -0.093",
+      "normal": "-0.465 0.306 -0.831"
+    },
+    {
+      "id": "origin-right-teres-minor",
+      "type": "origin",
+      "label": "Lateral border of scapula",
+      "muscle": "Teres minor",
+      "description": "Origin along the upper portion of the lateral border on the posterior scapula.",
+      "position": "-0.134 1.338 -0.067",
+      "normal": "-0.745 0.025 -0.667"
+    },
+    {
+      "id": "origin-right-deltoid-acromial",
+      "type": "origin",
+      "label": "Acromion — acromial part",
+      "muscle": "Deltoid",
+      "description": "The acromial fibers arise here; the deltoid also originates from the lateral clavicle and scapular spine.",
+      "position": "-0.161 1.410 -0.036",
+      "normal": "-0.196 -0.935 0.296"
+    },
+    {
+      "id": "insertion-right-supraspinatus",
+      "type": "insertion",
+      "label": "Superior facet of greater tubercle",
+      "muscle": "Supraspinatus",
+      "description": "Insertion on the superior facet of the greater tubercle of the humerus.",
+      "position": "-0.183 1.398 -0.016",
+      "normal": "-0.217 0.364 0.906"
+    },
+    {
+      "id": "insertion-right-infraspinatus",
+      "type": "insertion",
+      "label": "Middle facet of greater tubercle",
+      "muscle": "Infraspinatus",
+      "description": "Insertion on the middle facet of the greater tubercle of the humerus.",
+      "position": "-0.179 1.388 -0.046",
+      "normal": "-0.086 0.117 -0.989"
+    },
+    {
+      "id": "insertion-right-teres-minor",
+      "type": "insertion",
+      "label": "Inferior facet of greater tubercle",
+      "muscle": "Teres minor",
+      "description": "Insertion on the inferior facet of the greater tubercle of the humerus.",
+      "position": "-0.179 1.378 -0.045",
+      "normal": "-0.088 -0.532 -0.842"
+    },
+    {
+      "id": "insertion-right-subscapularis",
+      "type": "insertion",
+      "label": "Lesser tubercle",
+      "muscle": "Subscapularis",
+      "description": "Insertion on the lesser tubercle of the humerus.",
+      "position": "-0.158 1.385 -0.012",
+      "normal": "0.548 0.324 0.771"
+    },
+    {
+      "id": "insertion-right-deltoid",
+      "type": "insertion",
+      "label": "Deltoid tuberosity",
+      "muscle": "Deltoid",
+      "description": "Insertion on the lateral surface of the humeral shaft.",
+      "position": "-0.197 1.313 -0.020",
+      "normal": "-0.442 0.060 0.895"
+    },
+    {
+      "id": "landmark-right-lateral-epicondyle",
+      "type": "landmark",
+      "label": "Lateral epicondyle of humerus (right)",
+      "description": "Lateral projection of the distal humerus that anchors the common extensor tendon.",
+      "position": "-0.240 1.107 -0.031",
+      "normal": "0.111 -0.073 0.991"
+    },
+    {
+      "id": "landmark-right-medial-epicondyle",
+      "type": "landmark",
+      "label": "Medial epicondyle of humerus (right)",
+      "description": "Prominent medial projection of the distal humerus that anchors the common flexor tendon.",
+      "position": "-0.191 1.107 -0.034",
+      "normal": "0.081 -0.387 0.918"
+    },
+    {
+      "id": "landmark-right-capitulum",
+      "type": "landmark",
+      "label": "Capitulum of humerus (right)",
+      "description": "Rounded lateral articular surface of the distal humerus that articulates with the head of the radius.",
+      "position": "-0.235 1.100 -0.035",
+      "normal": "0.249 -0.665 0.704"
+    },
+    {
+      "id": "landmark-right-trochlea",
+      "type": "landmark",
+      "label": "Trochlea of humerus (right)",
+      "description": "Pulley-shaped medial articular surface of the distal humerus that articulates with the ulna.",
+      "position": "-0.205 1.095 -0.025",
+      "normal": "-0.160 -0.277 0.948"
+    },
+    {
+      "id": "landmark-right-olecranon",
+      "type": "landmark",
+      "label": "Olecranon (right)",
+      "description": "Large proximal projection of the ulna that forms the point of the elbow.",
+      "position": "-0.209 1.092 -0.061",
+      "normal": "0.525 -0.286 -0.802"
+    },
+    {
+      "id": "landmark-right-coronoid-process",
+      "type": "landmark",
+      "label": "Coronoid process of ulna (right)",
+      "description": "Anterior projection of the proximal ulna that enters the coronoid fossa during flexion.",
+      "position": "-0.215 1.093 -0.029",
+      "normal": "0.820 0.533 0.210"
+    },
+    {
+      "id": "landmark-right-radial-head",
+      "type": "landmark",
+      "label": "Head of radius (right)",
+      "description": "Disc-shaped proximal end of the radius that articulates with the capitulum and radial notch.",
+      "position": "-0.239 1.094 -0.026",
+      "normal": "-0.203 0.353 0.913"
+    },
+    {
+      "id": "landmark-right-radial-tuberosity",
+      "type": "landmark",
+      "label": "Radial tuberosity (right)",
+      "description": "Roughened proximal radial prominence that receives the biceps brachii tendon.",
+      "position": "-0.232 1.080 -0.029",
+      "normal": "0.700 0.081 0.710"
+    },
+    {
+      "id": "origin-right-brachioradialis",
+      "type": "origin",
+      "label": "Lateral supracondylar ridge",
+      "muscle": "Brachioradialis",
+      "description": "Origin along the proximal two-thirds of the lateral supracondylar ridge of the humerus.",
+      "position": "-0.236 1.129 -0.047",
+      "normal": "-0.494 0.467 0.733"
+    },
+    {
+      "id": "insertion-right-biceps-brachii",
+      "type": "insertion",
+      "label": "Radial tuberosity",
+      "muscle": "Biceps brachii",
+      "description": "Insertion on the radial tuberosity; the bicipital aponeurosis also blends with forearm fascia.",
+      "position": "-0.232 1.080 -0.029",
+      "normal": "0.804 0.039 0.593"
+    },
+    {
+      "id": "insertion-right-brachialis",
+      "type": "insertion",
+      "label": "Coronoid process and ulnar tuberosity",
+      "muscle": "Brachialis",
+      "description": "Insertion across the coronoid process and ulnar tuberosity of the proximal ulna.",
+      "position": "-0.214 1.081 -0.033",
+      "normal": "-0.012 -0.357 0.934"
+    },
+    {
+      "id": "insertion-right-triceps-brachii",
+      "type": "insertion",
+      "label": "Olecranon",
+      "muscle": "Triceps brachii",
+      "description": "Common triceps tendon insertion on the proximal olecranon of the ulna.",
+      "position": "-0.207 1.093 -0.059",
+      "normal": "0.718 -0.314 -0.621"
+    },
+    {
+      "id": "landmark-right-ulnar-styloid",
+      "type": "landmark",
+      "label": "Styloid process of ulna (right)",
+      "description": "Pointed distal ulnar projection on the medial side of the wrist.",
+      "position": "-0.254 0.858 0.008",
+      "normal": "-0.095 0.767 -0.635"
+    },
+    {
+      "id": "landmark-right-radial-styloid",
+      "type": "landmark",
+      "label": "Styloid process of radius (right)",
+      "description": "Lateral distal projection of the radius on the thumb side of the wrist.",
+      "position": "-0.286 0.858 0.012",
+      "normal": "-0.381 -0.786 -0.486"
+    },
+    {
+      "id": "landmark-right-dorsal-tubercle-radius",
+      "type": "landmark",
+      "label": "Dorsal tubercle of radius (right)",
+      "description": "Posterior radial prominence that redirects the extensor pollicis longus tendon.",
+      "position": "-0.274 0.868 -0.001",
+      "normal": "0.277 -0.152 -0.949"
+    },
+    {
+      "id": "landmark-right-capitate",
+      "type": "landmark",
+      "label": "Capitate (right)",
+      "description": "Largest and most central carpal bone in the distal row.",
+      "position": "-0.266 0.842 0.008",
+      "normal": "0.107 0.375 -0.921"
+    },
+    {
+      "id": "landmark-right-pisiform",
+      "type": "landmark",
+      "label": "Pisiform (right)",
+      "description": "Palpable sesamoid carpal on the palmar, ulnar side of the wrist.",
+      "position": "-0.245 0.852 0.030",
+      "normal": "0.245 0.331 0.911"
+    },
+    {
+      "id": "landmark-right-hook-hamate",
+      "type": "landmark",
+      "label": "Hook of hamate (right)",
+      "description": "Palmar projection of the hamate that forms the ulnar boundary of Guyon canal.",
+      "position": "-0.253 0.840 0.027",
+      "normal": "0.810 -0.217 0.544"
+    },
+    {
+      "id": "landmark-right-scaphoid-tubercle",
+      "type": "landmark",
+      "label": "Tubercle of scaphoid (right)",
+      "description": "Palmar scaphoid projection that contributes to the lateral boundary of the carpal tunnel.",
+      "position": "-0.283 0.845 0.027",
+      "normal": "-0.295 -0.685 0.667"
+    },
+    {
+      "id": "landmark-right-trapezium-tubercle",
+      "type": "landmark",
+      "label": "Tubercle of trapezium (right)",
+      "description": "Palmar trapezial projection that contributes to the lateral boundary of the carpal tunnel.",
+      "position": "-0.289 0.838 0.030",
+      "normal": "0.333 -0.417 0.846"
+    },
+    {
+      "id": "insertion-right-brachioradialis",
+      "type": "insertion",
+      "label": "Lateral distal radius near the styloid process",
+      "muscle": "Brachioradialis",
+      "description": "Insertion on the lateral distal radius at the base of the radial styloid process.",
+      "position": "-0.287 0.860 0.014",
+      "normal": "-0.874 -0.172 0.454"
+    },
+    {
+      "id": "insertion-right-flexor-carpi-radialis",
+      "type": "insertion",
+      "label": "Base of second metacarpal",
+      "muscle": "Flexor carpi radialis",
+      "description": "Primary insertion on the palmar base of the second metacarpal.",
+      "position": "-0.282 0.832 0.026",
+      "normal": "-0.421 0.274 0.865"
+    },
+    {
+      "id": "insertion-right-flexor-carpi-ulnaris",
+      "type": "insertion",
+      "label": "Pisiform",
+      "muscle": "Flexor carpi ulnaris",
+      "description": "Insertion on the pisiform, with ligamentous continuations to the hook of hamate and base of the fifth metacarpal.",
+      "position": "-0.246 0.851 0.031",
+      "normal": "0.245 0.331 0.911"
+    },
+    {
+      "id": "insertion-right-extensor-carpi-ulnaris",
+      "type": "insertion",
+      "label": "Dorsal base of fifth metacarpal",
+      "muscle": "Extensor carpi ulnaris",
+      "description": "Insertion on the dorsal base of the fifth metacarpal.",
+      "position": "-0.246 0.833 0.016",
+      "normal": "0.081 0.228 -0.970"
+    }
+  ]
+}

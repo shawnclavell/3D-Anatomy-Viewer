@@ -1,0 +1,385 @@
+{
+  "label": "Lower Limbs",
+  "alt": "Interactive anterior view of the left and right lower-limb skeletons, including the pelvic girdles and foot bones",
+  "glb": "assets/overview-lower-limb.glb?v=1",
+  "defaultPreset": 0,
+  "annotationScope": "Right hip, knee, ankle, and foot: major bone landmarks plus selected gluteal, iliopsoas, quadriceps, hamstring, triceps surae, tibialis, and fibularis insertions",
+  "annotationSources": [
+    {
+      "title": "OpenStax Anatomy and Physiology 2e — Appendicular muscles of the pelvic girdle and lower limbs",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs"
+    },
+    {
+      "title": "NCBI Bookshelf — Hip anatomy and muscle attachments",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK526019/"
+    },
+    {
+      "title": "NCBI Bookshelf — Ilium, ischium, and pubis landmarks",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK519524/"
+    },
+    {
+      "title": "NCBI Bookshelf — Lateral pelvis and gluteal tendon facets",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK570153/"
+    },
+    {
+      "title": "NCBI Bookshelf — Leg bones and proximal tibiofibular attachment sites",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK537024/"
+    },
+    {
+      "title": "NCBI Bookshelf — Femoral muscles and knee insertions",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK500008/"
+    },
+    {
+      "title": "NCBI Bookshelf — Medial thigh muscles and pes anserinus",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK534775/"
+    },
+    {
+      "title": "NCBI Bookshelf — Ankle joint anatomy and the talar mortise",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK545158/"
+    },
+    {
+      "title": "NCBI Bookshelf — Foot muscles and distal tendon attachments",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK539705/"
+    },
+    {
+      "title": "NCBI Bookshelf — Tibialis posterior anatomy and insertions",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK539913/"
+    }
+  ],
+
+  "cameraPresets": [
+    { "name": "Anterior", "orbit": "0deg 90deg 2.20m", "target": "0m 0.480m 0.022m" },
+    { "name": "Posterior", "orbit": "180deg 90deg 2.20m", "target": "0m 0.480m 0.022m" },
+    { "name": "Left Anterior Oblique", "orbit": "35deg 90deg 2.25m", "target": "0m 0.480m 0.022m" },
+    { "name": "Right Anterior Oblique", "orbit": "-35deg 90deg 2.25m", "target": "0m 0.480m 0.022m" },
+    { "name": "Feet — Anterior", "orbit": "0deg 90deg 0.85m", "target": "0m 0.100m 0.022m" },
+    { "name": "Feet — Posterior", "orbit": "180deg 90deg 0.85m", "target": "0m 0.100m 0.022m" },
+    { "name": "Right Hip — Anterior", "orbit": "0deg 90deg 0.52m", "target": "-0.115m 0.880m 0.020m" },
+    { "name": "Right Hip — Posterior", "orbit": "180deg 90deg 0.52m", "target": "-0.115m 0.880m 0.020m" },
+    { "name": "Right Knee — Anterior", "orbit": "0deg 90deg 0.48m", "target": "-0.085m 0.480m 0.020m" },
+    { "name": "Right Knee — Posterior", "orbit": "180deg 90deg 0.48m", "target": "-0.085m 0.480m 0.020m" },
+    { "name": "Right Ankle — Anterior", "orbit": "0deg 90deg 0.42m", "target": "-0.085m 0.105m 0.020m" },
+    { "name": "Right Ankle — Posterior", "orbit": "180deg 90deg 0.42m", "target": "-0.085m 0.105m 0.020m" },
+    { "name": "Right Foot — Lateral", "orbit": "90deg 90deg 0.42m", "target": "-0.085m 0.075m 0.005m" },
+    { "name": "Right Foot — Medial", "orbit": "-90deg 90deg 0.42m", "target": "-0.085m 0.075m 0.005m" }
+  ],
+
+  "hotspots": [
+    {
+      "id": "landmark-right-iliac-crest",
+      "type": "landmark",
+      "label": "Iliac crest (right)",
+      "description": "Superior curved border of the ilium and a palpable pelvic landmark.",
+      "position": "-0.093 0.996 -0.022",
+      "normal": "0.665 0.178 0.726"
+    },
+    {
+      "id": "landmark-right-asis",
+      "type": "landmark",
+      "label": "Anterior superior iliac spine (right)",
+      "description": "Anterior end of the iliac crest and a major palpable attachment landmark.",
+      "position": "-0.131 0.966 0.035",
+      "normal": "-0.963 -0.162 0.214"
+    },
+    {
+      "id": "landmark-right-aiis",
+      "type": "landmark",
+      "label": "Anterior inferior iliac spine (right)",
+      "description": "Anterior projection immediately superior to the acetabulum.",
+      "position": "-0.100 0.888 0.001",
+      "normal": "-0.987 -0.052 0.154"
+    },
+    {
+      "id": "landmark-right-acetabular-rim",
+      "type": "landmark",
+      "label": "Acetabular rim (right)",
+      "description": "Bony margin of the hip socket surrounding the head of the femur.",
+      "position": "-0.086 0.863 0.018",
+      "normal": "-0.067 0.182 0.981"
+    },
+    {
+      "id": "landmark-right-ischial-tuberosity",
+      "type": "landmark",
+      "label": "Ischial tuberosity (right)",
+      "description": "Large inferior ischial prominence that bears weight when sitting.",
+      "position": "-0.042 0.810 -0.047",
+      "normal": "0.828 0.348 -0.439"
+    },
+    {
+      "id": "landmark-right-femoral-neck",
+      "type": "landmark",
+      "label": "Neck of femur (right)",
+      "description": "Narrowed region connecting the femoral head to the shaft and trochanters.",
+      "position": "-0.113 0.853 0.000",
+      "normal": "-0.499 0.771 0.396"
+    },
+    {
+      "id": "landmark-right-greater-trochanter",
+      "type": "landmark",
+      "label": "Greater trochanter of femur (right)",
+      "description": "Large lateral projection of the proximal femur and major muscle-attachment site.",
+      "position": "-0.131 0.846 -0.036",
+      "normal": "-0.414 0.157 -0.897"
+    },
+    {
+      "id": "landmark-right-lesser-trochanter",
+      "type": "landmark",
+      "label": "Lesser trochanter of femur (right)",
+      "description": "Posteromedial projection below the femoral neck.",
+      "position": "-0.095 0.830 -0.021",
+      "normal": "0.546 -0.105 -0.831"
+    },
+    {
+      "id": "insertion-right-gluteus-minimus",
+      "type": "insertion",
+      "label": "Anterior facet of greater trochanter",
+      "muscle": "Gluteus minimus",
+      "description": "Insertion on the anterior facet of the greater trochanter.",
+      "position": "-0.131 0.843 0.005",
+      "normal": "-0.258 0.298 0.919"
+    },
+    {
+      "id": "insertion-right-gluteus-medius",
+      "type": "insertion",
+      "label": "Lateral and superoposterior facets of greater trochanter",
+      "muscle": "Gluteus medius",
+      "description": "Insertion across the lateral and superoposterior facets of the greater trochanter.",
+      "position": "-0.129 0.847 -0.036",
+      "normal": "-0.317 0.141 -0.938"
+    },
+    {
+      "id": "insertion-right-iliopsoas",
+      "type": "insertion",
+      "label": "Lesser trochanter",
+      "muscle": "Iliopsoas",
+      "description": "Common iliacus and psoas major tendon insertion on the lesser trochanter.",
+      "position": "-0.095 0.830 -0.021",
+      "normal": "0.546 -0.105 -0.831"
+    },
+    {
+      "id": "insertion-right-gluteus-maximus",
+      "type": "insertion",
+      "label": "Gluteal tuberosity",
+      "muscle": "Gluteus maximus",
+      "description": "Deep-fiber insertion on the gluteal tuberosity of the posterior femur.",
+      "position": "-0.107 0.809 -0.032",
+      "normal": "0.639 0.121 -0.760"
+    },
+    {
+      "id": "landmark-right-medial-femoral-epicondyle",
+      "type": "landmark",
+      "label": "Medial epicondyle of femur (right)",
+      "description": "Medial distal femoral prominence superior to the medial condyle.",
+      "position": "-0.042 0.466 -0.047",
+      "normal": "0.249 0.941 -0.231"
+    },
+    {
+      "id": "landmark-right-lateral-femoral-epicondyle",
+      "type": "landmark",
+      "label": "Lateral epicondyle of femur (right)",
+      "description": "Lateral distal femoral prominence superior to the lateral condyle.",
+      "position": "-0.106 0.467 -0.052",
+      "normal": "-0.654 0.377 -0.656"
+    },
+    {
+      "id": "landmark-right-medial-femoral-condyle",
+      "type": "landmark",
+      "label": "Medial condyle of femur (right)",
+      "description": "Medial rounded articular surface of the distal femur.",
+      "position": "-0.051 0.446 -0.057",
+      "normal": "0.000 -0.396 -0.918"
+    },
+    {
+      "id": "landmark-right-lateral-femoral-condyle",
+      "type": "landmark",
+      "label": "Lateral condyle of femur (right)",
+      "description": "Lateral rounded articular surface of the distal femur.",
+      "position": "-0.095 0.446 -0.053",
+      "normal": "0.195 -0.565 -0.802"
+    },
+    {
+      "id": "landmark-right-patella-base",
+      "type": "landmark",
+      "label": "Base of patella (right)",
+      "description": "Broad superior border of the patella within the quadriceps tendon.",
+      "position": "-0.079 0.468 -0.001",
+      "normal": "0.212 0.094 0.973"
+    },
+    {
+      "id": "landmark-right-patella-apex",
+      "type": "landmark",
+      "label": "Apex of patella (right)",
+      "description": "Pointed inferior end of the patella that continues into the patellar ligament.",
+      "position": "-0.078 0.426 -0.006",
+      "normal": "-0.021 0.584 0.811"
+    },
+    {
+      "id": "landmark-right-lateral-tibial-condyle",
+      "type": "landmark",
+      "label": "Lateral condyle of tibia (right)",
+      "description": "Lateral part of the tibial plateau that articulates with the lateral femoral condyle.",
+      "position": "-0.105 0.418 -0.012",
+      "normal": "-0.611 0.107 0.784"
+    },
+    {
+      "id": "landmark-right-medial-tibial-condyle",
+      "type": "landmark",
+      "label": "Medial condyle of tibia (right)",
+      "description": "Medial part of the tibial plateau that articulates with the medial femoral condyle.",
+      "position": "-0.053 0.418 -0.015",
+      "normal": "0.493 -0.478 0.726"
+    },
+    {
+      "id": "landmark-right-tibial-tuberosity",
+      "type": "landmark",
+      "label": "Tibial tuberosity (right)",
+      "description": "Anterior proximal tibial prominence that receives the patellar ligament.",
+      "position": "-0.077 0.395 0.001",
+      "normal": "0.467 -0.077 0.881"
+    },
+    {
+      "id": "landmark-right-fibular-head",
+      "type": "landmark",
+      "label": "Head of fibula (right)",
+      "description": "Expanded proximal end of the fibula on the lateral side of the knee.",
+      "position": "-0.119 0.406 -0.031",
+      "normal": "-0.609 0.287 0.739"
+    },
+    {
+      "id": "insertion-right-quadriceps-femoris",
+      "type": "insertion",
+      "label": "Base of patella",
+      "muscle": "Quadriceps femoris",
+      "description": "Insertion of the quadriceps tendon on the superior patella.",
+      "position": "-0.079 0.467 -0.001",
+      "normal": "0.212 0.094 0.973"
+    },
+    {
+      "id": "insertion-right-pes-anserinus",
+      "type": "insertion",
+      "label": "Pes anserinus on anteromedial proximal tibia",
+      "muscle": "Sartorius, gracilis, and semitendinosus",
+      "description": "Shared insertion on the anteromedial proximal tibia, medial to the tibial tuberosity.",
+      "position": "-0.050 0.399 -0.027",
+      "normal": "0.843 -0.394 0.367"
+    },
+    {
+      "id": "insertion-right-semimembranosus",
+      "type": "insertion",
+      "label": "Posterior medial tibial condyle",
+      "muscle": "Semimembranosus",
+      "description": "Insertion on the posterior surface of the medial tibial condyle.",
+      "position": "-0.041 0.420 -0.046",
+      "normal": "0.558 -0.711 -0.428"
+    },
+    {
+      "id": "insertion-right-biceps-femoris",
+      "type": "insertion",
+      "label": "Head of fibula",
+      "muscle": "Biceps femoris",
+      "description": "Insertion on the posterolateral aspect of the fibular head.",
+      "position": "-0.111 0.410 -0.052",
+      "normal": "0.128 0.336 -0.933"
+    },
+    {
+      "id": "landmark-right-medial-malleolus",
+      "type": "landmark",
+      "label": "Medial malleolus of tibia (right)",
+      "description": "Distal medial projection of the tibia that forms the medial wall of the ankle mortise.",
+      "position": "-0.057 0.078 -0.032",
+      "normal": "-0.904 -0.429 -0.004"
+    },
+    {
+      "id": "landmark-right-lateral-malleolus",
+      "type": "landmark",
+      "label": "Lateral malleolus of fibula (right)",
+      "description": "Distal fibular projection that forms the lateral wall of the ankle mortise.",
+      "position": "-0.104 0.062 -0.044",
+      "normal": "-0.701 -0.401 0.590"
+    },
+    {
+      "id": "landmark-right-talar-trochlea",
+      "type": "landmark",
+      "label": "Trochlea (dome) of talus (right)",
+      "description": "Superior articular surface of the talus that fits within the tibiofibular ankle mortise.",
+      "position": "-0.081 0.071 0.005",
+      "normal": "-0.137 0.832 0.538"
+    },
+    {
+      "id": "landmark-right-talar-head",
+      "type": "landmark",
+      "label": "Head of talus (right)",
+      "description": "Rounded anterior part of the talus that articulates with the navicular.",
+      "position": "-0.076 0.060 0.031",
+      "normal": "0.100 0.222 0.970"
+    },
+    {
+      "id": "landmark-right-calcaneal-tuberosity",
+      "type": "landmark",
+      "label": "Calcaneal tuberosity (right)",
+      "description": "Large posterior-inferior prominence of the calcaneus that forms the heel.",
+      "position": "-0.064 0.035 -0.087",
+      "normal": "0.465 0.074 -0.882"
+    },
+    {
+      "id": "landmark-right-sustentaculum-tali",
+      "type": "landmark",
+      "label": "Sustentaculum tali (right)",
+      "description": "Medial shelf of the calcaneus that supports the talus.",
+      "position": "-0.106 0.042 -0.019",
+      "normal": "-0.751 -0.096 -0.653"
+    },
+    {
+      "id": "landmark-right-navicular-tuberosity",
+      "type": "landmark",
+      "label": "Navicular tuberosity (right)",
+      "description": "Medial prominence of the navicular and a key tendon-attachment landmark.",
+      "position": "-0.108 0.040 0.004",
+      "normal": "-0.316 -0.338 0.886"
+    },
+    {
+      "id": "landmark-right-fifth-metatarsal-tuberosity",
+      "type": "landmark",
+      "label": "Tuberosity of fifth metatarsal (right)",
+      "description": "Lateral prominence at the base of the fifth metatarsal.",
+      "position": "-0.108 0.046 0.020",
+      "normal": "-0.388 0.813 0.434"
+    },
+    {
+      "id": "insertion-right-triceps-surae",
+      "type": "insertion",
+      "label": "Posterior calcaneus via calcaneal tendon",
+      "muscle": "Gastrocnemius and soleus",
+      "description": "Shared insertion of gastrocnemius and soleus on the posterior calcaneus through the calcaneal (Achilles) tendon.",
+      "position": "-0.074 0.042 -0.091",
+      "normal": "0.519 -0.193 -0.833"
+    },
+    {
+      "id": "insertion-right-tibialis-posterior",
+      "type": "insertion",
+      "label": "Navicular tuberosity",
+      "muscle": "Tibialis posterior",
+      "description": "Primary insertion on the navicular tuberosity, with expansions to adjacent plantar tarsal structures.",
+      "position": "-0.107 0.040 0.004",
+      "normal": "-0.316 -0.338 0.886"
+    },
+    {
+      "id": "insertion-right-tibialis-anterior",
+      "type": "insertion",
+      "label": "Medial cuneiform and base of first metatarsal",
+      "muscle": "Tibialis anterior",
+      "description": "Insertion across the medial cuneiform and base of the first metatarsal.",
+      "position": "-0.104 0.040 0.031",
+      "normal": "-0.813 -0.523 -0.256"
+    },
+    {
+      "id": "insertion-right-fibularis-brevis",
+      "type": "insertion",
+      "label": "Tuberosity at base of fifth metatarsal",
+      "muscle": "Fibularis brevis",
+      "description": "Insertion on the lateral tuberosity at the base of the fifth metatarsal.",
+      "position": "-0.109 0.045 0.022",
+      "normal": "-0.254 0.846 0.468"
+    }
+  ]
+}
