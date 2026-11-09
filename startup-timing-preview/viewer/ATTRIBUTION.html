@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model Credits — Anatomy Viewer</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #14171a;
+    color: #e9e2d0;
+    font: 16px/1.6 system-ui, sans-serif;
+  }
+  main { width: min(760px, calc(100% - 36px)); margin: 0 auto; padding: 44px 0 64px; }
+  h1, h2 { line-height: 1.2; }
+  h1 { margin-top: 0; }
+  h2 { margin-top: 32px; color: #83cfda; }
+  a { color: #9bdce5; }
+  .back {
+    display: inline-block;
+    margin-bottom: 28px;
+    padding: 8px 12px;
+    border: 1px solid #4fa9b8;
+    border-radius: 3px;
+    text-decoration: none;
+  }
+  .notice {
+    padding: 14px 16px;
+    border-left: 3px solid #c9a227;
+    background: #20252a;
+  }
+  code { color: #e9e2d0; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="index.html?model=skeleton">&larr; Return to the anatomy viewer</a>
+  <h1>Model credits and educational-use notice</h1>
+
+  <p class="notice">
+    This viewer is an instructional anatomy resource. It is not a diagnostic,
+    surgical-planning, or patient-care tool, and it does not represent every
+    anatomical variation.
+  </p>
+
+  <h2>Anatomy model sources</h2>
+  <p>
+    The skeleton, skull, exploded-skull, skull-base, upper-limb, and lower-limb
+    files are browser-oriented adaptations of models from
+    <a href="https://z-anatomy.com/">Z-Anatomy</a>, the libre 3D atlas of
+    anatomy.
+  </p>
+  <ul>
+    <li><a href="https://z-anatomy.com/">Z-Anatomy project website</a></li>
+    <li><a href="https://github.com/Z-Anatomy/Models-of-human-anatomy">Z-Anatomy source models and attribution</a></li>
+  </ul>
+  <p>
+    Z-Anatomy code and content, including these adapted model files, is
+    distributed under the
+    <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International license</a>.
+    Preserve this attribution and the same license when redistributing the
+    model files or adaptations of them.
+  </p>
+
+  <blockquote>
+    Z-Anatomy — The libre 3D atlas of anatomy — CC BY-SA 4.0.
+  </blockquote>
+
+  <h2>Upstream anatomy data</h2>
+  <p>
+    Z-Anatomy identifies BodyParts3D as the original model base and requests
+    the following attribution:
+  </p>
+  <blockquote>
+    BodyParts3D — The Database Center for Life Science — CC BY-SA 2.1 Japan.
+  </blockquote>
+  <p>
+    See the <a href="https://github.com/Z-Anatomy/Models-of-human-anatomy/blob/master/Readme.md">Z-Anatomy license and attribution notice</a>
+    and the <a href="https://dbarchive.biosciencedbc.jp/en/bodyparts3d/lic.html">BodyParts3D license page</a>
+    for the source notices.
+  </p>
+
+  <h2>Changes made for this viewer</h2>
+  <p>
+    The Z-Anatomy source models were modified for web-based teaching in 2026.
+    Changes include
+    bilateral mirroring where source geometry supplied one side, applied
+    transforms and repaired normals, per-object materials for selection,
+    focused regional derivatives, an exploded-skull arrangement, Draco web
+    compression, camera presets, and instructor-reviewed teaching annotations.
+    The muscular-system review preview combines the source muscular collections
+    with the completed skeleton, omits organizational helper objects, applies
+    complete mirrored transforms, evaluates source modifiers, recalculates normals,
+    preserves source-assigned tendon regions, and assigns separate muscle, fascia,
+    tendon, sheath, and bursa colors. Source origin/insertion surface meshes are
+    shown as provisional selected-structure overlays. Anatomical alignment and
+    attachment relationships remain under review.
+  </p>
+
+  <h2>Viewer implementation</h2>
+  <p>The local nervous-system review derivative evaluates source meshes and
+    nerve curves, preserves their source placement and laterality, bakes them
+    into independently selectable surfaces, and adds optional skeletal context.
+    Display colors and tissue groups are teaching aids pending instructor review.
+    Labels, organizational helpers, and curves without source surfaces are omitted.
+    This derivative retains the Z-Anatomy CC BY-SA 4.0 license and the upstream
+    BodyParts3D attribution above.</p>
+  <p>The local body-regions review derivative uses the Z-Anatomy "Regions of
+    human body" skin surfaces without reshaping them. Source patches are grouped
+    under course regional terms, hair meshes and labels are omitted, and display
+    colors, reference planes and directional arrows are added teaching aids
+    pending instructor review. This derivative retains the Z-Anatomy CC BY-SA 4.0
+    license and the upstream BodyParts3D attribution above.</p>
+  <p>
+    Viewer interface and instructional configuration: Shawn Anthony Clavell,
+    DPT. The site uses Google's open-source
+    <a href="https://modelviewer.dev/">&lt;model-viewer&gt;</a> web component.
+  </p>
+</main>
+<p>The local Eyes review derivative selects 34 eye, tear-apparatus and optic-nerve surfaces from the saved Z-Anatomy nervous-system derivative. Source geometry is retained; display colors are identification aids. This derivative retains CC BY-SA 4.0 and the upstream BodyParts3D credits above. Anatomical review remains pending.</p>
+</body>
+</html>

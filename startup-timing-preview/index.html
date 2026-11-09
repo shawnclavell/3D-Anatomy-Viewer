@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Layered anatomy startup test</title>
+<style>
+body { font: 1rem/1.5 system-ui, sans-serif; margin: 1rem; max-width: 80rem; }
+button, input:not([type=checkbox]) { min-height: 44px; font: inherit; }
+label { display: block; margin-block: .5rem; }
+input:not([type=checkbox]), iframe, textarea { box-sizing: border-box; max-width: 100%; }
+iframe, textarea { width: 100%; }
+iframe { height: 640px; border: 1px solid #777; }
+textarea { height: 12rem; }
+#stop:not(:disabled) { position: fixed; z-index: 10; top: 8px; right: 8px; background: white; color: black; border: 2px solid black; }
+</style>
+</head>
+<body>
+<h1>Layered anatomy startup test</h1>
+<p>This test loads the same model twice and records where startup time goes. Keep this page visible until both loads finish. Your browser may reuse cached files. No results are uploaded.</p>
+<label>Device and browser <input id="device" placeholder="e.g. iPhone 17, Safari"></label>
+<label><input id="student-view" type="checkbox"> I opened this test in Canvas Student View</label>
+<button id="run" type="button">Measure two loads</button>
+<button id="stop" type="button" disabled>Stop</button>
+<p id="status" role="status">Ready.</p>
+<iframe id="target" title="Layered anatomy model under startup test"></iframe>
+<p><button id="download" type="button" disabled>Download results JSON</button></p>
+<details><summary>View results JSON</summary><textarea id="results" aria-label="Startup results" readonly></textarea></details>
+<script src="startup-runner.js"></script>
+</body>
+</html>
