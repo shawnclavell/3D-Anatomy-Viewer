@@ -1,0 +1,11 @@
+.skin-tools { margin-block-start: 14px; min-width: 0; }
+.skin-tools .btn { min-height: 44px; white-space: normal; overflow-wrap: anywhere; }
+.skin-tools p { line-height: 1.5; }
+.skin-guide-link { display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 100%; text-align: center; }
+#skinSurfaceToggle[aria-pressed="true"] { border-width: 2px; }
+#skinSurfaceToggle[aria-pressed="true"]::after { content: ' — On'; }
+#skinSurfaceToggle[aria-pressed="false"]::after { content: ' — Off'; }
+#skinSurfaceToggle[aria-pressed="mixed"]::after { content: ' — Some'; }
+#skinSurfaceToggle[aria-pressed="mixed"] { border-style: dashed; border-width: 2px; }
+#skinSurfaceStatus:empty { display: none; }
+@media (forced-colors: active) { .skin-tools .btn { border-color: ButtonText; } }

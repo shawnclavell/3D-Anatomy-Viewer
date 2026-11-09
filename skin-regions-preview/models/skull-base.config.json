@@ -1,0 +1,232 @@
+{
+  "label": "Base of Skull",
+  "alt": "Interactive inferior view of the external base of the skull and upper palate",
+  "glb": "assets/overview-skull-base.glb?v=1",
+  "defaultPreset": 0,
+  "annotationScope": "External skull base: central occipital and sphenoid openings, occipital condyles, hard palate, vomer, and reviewed bilateral temporal landmarks",
+  "annotationSources": [
+    {
+      "title": "OpenStax Anatomy and Physiology 2e — The Skull",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/7-2-the-skull"
+    },
+    {
+      "title": "NCBI Bookshelf — Foramen magnum anatomy",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK526041/"
+    },
+    {
+      "title": "NCBI Bookshelf — Styloid process anatomy",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK540975/"
+    },
+    {
+      "title": "NCBI Bookshelf — Jugular foramen anatomy",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK538507/"
+    }
+  ],
+
+  "cameraPresets": [
+    { "name": "Inferior", "orbit": "0deg 179deg 0.54m", "target": "0m 1.595m -0.005m" },
+    { "name": "Anterior Inferior", "orbit": "0deg 135deg 0.58m", "target": "0m 1.595m -0.005m" },
+    { "name": "Posterior Inferior", "orbit": "180deg 135deg 0.58m", "target": "0m 1.595m -0.005m" },
+    { "name": "Left Inferior Oblique", "orbit": "90deg 145deg 0.60m", "target": "0m 1.595m -0.005m" },
+    { "name": "Right Inferior Oblique", "orbit": "-90deg 145deg 0.60m", "target": "0m 1.595m -0.005m" },
+    { "name": "Inferior Detail", "orbit": "0deg 179deg 0.40m", "target": "0m 1.590m -0.005m" },
+    { "name": "Right Skull Base — Inferior Detail", "orbit": "0deg 179deg 0.30m", "target": "-0.035m 1.585m -0.005m" },
+    { "name": "Right Temporal — Inferior Oblique", "orbit": "-90deg 145deg 0.30m", "target": "-0.035m 1.585m -0.005m" },
+    { "name": "Left Temporal — Inferior Oblique", "orbit": "90deg 145deg 0.30m", "target": "0.035m 1.585m -0.005m" }
+  ],
+
+  "hotspots": [
+    {
+      "id": "landmark-foramen-magnum",
+      "type": "landmark",
+      "label": "Foramen magnum",
+      "description": "Large opening in the occipital bone that connects the cranial cavity with the vertebral canal.",
+      "position": "-0.013 1.552 -0.007",
+      "normal": "-0.114 -0.861 0.495"
+    },
+    {
+      "id": "landmark-right-occipital-condyle",
+      "type": "landmark",
+      "label": "Occipital condyle (right)",
+      "description": "Oval articular surface beside the foramen magnum that articulates with the atlas.",
+      "position": "-0.018 1.562 -0.007",
+      "normal": "-0.549 -0.043 0.835"
+    },
+    {
+      "id": "landmark-left-occipital-condyle",
+      "type": "landmark",
+      "label": "Occipital condyle (left)",
+      "description": "Oval articular surface beside the foramen magnum that articulates with the atlas.",
+      "position": "0.019 1.565 -0.009",
+      "normal": "0.313 -0.701 0.641"
+    },
+    {
+      "id": "landmark-right-foramen-ovale",
+      "type": "landmark",
+      "label": "Foramen ovale (right)",
+      "description": "Large oval opening in the greater wing of the sphenoid for the mandibular division of the trigeminal nerve.",
+      "position": "-0.026 1.579 0.014",
+      "normal": "0.522 -0.852 -0.030"
+    },
+    {
+      "id": "landmark-left-foramen-ovale",
+      "type": "landmark",
+      "label": "Foramen ovale (left)",
+      "description": "Large oval opening in the greater wing of the sphenoid for the mandibular division of the trigeminal nerve.",
+      "position": "0.025 1.579 0.013",
+      "normal": "-0.602 -0.770 -0.211"
+    },
+    {
+      "id": "landmark-right-foramen-spinosum",
+      "type": "landmark",
+      "label": "Foramen spinosum (right)",
+      "description": "Small opening posterolateral to the foramen ovale for the middle meningeal vessels.",
+      "position": "-0.029 1.575 0.010",
+      "normal": "0.191 -0.508 -0.840"
+    },
+    {
+      "id": "landmark-left-foramen-spinosum",
+      "type": "landmark",
+      "label": "Foramen spinosum (left)",
+      "description": "Small opening posterolateral to the foramen ovale for the middle meningeal vessels.",
+      "position": "0.029 1.575 0.010",
+      "normal": "-0.191 -0.508 -0.840"
+    },
+    {
+      "id": "landmark-palatine-process-maxilla",
+      "type": "landmark",
+      "label": "Palatine process of maxilla",
+      "description": "Anterior three-quarters of the hard palate, formed by the paired maxillae.",
+      "position": "-0.002 1.555 0.069",
+      "normal": "0.030 -0.987 -0.155"
+    },
+    {
+      "id": "landmark-horizontal-plate-palatine",
+      "type": "landmark",
+      "label": "Horizontal plate of palatine bone",
+      "description": "Posterior quarter of the hard palate, formed by the paired palatine bones.",
+      "position": "-0.002 1.556 0.051",
+      "normal": "0.143 -0.986 0.084"
+    },
+    {
+      "id": "landmark-vomer",
+      "type": "landmark",
+      "label": "Vomer",
+      "description": "Midline bone forming the posterior-inferior portion of the nasal septum.",
+      "position": "0.000 1.568 0.029",
+      "normal": "0.512 -0.741 -0.434"
+    },
+    {
+      "id": "landmark-right-mastoid-process",
+      "type": "landmark",
+      "label": "Mastoid process (right)",
+      "description": "Rounded inferior projection of the mastoid part of the temporal bone; a major neck-muscle attachment site.",
+      "position": "-0.049 1.567 -0.011",
+      "normal": "0.419 -0.802 0.426"
+    },
+    {
+      "id": "landmark-right-styloid-process",
+      "type": "landmark",
+      "label": "Styloid process (right)",
+      "description": "Slender inferior projection of the temporal bone that anchors styloid muscles and ligaments.",
+      "position": "-0.058 1.566 -0.013",
+      "normal": "-0.452 -0.443 0.775"
+    },
+    {
+      "id": "landmark-right-external-acoustic-meatus",
+      "type": "landmark",
+      "label": "External acoustic meatus (right)",
+      "description": "Lateral opening of the temporal bone that leads into the external auditory canal.",
+      "position": "-0.064 1.583 -0.023",
+      "normal": "-0.952 -0.254 0.170"
+    },
+    {
+      "id": "landmark-right-mandibular-fossa",
+      "type": "landmark",
+      "label": "Mandibular fossa (right)",
+      "description": "Oval depression anterior to the external acoustic meatus that receives the mandibular condyle at the temporomandibular joint.",
+      "position": "-0.061 1.605 0.014",
+      "normal": "-0.928 -0.157 0.338"
+    },
+    {
+      "id": "landmark-right-stylomastoid-foramen",
+      "type": "landmark",
+      "label": "Stylomastoid foramen (right)",
+      "description": "Small opening between the styloid and mastoid processes through which the facial nerve exits the skull.",
+      "position": "-0.055 1.569 -0.011",
+      "normal": "-0.636 -0.563 0.528"
+    },
+    {
+      "id": "landmark-right-carotid-canal-entrance",
+      "type": "landmark",
+      "label": "Carotid canal entrance (right)",
+      "description": "Inferior entrance anteromedial to the styloid process for passage of the internal carotid artery.",
+      "position": "-0.027 1.572 -0.005",
+      "normal": "-0.581 -0.742 -0.335"
+    },
+    {
+      "id": "landmark-right-jugular-foramen",
+      "type": "landmark",
+      "label": "Jugular foramen (right)",
+      "description": "Irregular opening between the temporal and occipital bones that transmits cranial nerves IX–XI and the internal jugular vein.",
+      "position": "-0.027 1.575 -0.014",
+      "normal": "-0.080 -0.795 0.601"
+    },
+    {
+      "id": "landmark-left-mastoid-process",
+      "type": "landmark",
+      "label": "Mastoid process (left)",
+      "description": "Rounded inferior projection of the mastoid part of the temporal bone; a major neck-muscle attachment site.",
+      "position": "0.049 1.567 -0.011",
+      "normal": "-0.419 -0.802 0.426"
+    },
+    {
+      "id": "landmark-left-styloid-process",
+      "type": "landmark",
+      "label": "Styloid process (left)",
+      "description": "Slender inferior projection of the temporal bone that anchors styloid muscles and ligaments.",
+      "position": "0.058 1.566 -0.013",
+      "normal": "0.452 -0.443 0.775"
+    },
+    {
+      "id": "landmark-left-external-acoustic-meatus",
+      "type": "landmark",
+      "label": "External acoustic meatus (left)",
+      "description": "Lateral opening of the temporal bone that leads into the external auditory canal.",
+      "position": "0.064 1.583 -0.023",
+      "normal": "0.952 -0.254 0.170"
+    },
+    {
+      "id": "landmark-left-mandibular-fossa",
+      "type": "landmark",
+      "label": "Mandibular fossa (left)",
+      "description": "Oval depression anterior to the external acoustic meatus that receives the mandibular condyle at the temporomandibular joint.",
+      "position": "0.061 1.605 0.014",
+      "normal": "0.928 -0.157 0.338"
+    },
+    {
+      "id": "landmark-left-stylomastoid-foramen",
+      "type": "landmark",
+      "label": "Stylomastoid foramen (left)",
+      "description": "Small opening between the styloid and mastoid processes through which the facial nerve exits the skull.",
+      "position": "0.055 1.569 -0.011",
+      "normal": "0.636 -0.563 0.528"
+    },
+    {
+      "id": "landmark-left-carotid-canal-entrance",
+      "type": "landmark",
+      "label": "Carotid canal entrance (left)",
+      "description": "Inferior entrance anteromedial to the styloid process for passage of the internal carotid artery.",
+      "position": "0.027 1.572 -0.005",
+      "normal": "0.581 -0.742 -0.335"
+    },
+    {
+      "id": "landmark-left-jugular-foramen",
+      "type": "landmark",
+      "label": "Jugular foramen (left)",
+      "description": "Irregular opening between the temporal and occipital bones that transmits cranial nerves IX–XI and the internal jugular vein.",
+      "position": "0.027 1.575 -0.014",
+      "normal": "0.080 -0.795 0.601"
+    }
+  ]
+}

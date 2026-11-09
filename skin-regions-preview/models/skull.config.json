@@ -1,0 +1,13 @@
+{
+  "label": "Colored Skull",
+  "glb": "assets/overview-colored-skull.glb",
+
+  "cameraPresets": [
+    { "name": "Anterior", "orbit": "0deg 90deg 0.68m", "target": "0m 1.60m 0m" },
+    { "name": "Posterior", "orbit": "180deg 90deg 0.68m", "target": "0m 1.60m 0m" },
+    { "name": "Left Lateral", "orbit": "90deg 90deg 0.75m", "target": "0m 1.60m 0m" },
+    { "name": "Right Lateral", "orbit": "-90deg 90deg 0.75m", "target": "0m 1.60m 0m" }
+  ],
+
+  "hotspots": []
+}
