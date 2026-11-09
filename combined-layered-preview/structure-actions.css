@@ -1,0 +1,6 @@
+.structure-action-menu { position: fixed; z-index: 10000; box-sizing: border-box; width: min(280px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow-y: auto; padding: 8px; background: #1b1f23; color: #e9e2d0; border: 2px solid #7d8992; border-radius: 6px; box-shadow: 0 4px 20px #0008; }
+.structure-action-menu[hidden] { display: none; }
+.structure-action-menu p { margin: 4px 6px 8px; overflow-wrap: anywhere; }
+.structure-action-menu button { display: block; width: 100%; min-height: 44px; margin-block: 4px; text-align: left; padding: 10px; background: #1b1f23; color: #e9e2d0; border: 1px solid #7d8992; font: inherit; }
+.structure-actions-button { min-height: 44px; margin-block: 8px; }
+@media (forced-colors: active) { .structure-action-menu, .structure-action-menu button { background: Canvas; color: CanvasText; border-color: ButtonText; } }
