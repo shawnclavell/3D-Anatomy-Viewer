@@ -19,20 +19,10 @@
   #layerButtons .layered-group button[aria-pressed="true"] { border: 3px solid Highlight; }
 }
 
-.layer-study-views {
-  min-inline-size: 0;
-  margin: 0 0 1rem;
-  padding: .6rem;
-  border: 1px solid #7d8992;
-}
-.layer-study-views legend { font-weight: 600; }
-.layer-study-views .empty-note { margin: 0 0 .6rem; }
-.layer-study-views button { min-height: 44px; }
-
-.layer-depth { min-inline-size: 0; margin: 0 0 1rem; padding: .6rem; border: 1px solid #7d8992; }
+.layer-depth { min-inline-size: 0; margin: 0 0 .75rem; padding: 0; border: 0; }
 .layer-depth legend { font-weight: 600; }
-.layer-depth p { font-size: .85rem; line-height: 1.5; }
-.layer-depth label, .layer-depth output { display: block; margin-block: .5rem; }
+
+.layer-depth output { display: block; margin-block: .25rem; font-size: .85rem; }
 .layer-depth input, .layer-depth select { box-sizing: border-box; width: 100%; min-height: 44px; }
 .layer-depth input { accent-color: #49c5d6; }
 .layer-depth select { background: #20282d; color: #f1f4f5; padding: .5rem; }

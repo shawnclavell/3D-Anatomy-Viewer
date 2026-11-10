@@ -297,7 +297,6 @@
         document.getElementById("layerButtons").appendChild(button);
       });
       if (cfg.layerStudyViews) {
-        buildLayerStudyViews(cfg);
         buildLayerDepth();
       }
     }
@@ -329,50 +328,6 @@
     if (selectedName) selectByName(selectedName, { scrollIntoView: false, refresh: true });
     filterStructureList();
     visibilityChanged(message);
-  }
-
-  function buildLayerStudyViews(cfg) {
-    var layerButtons = document.getElementById("layerButtons");
-    var fieldset = document.createElement("fieldset");
-    fieldset.className = "layer-study-views";
-    var legend = document.createElement("legend");
-    legend.textContent = "Layer study views";
-    var help = document.createElement("p");
-    help.className = "empty-note";
-    help.textContent = "Choose a view to set several layers at once. Use the individual switches below to customize it.";
-    var choices = document.createElement("div");
-    choices.className = "layered-group__buttons";
-    fieldset.append(legend, help, choices);
-    layerButtons.before(fieldset);
-
-    cfg.layerStudyViews.forEach(function (studyView) {
-      var button = document.createElement("button");
-      button.type = "button";
-      button.className = "annotation-filter";
-      button.textContent = studyView.label;
-
-      function updateState() {
-        var matches = cfg.structureGroups.every(function (group) {
-          return layerVisibility[group.id] === studyView.layers.includes(group.id);
-        });
-        button.disabled = !materialStates.length;
-        button.setAttribute("aria-pressed", String(matches));
-        button.classList.toggle("is-active", matches);
-      }
-
-      button.addEventListener("click", function () {
-        if (!materialStates.length || markupModeOn) return;
-        clearLayerDepth();
-        cfg.structureGroups.forEach(function (group) {
-          layerVisibility[group.id] = studyView.layers.includes(group.id);
-        });
-        layerButtons.querySelectorAll("[data-layer]").forEach(syncLayerButton);
-        applyLayerChange("Layer study view applied. " + studyView.label + ".", true);
-      });
-      choices.appendChild(button);
-      document.addEventListener("anatomy-visibility", updateState);
-      updateState();
-    });
   }
 
   var depthStages = ["Skin", "Fascia and connective tissue", "Bursae", "Tendon sheaths", "Muscles", "Tendons", "Skeleton with origins and insertions", "Nerves with skeleton"];
@@ -409,7 +364,7 @@
       depthControls.select.value = String(Math.floor(layerDepth));
     } else depthControls.select.value = "";
     var description = layerDepth === null ? "Custom layers. Move the slider to apply a depth stage." : depthDescription(layerDepth);
-    depthControls.output.textContent = description;
+    depthControls.output.textContent = layerDepth === null ? "Custom" : depthStages[Math.floor(layerDepth)];
     depthControls.range.setAttribute("aria-valuetext", description);
   }
 
@@ -437,14 +392,14 @@
   function buildLayerDepth() {
     var field = document.createElement("fieldset");
     field.className = "layer-depth";
-    field.innerHTML = '<legend>Layer depth</legend>' +
-      '<p id="layerDepthHelp">Drag toward deeper anatomy to fade one tissue group at a time. Use the arrow keys or step buttons. These are tissue groups; muscle depth varies by region. Individual layer switches create a custom view. Removed structures stay removed.</p>' +
-      '<label for="layerDepth">Surface to deeper anatomy</label>' +
-      '<input id="layerDepth" type="range" min="0" max="700" step="1" value="0" aria-describedby="layerDepthHelp layerDepthStatus">' +
+    var help = "Slide to fade skin, fascia and connective tissue, bursae, tendon sheaths, muscles, and tendons. The skeleton shows linked origins in red and insertions in blue; placement review is pending. Unmatched surfaces stay hidden. Arrow keys adjust depth. Individual switches customize the layers. Removed structures stay removed.";
+    field.innerHTML = '<legend title="' + help + '">Layer depth</legend>' +
+      '<p id="layerDepthHelp" class="visually-hidden">' + help + '</p>' +
+      '<label for="layerDepth" class="visually-hidden">Surface to deeper anatomy</label>' +
       '<output id="layerDepthStatus" for="layerDepth"></output>' +
+      '<input id="layerDepth" title="' + help + '" type="range" min="0" max="700" step="1" value="0" aria-describedby="layerDepthHelp">' +
       '<div class="layer-depth-steps"><button type="button" id="layerDepthBack">Shallower</button><button type="button" id="layerDepthNext">Deeper</button></div>' +
-      '<label for="layerDepthStage">Go to a stage</label><select id="layerDepthStage"><option value="" disabled>Custom layers</option></select>' +
-      '<p>At the skeleton stage, linked origin surfaces are red and insertion surfaces are blue. Placement review is pending. Unmatched surfaces remain hidden.</p>';
+      '<label for="layerDepthStage" class="visually-hidden">Go to stage</label><select id="layerDepthStage"><option value="" disabled>Go to stage</option></select>';
     document.getElementById("layerButtons").before(field);
     depthControls = {
       range:field.querySelector("input"), output:field.querySelector("output"),
