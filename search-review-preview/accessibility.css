@@ -1,0 +1,96 @@
+/* Interface remediation toward WCAG 2.2 AA. See ACCESSIBILITY-REVIEW.md. */
+#presetList[hidden] { display: none; }
+.view-picker-panel { margin-block: 12px; min-width: 0; }
+.view-picker-panel label { display: block; margin-bottom: 6px; }
+.view-picker-panel select { display: block; width: 100%; min-width: 0; min-height: 44px; margin-bottom: 8px; padding: 8px; background: #1b1f23; color: #e9e2d0; border: 1px solid #7d8992; font: inherit; }
+.view-picker-panel button { min-height: 44px; padding: 8px 12px; border: 1px solid #7d8992; border-radius: 3px; background: #1b1f23; color: #e9e2d0; font: inherit; }
+@media (forced-colors: active) { .view-picker-panel select, .view-picker-panel button { background: ButtonFace; color: ButtonText; border-color: ButtonText; } .view-picker-panel button:disabled { color: GrayText; } }
+button, input, select, summary { min-height: 36px; }
+button, input, select, textarea, summary { scroll-margin: 12px; }
+input, select, textarea { border-color: #7d8992; }
+.annotation-filter:not(.is-active) { opacity: 1; }
+.btn { transition: none; }
+.btn--accent.btn--active:hover { background: var(--accent); }
+:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+.bone-list { padding: 5px; }
+.bone-btn[aria-pressed="true"]::before { content: "Selected: "; }
+.hotspot { font: inherit; text-align: left; color: inherit; background: transparent; border: 0; padding: 7px; min-width: 24px; min-height: 24px; }
+.hotspot:focus-visible .hotspot__label { opacity: 1; }
+.hotspot.is-crowded { visibility: hidden; }
+.hotspot__label { pointer-events: none; background: #14171a; }
+.hotspot:hover .hotspot__label, .hotspot:focus-visible .hotspot__label, .hotspot.is-focused .hotspot__label { pointer-events: auto; }
+.hotspot.is-label-dismissed .hotspot__label { opacity: 0; pointer-events: none; }
+.stage__fullscreen-btn, .stage__markup-btn { background: #1b1f23; }
+.stage__hint { background: #14171a; }
+.stage__hint.is-hidden { visibility: hidden; }
+.author-banner { background: #14171a; }
+.dissection-panel { margin-block: 16px; padding-block: 12px; border-top: 1px solid #7d8992; }
+.dissection-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.dissection-panel button { min-height: 44px; max-width: 100%; padding: 8px; border: 1px solid #7d8992; border-radius: 3px; background: #1b1f23; color: #e9e2d0; font: inherit; overflow-wrap: anywhere; }
+.dissection-panel button:disabled { color: #a5afb6; cursor: not-allowed; }
+.dissection-panel ul { padding-left: 20px; }
+.dissection-panel li { margin-block: 8px; }
+.dissection-panel h3, .bone-btn, .study-dialog h2, .study-dialog h3, .study-dialog h4 { overflow-wrap: anywhere; }
+.annotation-filters { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.annotation-filter { min-width: 0; overflow-wrap: anywhere; }
+#loadingOverlay.is-hidden { visibility: hidden; }
+.hotspot-btn__description { display: block; color: var(--ink); font-size: 0.875rem; line-height: 1.5; text-transform: none; letter-spacing: normal; }
+.access-controls { position: absolute; top: 12px; left: 12px; z-index: 41; display: flex; flex-direction: column; gap: 8px; max-width: min(290px, calc(100% - 24px)); }
+.access-controls[hidden] { display: none; }
+.access-controls button, .access-controls summary, .study-dialog button { padding: 8px 12px; background: var(--panel); border: 1px solid #7d8992; border-radius: 4px; color: var(--ink); font: inherit; font-size: 0.875rem; cursor: pointer; }
+.access-controls summary { list-style-position: inside; }
+.camera-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 8px; background: var(--panel); max-height: 45vh; overflow: auto; }
+.camera-controls button:disabled { opacity: 0.5; }
+.study-dialog { width: min(850px, calc(100% - 24px)); max-width: calc(100% - 24px); max-height: calc(100dvh - 24px); box-sizing: border-box; overflow: auto; padding: 24px; background: var(--panel); color: var(--ink); border: 2px solid #7d8992; border-radius: 6px; line-height: 1.6; }
+.study-dialog::backdrop { background: rgba(0, 0, 0, 0.75); }
+.study-dialog h2 { font-size: 1.5rem; }
+.study-dialog h3 { font-size: 1.25rem; }
+.study-dialog h4 { font-size: 1.125rem; }
+.study-dialog label { display: block; font-weight: 600; }
+.study-dialog input { width: 100%; padding: 10px; background: var(--bg); color: var(--ink); border: 1px solid #7d8992; font: inherit; }
+.study-dialog li { margin-block: 8px; }
+.study-dialog button[aria-pressed="true"]::before { content: "Selected: "; }
+.study-dialog article { border-top: 1px solid #7d8992; }
+.study-dialog a { color: #9ed9f5; text-decoration: underline; overflow-wrap: anywhere; }
+.study-dialog p, .study-dialog li, .study-dialog button, .hotspot-btn { overflow-wrap: anywhere; }
+.markup-tool { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
+.markup-field, .author-field { min-width: 0; }
+#closeStudyBtn { position: sticky; top: 0; z-index: 1; }
+.author-panel { max-height: calc(100% - 100px); overflow-y: auto; }
+.author-panel > * { flex-shrink: 0; }
+.author-form, .author-actions { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.author-field input, .author-field select, .author-field textarea { min-width: 0; }
+.author-coordinate-fields { margin-block: 12px; border: 1px solid #7d8992; padding: 10px; }
+.author-coordinate-fields input { width: 100%; font: inherit; }
+.study-dialog button:disabled { color: var(--ink-dim); }
+.markup-position { flex: 1 1 120px; }
+.markup-position input { width: 100%; padding: 6px; }
+.markup-labels { margin-top: 8px; font-size: 0.875rem; }
+.markup-labels ul { max-height: 120px; overflow-y: auto; }
+.markup-toolbar { max-height: calc(100% - 86px); overflow: auto; background: #14171a; }
+.stage.is-markup .stage__fullscreen-btn { z-index: 42; }
+@media (max-width: 760px) {
+  body { overflow: auto; }
+  .app { height: auto; min-height: 100dvh; width: 100%; }
+  .sidebar { max-height: none; overflow: visible; }
+  .sidebar__footer { position: static; }
+  .stage { flex: none; height: 70dvh; min-height: 420px; }
+  .access-controls { top: 62px; }
+  .stage:fullscreen .access-controls, .stage:-webkit-full-screen .access-controls { top: 62px; }
+  .study-dialog { padding: 16px; }
+  .author-form, .author-actions { grid-template-columns: minmax(0, 1fr); }
+  .bone-list { max-height: none; overflow: visible; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+@media (forced-colors: active) {
+  .dissection-panel button { background: ButtonFace; color: ButtonText; border-color: ButtonText; }
+  .dissection-panel button:disabled { color: GrayText; }
+  .study-dialog, .markup-toolbar, .author-panel, .author-banner, .camera-controls, .hotspot__label { background: Canvas; color: CanvasText; }
+  button, input, select, textarea, summary, .study-dialog { border: 1px solid ButtonText; }
+  .hotspot__pin { background: ButtonText; border: 2px solid Canvas; outline: 1px solid ButtonText; box-shadow: none; }
+  .hotspot__label { border-color: CanvasText; }
+  .study-dialog a { color: LinkText; }
+  .camera-controls button:disabled, .markup-tool:disabled { opacity: 1; color: GrayText; border-color: GrayText; }
+  :focus-visible { outline-color: Highlight; }
+  .bone-btn[aria-pressed="true"], button[aria-pressed="true"] { border: 3px solid Highlight; }
+}

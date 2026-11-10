@@ -1,0 +1,94 @@
+/* On narrow screens the model comes first, with controls in the page flow. */
+.mobile-structure-link, .mobile-model-link { display: none; }
+.stage__viewport { display: contents; }
+.stage__fullscreen-btn[hidden] { display: none; }
+
+@media (max-width: 760px), (max-width: 1024px) and (any-pointer: coarse) {
+  body { overflow: auto; }
+  .app { flex-direction: column; height: auto; min-height: 100dvh; width: 100%; }
+  .sidebar { width: 100%; max-height: none; overflow: visible; border-right: 0; }
+  .sidebar__footer { position: static; }
+  .stage--compact:is(:fullscreen, :-webkit-full-screen) .access-controls { top: 62px; }
+  .stage.stage--compact:not(:is(:fullscreen, :-webkit-full-screen)) {
+    height: auto;
+    min-height: 0;
+    min-width: 0;
+  }
+  .stage--compact:not(:is(:fullscreen, :-webkit-full-screen)) .stage__viewport {
+    display: block;
+    position: relative;
+    height: clamp(285px, 53svh, 560px);
+  }
+  .stage--compact:not(:is(:fullscreen, :-webkit-full-screen)).is-markup .stage__viewport {
+    height: max(420px, 74svh);
+  }
+  .stage--compact:not(.is-markup) .stage__markup-btn {
+    display: inline-flex;
+    align-items: center;
+    left: 12px;
+    right: auto;
+  }
+  .stage--compact .stage__fullscreen-btn,
+  .stage--compact .stage__markup-btn { min-height: 44px; }
+  .stage--compact:not(:is(:fullscreen, :-webkit-full-screen)) .access-controls:not([hidden]) {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 8px;
+    max-width: none;
+    padding: 12px;
+    background: var(--panel);
+    border-block: 1px solid #7d8992;
+  }
+  .stage--compact .access-controls #cameraControls[open] { grid-column: 1 / -1; }
+  .stage--compact .access-controls :is(button, summary, a) {
+    min-height: 44px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .stage--compact:not(:is(:fullscreen, :-webkit-full-screen)) .camera-controls {
+    max-height: none;
+    overflow: visible;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stage--compact:not(:is(:fullscreen, :-webkit-full-screen)) .mobile-structure-link {
+    display: grid;
+    place-items: center;
+    padding: 8px 12px;
+    background: var(--panel);
+    border: 1px solid #7d8992;
+    border-radius: 4px;
+    color: var(--ink);
+    font-size: 0.875rem;
+    text-align: center;
+  }
+  .stage--compact:not(:is(:fullscreen, :-webkit-full-screen)) .stage__hint {
+    position: static;
+    transform: none;
+    max-width: none;
+    margin: 0;
+    text-align: center;
+  }
+  .stage--compact .stage__hint.is-hidden { display: none; }
+  .stage--compact:not(:is(:fullscreen, :-webkit-full-screen)) .viewer-history-controls,
+  .stage--compact .mobile-structure-link { grid-column: 1 / -1; }
+  .stage--compact .viewer-history-controls > button { flex: 1 1 112px; }
+  .mobile-model-link {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 44px;
+    margin-block-start: 8px;
+    color: var(--accent);
+  }
+  .sidebar__header { padding-block: 14px; }
+  .sidebar__eyebrow { display: none; }
+  .specimen-picker { margin-top: 8px; font-size: 0.75rem; }
+  .sidebar :is(button:not(.hotspot), input, select, summary, .btn--link) { min-height: 44px; }
+  .sidebar :is(input, select) { font-size: 1rem; }
+  .sidebar .selection__actions > button { min-width: 0; overflow-wrap: anywhere; }
+}
+@media (forced-colors: active) {
+  .mobile-structure-link { color: LinkText !important; border-color: ButtonText !important; }
+}
