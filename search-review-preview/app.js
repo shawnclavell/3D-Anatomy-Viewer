@@ -122,6 +122,9 @@
 
   var config         = null;
   var layerVisibility = {};
+  var layerDepth = null;
+  var depthControls = null;
+  var depthBefore = null;
   var meshVisibility = null;
   var defaultOrbit   = null;
   var defaultTarget  = null;
@@ -286,13 +289,17 @@
         button.setAttribute("aria-pressed", String(layerVisibility[group.id]));
         button.classList.toggle("is-active", layerVisibility[group.id]);
         button.addEventListener("click", function () {
+          clearLayerDepth();
           layerVisibility[group.id] = !layerVisibility[group.id];
           syncLayerButton(button);
           applyLayerChange();
         });
         document.getElementById("layerButtons").appendChild(button);
       });
-      if (cfg.layerStudyViews) buildLayerStudyViews(cfg);
+      if (cfg.layerStudyViews) {
+        buildLayerStudyViews(cfg);
+        buildLayerDepth();
+      }
     }
 
     viewer.addEventListener("load", onModelLoaded, { once: true });
@@ -355,6 +362,7 @@
 
       button.addEventListener("click", function () {
         if (!materialStates.length || markupModeOn) return;
+        clearLayerDepth();
         cfg.structureGroups.forEach(function (group) {
           layerVisibility[group.id] = studyView.layers.includes(group.id);
         });
@@ -365,6 +373,109 @@
       document.addEventListener("anatomy-visibility", updateState);
       updateState();
     });
+  }
+
+  var depthStages = ["Skin", "Fascia and connective tissue", "Bursae", "Tendon sheaths", "Muscles", "Tendons", "Skeleton with origins and insertions", "Nerves with skeleton"];
+
+  function depthOpacity(group, depth) {
+    var outer = ["skin", "fascia", "bursae", "sheaths", "muscles", "tendons"].indexOf(group);
+    if (outer !== -1) return Math.max(0, Math.min(1, outer + 1 - depth));
+    if (isAttachmentGroup(group)) return Math.max(0, Math.min(1, depth - 5));
+    if (["central", "peripheral", "meninges", "senses"].indexOf(group) !== -1) return Math.max(0, Math.min(1, depth - 6));
+    return 1;
+  }
+
+  function clearLayerDepth() {
+    layerDepth = null;
+    depthBefore = null;
+    updateLayerDepthControls();
+  }
+
+  function depthDescription(depth) {
+    var stage = Math.floor(depth);
+    return depth === stage ? depthStages[stage]
+      : "Removing " + depthStages[stage] + "; approaching " + depthStages[stage + 1];
+  }
+
+  function updateLayerDepthControls() {
+    if (!depthControls) return;
+    var disabled = !materialStates.length || markupModeOn;
+    depthControls.range.disabled = disabled;
+    depthControls.select.disabled = disabled;
+    depthControls.back.disabled = disabled || layerDepth === 0;
+    depthControls.next.disabled = disabled || layerDepth === 7;
+    if (layerDepth !== null) {
+      depthControls.range.value = String(Math.round(layerDepth * 100));
+      depthControls.select.value = String(Math.floor(layerDepth));
+    } else depthControls.select.value = "";
+    var description = layerDepth === null ? "Custom layers. Move the slider to apply a depth stage." : depthDescription(layerDepth);
+    depthControls.output.textContent = description;
+    depthControls.range.setAttribute("aria-valuetext", description);
+  }
+
+  function applyLayerDepth(value) {
+    if (!materialStates.length || markupModeOn) return;
+    layerDepth = Math.max(0, Math.min(7, value));
+    config.structureGroups.forEach(function (group) {
+      layerVisibility[group.id] = depthOpacity(group.id, layerDepth) > 0;
+    });
+    document.querySelectorAll('#layerButtons [data-layer]').forEach(syncLayerButton);
+    applyLayerChange("", true);
+    updateLayerDepthControls();
+  }
+
+  function commitLayerDepth() {
+    if (depthBefore && JSON.stringify(depthBefore) !== JSON.stringify(viewerSnapshot())) {
+      viewerUndoStack.push({state:depthBefore,label:"layer depth"});
+      if (viewerUndoStack.length > 40) viewerUndoStack.shift();
+      updateUndoButtons();
+    }
+    depthBefore = null;
+    if (layerDepth !== null) visibilityChanged("Layer depth: " + depthDescription(layerDepth) + ". Removed structures stay removed.");
+  }
+
+  function buildLayerDepth() {
+    var field = document.createElement("fieldset");
+    field.className = "layer-depth";
+    field.innerHTML = '<legend>Layer depth</legend>' +
+      '<p id="layerDepthHelp">Drag toward deeper anatomy to fade one tissue group at a time. Use the arrow keys or step buttons. These are tissue groups; muscle depth varies by region. Individual layer switches create a custom view. Removed structures stay removed.</p>' +
+      '<label for="layerDepth">Surface to deeper anatomy</label>' +
+      '<input id="layerDepth" type="range" min="0" max="700" step="1" value="0" aria-describedby="layerDepthHelp layerDepthStatus">' +
+      '<output id="layerDepthStatus" for="layerDepth"></output>' +
+      '<div class="layer-depth-steps"><button type="button" id="layerDepthBack">Shallower</button><button type="button" id="layerDepthNext">Deeper</button></div>' +
+      '<label for="layerDepthStage">Go to a stage</label><select id="layerDepthStage"><option value="" disabled>Custom layers</option></select>' +
+      '<p>At the skeleton stage, linked origin surfaces are red and insertion surfaces are blue. Placement review is pending. Unmatched surfaces remain hidden.</p>';
+    document.getElementById("layerButtons").before(field);
+    depthControls = {
+      range:field.querySelector("input"), output:field.querySelector("output"),
+      select:field.querySelector("select"), back:field.querySelector("#layerDepthBack"), next:field.querySelector("#layerDepthNext")
+    };
+    depthStages.forEach(function (label, index) {
+      var option = document.createElement("option");
+      option.value = String(index); option.textContent = label; depthControls.select.appendChild(option);
+    });
+    depthControls.range.addEventListener("input", function () {
+      if (!depthBefore) depthBefore = viewerSnapshot();
+      applyLayerDepth(Number(depthControls.range.value) / 100);
+    });
+    depthControls.range.addEventListener("change", commitLayerDepth);
+    depthControls.select.addEventListener("change", function () {
+      depthBefore = viewerSnapshot();
+      applyLayerDepth(Number(depthControls.select.value));
+      commitLayerDepth();
+    });
+    depthControls.back.addEventListener("click", function () {
+      applyLayerDepth(layerDepth === null ? 0 : Math.max(0, Math.ceil(layerDepth) - 1));
+      if (layerDepth !== null) visibilityChanged("Layer depth: " + depthDescription(layerDepth) + ".");
+    });
+    depthControls.next.addEventListener("click", function () {
+      applyLayerDepth(layerDepth === null ? 0 : Math.min(7, Math.floor(layerDepth) + 1));
+      if (layerDepth !== null) visibilityChanged("Layer depth: " + depthDescription(layerDepth) + ".");
+    });
+    document.addEventListener("anatomy-visibility", updateLayerDepthControls);
+    document.addEventListener("anatomy-markup", updateLayerDepthControls);
+    viewer.addEventListener("load", updateLayerDepthControls);
+    updateLayerDepthControls();
   }
 
   function onModelLoaded() {
@@ -1042,14 +1153,15 @@
     var groups = config && config.structureGroups || [];
     var id = structureGroupId(state);
     var group = groups.find(function (item) { return item.id === id; });
-    return group && typeof group.opacity === "number" ? group.opacity : 1;
+    var opacity = group && typeof group.opacity === "number" ? group.opacity : 1;
+    return opacity * (layerDepth === null ? 1 : depthOpacity(id, layerDepth));
   }
 
   function restoreMaterial(state) {
     var groupId = structureGroupId(state);
     if (isAttachmentGroup(groupId) && isStructureVisible(state)) {
       setEmissive(state, ATTACHMENT_EMISSIVE);
-      applyLook(state, groupId === "origin" ? ORIGIN_COLOR : INSERTION_COLOR, 1);
+      applyLook(state, groupId === "origin" ? ORIGIN_COLOR : INSERTION_COLOR, layerOpacity(state));
       return;
     }
     setEmissive(state, state.emissive);
@@ -1080,7 +1192,10 @@
     if (!state || !config || !config.structureMembership) return true;
     var groupId = structureGroupId(state);
     if (isAttachmentGroup(groupId)) {
-      return layerVisibility[groupId] !== false && selectedAttachments(groupId).indexOf(state.name) !== -1;
+      var linked = layerDepth !== null && layerDepth > 5
+        ? config.attachmentOwners && config.attachmentOwners[state.name] && config.attachmentOwners[state.name].length
+        : selectedAttachments(groupId).indexOf(state.name) !== -1;
+      return layerVisibility[groupId] !== false && !!linked;
     }
     return layerVisibility[groupId] !== false;
   }
@@ -1448,6 +1563,7 @@
     var group = structureGroupId(state);
     var revealed = layerVisibility[group] === false;
     if (revealed) {
+      clearLayerDepth();
       layerVisibility[group] = true;
       var layerButton = document.querySelector('#layerButtons [data-layer="' + cssEscape(group) + '"]');
       if (layerButton) syncLayerButton(layerButton);
@@ -2118,7 +2234,7 @@
     var orbit = viewer.getCameraOrbit();
     var target = viewer.getCameraTarget();
     return {selected:Array.from(selectedNames),primary:selectedName,hidden:Array.from(hiddenStructures),
-      hideHistory:hideHistory.slice(),layers:Object.assign({},layerVisibility),mode:viewMode,
+      hideHistory:hideHistory.slice(),layers:Object.assign({},layerVisibility),depth:layerDepth,mode:viewMode,
       orbit:orbit.theta + "rad " + orbit.phi + "rad " + orbit.radius + "m",target:target.x + "m " + target.y + "m " + target.z + "m",
       preset:Array.from(presetList.querySelectorAll('.preset-btn')).findIndex(function (b) { return b.classList.contains('is-active'); })};
   }
@@ -2166,6 +2282,7 @@
         if (studySearch) { studySearch.value = s.filters.study; studySearch.dispatchEvent(new Event('input',{bubbles:true})); }
       }
       hiddenStructures = new Set(s.hidden); hideHistory = s.hideHistory.slice();
+      layerDepth = s.depth === undefined ? null : s.depth;
       layerVisibility = Object.assign({},s.layers);
       document.querySelectorAll('#layerButtons [data-layer]').forEach(function (b) {
         var on = layerVisibility[b.dataset.layer] !== false;
@@ -2175,6 +2292,7 @@
       if (selectedName) selectByName(selectedName,{refresh:true,scrollIntoView:false});
       else clearSelection();
       if (s.mode === 'all') restoreView();
+      updateLayerDepthControls();
       showAllBtn.disabled = !selectedName && !hiddenStructures.size;
       if (s.orbit === null) viewer.removeAttribute('camera-orbit');
       if (s.target === null) viewer.removeAttribute('camera-target');
@@ -2228,10 +2346,9 @@
     var studySearch = document.getElementById('studySearch');
     if (undoBefore) {
       undoBefore.filters = {search:boneSearch.value,informationOnly:document.getElementById('muscleInformationOnly').checked,study:studySearch ? studySearch.value : ''};
-      if (viewer.getCameraOrbit) undoBefore.orbit = viewer.getCameraOrbit().toString();
-      if (viewer.getCameraTarget) undoBefore.target = viewer.getCameraTarget().toString();
     }
     hiddenStructures.clear(); hideHistory = [];
+    clearLayerDepth();
     (config.structureGroups || []).forEach(function (group) { layerVisibility[group.id] = group.visible !== false; });
     document.querySelectorAll('#layerButtons [data-layer]').forEach(function (b) {
       var on = layerVisibility[b.dataset.layer] !== false;
