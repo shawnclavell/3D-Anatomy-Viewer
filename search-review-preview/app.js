@@ -1454,8 +1454,21 @@
     }
     selectByName(state.name, { scrollIntoView: false, additive: additive });
     if (revealed) {
+      applyIsolate(true);
+      var bounds = meshVisibility && meshVisibility.bounds(materialStates.filter(function (item) {
+        return selectedNames.has(materialOwner(item.name));
+      }));
+      if (bounds) {
+        var orbit = viewer.getCameraOrbit();
+        var rect = viewer.getBoundingClientRect();
+        var fieldOfView = viewer.getFieldOfView() * Math.PI / 180;
+        var radius = Math.max(0.12, bounds.size.length() * 0.7 /
+          (Math.tan(fieldOfView / 2) * Math.min(1, rect.width / rect.height)));
+        applyCamera(orbit.theta + "rad " + orbit.phi + "rad " + radius + "m",
+          bounds.center.x + "m " + bounds.center.y + "m " + bounds.center.z + "m");
+      }
       var layerLabel = layerButton ? layerButton.textContent : group;
-      visibilityChanged("Revealed " + layerLabel + ". Selected " + prettifyName(state.name) + ".");
+      visibilityChanged("Revealed " + layerLabel + ". Selected " + prettifyName(state.name) + ". Surrounding anatomy faded. Go back restores the previous view.");
     }
   }
 
@@ -2102,9 +2115,11 @@
   var undoDepth = 0, undoBefore = null, undoLabel = '';
   var undoEvents = new WeakSet();
   function viewerSnapshot() {
+    var orbit = viewer.getCameraOrbit();
+    var target = viewer.getCameraTarget();
     return {selected:Array.from(selectedNames),primary:selectedName,hidden:Array.from(hiddenStructures),
       hideHistory:hideHistory.slice(),layers:Object.assign({},layerVisibility),mode:viewMode,
-      orbit:viewer.getAttribute('camera-orbit'),target:viewer.getAttribute('camera-target'),
+      orbit:orbit.theta + "rad " + orbit.phi + "rad " + orbit.radius + "m",target:target.x + "m " + target.y + "m " + target.z + "m",
       preset:Array.from(presetList.querySelectorAll('.preset-btn')).findIndex(function (b) { return b.classList.contains('is-active'); })};
   }
   function updateUndoButtons() {
