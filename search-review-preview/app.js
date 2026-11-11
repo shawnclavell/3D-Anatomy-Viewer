@@ -400,7 +400,7 @@
       '<input id="layerDepth" title="' + help + '" type="range" min="0" max="700" step="1" value="0" aria-describedby="layerDepthHelp">' +
       '<div class="layer-depth-steps"><button type="button" id="layerDepthBack">Shallower</button><button type="button" id="layerDepthNext">Deeper</button></div>' +
       '<label for="layerDepthStage" class="visually-hidden">Go to stage</label><select id="layerDepthStage"><option value="" disabled>Go to stage</option></select>';
-    document.getElementById("layerButtons").before(field);
+    (document.getElementById("customLayerControls") || document.getElementById("layerButtons")).before(field);
     depthControls = {
       range:field.querySelector("input"), output:field.querySelector("output"),
       select:field.querySelector("select"), back:field.querySelector("#layerDepthBack"), next:field.querySelector("#layerDepthNext")
@@ -1524,7 +1524,7 @@
       if (layerButton) syncLayerButton(layerButton);
     }
     selectByName(state.name, { scrollIntoView: false, additive: additive });
-    if (revealed) {
+    if (!additive) {
       applyIsolate(true);
       var bounds = meshVisibility && meshVisibility.bounds(materialStates.filter(function (item) {
         return selectedNames.has(materialOwner(item.name));
@@ -1539,7 +1539,7 @@
           bounds.center.x + "m " + bounds.center.y + "m " + bounds.center.z + "m");
       }
       var layerLabel = layerButton ? layerButton.textContent : group;
-      visibilityChanged("Revealed " + layerLabel + ". Selected " + prettifyName(state.name) + ". Surrounding anatomy faded. Go back restores the previous view.");
+      visibilityChanged((revealed ? "Revealed " + layerLabel + ". " : "") + "Selected " + prettifyName(state.name) + ". Surrounding anatomy faded. Go back restores the previous view.");
     }
   }
 

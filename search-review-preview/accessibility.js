@@ -135,14 +135,17 @@
     select.id = id;
     var apply = document.createElement("button");
     apply.type = "button"; apply.textContent = "Apply view";
+    apply.hidden = true;
     var help = document.createElement("p");
     help.className = "empty-note"; help.id = id + "Help";
-    help.textContent = "Choose a preset, then Apply view. This changes the camera, not which structures are removed.";
+    help.textContent = "Choosing a view moves the camera immediately. Removed structures stay removed.";
+    help.classList.add("visually-hidden");
     select.setAttribute("aria-describedby", help.id);
     section.appendChild(label); section.appendChild(select); section.appendChild(apply); section.appendChild(help);
     if (before) parent.insertBefore(section, before); else parent.appendChild(section);
     viewPickers.push({ select: select, apply: apply });
     select.addEventListener("change", updateViewAvailability);
+    select.addEventListener("change", function () { if (!apply.disabled) apply.click(); });
     apply.addEventListener("click", function () {
       if (select.disabled || select.value === "") return;
       var button = document.getElementById("presetList").querySelectorAll(".preset-btn")[Number(select.value)];
