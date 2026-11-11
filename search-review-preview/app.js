@@ -1233,7 +1233,7 @@
   }
 
   function loadReferenceInformation() {
-    fetch("models/structure.details.json?v=1").then(function (response) {
+    fetch("models/structure.details.json?v=2").then(function (response) {
       if (!response.ok) throw new Error("Reference descriptions unavailable");
       return response.json();
     }).then(function (data) {

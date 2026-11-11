@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "checkedDate": "2026-11-10",
-  "scope": "Initial 17 structure families. Exact name matching only. Left and right use the displayed model label.",
+  "scope": "25 structure families: initial limb, nerve and skin cards plus eight skull bone families. Exact name matching only; displayed model labels retain side.",
   "entries": [
     {
       "id": "humerus",
@@ -293,6 +293,146 @@
         {
           "title": "OpenStax Anatomy and Physiology 2e — Anatomical Terminology",
           "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/1-6-anatomical-terminology"
+        }
+      ]
+    },
+    {
+      "id": "frontal_bone",
+      "aliases": [
+        "Frontal bone"
+      ],
+      "type": "Bone",
+      "location": "Forehead and anterior cranial floor.",
+      "relations": "Orbit roofs and parietal bones.",
+      "description": "An unpaired cranial bone.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Skull",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/7-2-the-skull"
+        }
+      ]
+    },
+    {
+      "id": "parietal_bone",
+      "aliases": [
+        "Parietal bone left",
+        "Parietal bone right",
+        "Parietal bone"
+      ],
+      "type": "Bone",
+      "location": "Upper sides of the cranial vault.",
+      "relations": "Frontal, temporal and occipital bones.",
+      "description": "A paired cranial bone.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Skull",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/7-2-the-skull"
+        }
+      ]
+    },
+    {
+      "id": "temporal_bone",
+      "aliases": [
+        "Temporal bone"
+      ],
+      "type": "Bone",
+      "location": "Lower lateral skull.",
+      "relations": "Mandible at the temporomandibular joint.",
+      "description": "Contains middle and inner ear structures.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Skull",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/7-2-the-skull"
+        }
+      ]
+    },
+    {
+      "id": "occipital_bone",
+      "aliases": [
+        "Occipital bone"
+      ],
+      "type": "Bone",
+      "location": "Posterior skull and cranial base.",
+      "relations": "First cervical vertebra.",
+      "description": "Surrounds the foramen magnum.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Skull",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/7-2-the-skull"
+        }
+      ]
+    },
+    {
+      "id": "sphenoid_bone",
+      "aliases": [
+        "Sphenoid bone"
+      ],
+      "type": "Bone",
+      "location": "Central cranial base.",
+      "relations": "Orbits and other cranial bones.",
+      "description": "Contains the pituitary fossa.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Skull",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/7-2-the-skull"
+        }
+      ]
+    },
+    {
+      "id": "ethmoid_bone",
+      "aliases": [
+        "Ethmoid bone"
+      ],
+      "type": "Bone",
+      "location": "Between the orbits, above the nasal cavity.",
+      "relations": "Nasal septum and medial orbital walls.",
+      "description": "Its cribriform plates transmit olfactory nerve branches.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Skull",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/7-2-the-skull"
+        }
+      ]
+    },
+    {
+      "id": "maxilla",
+      "aliases": [
+        "Maxilla bone",
+        "Maxilla"
+      ],
+      "type": "Bone",
+      "location": "Upper jaw.",
+      "relations": "Upper teeth, hard palate and orbit floor.",
+      "description": "One of two maxillary bones.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Skull",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/7-2-the-skull"
+        }
+      ]
+    },
+    {
+      "id": "mandible",
+      "aliases": [
+        "Mandible bone",
+        "Mandible"
+      ],
+      "type": "Bone",
+      "location": "Lower jaw.",
+      "relations": "Lower teeth and temporal bones.",
+      "description": "The movable bone of the skull.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Skull",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/7-2-the-skull"
         }
       ]
     }
