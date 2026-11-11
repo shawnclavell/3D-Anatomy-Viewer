@@ -1,0 +1,300 @@
+{
+  "schemaVersion": 1,
+  "checkedDate": "2026-11-10",
+  "scope": "Initial 17 structure families. Exact name matching only. Left and right use the displayed model label.",
+  "entries": [
+    {
+      "id": "humerus",
+      "aliases": [
+        "Humerus"
+      ],
+      "type": "Bone",
+      "location": "Upper arm, between shoulder and elbow.",
+      "relations": "Scapula, radius and ulna.",
+      "description": "The single long bone of the arm.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — Bones of the Upper Limb",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/8-2-bones-of-the-upper-limb"
+        }
+      ]
+    },
+    {
+      "id": "radius",
+      "aliases": [
+        "Radius"
+      ],
+      "type": "Bone",
+      "location": "Lateral forearm in anatomical position.",
+      "relations": "Humerus, ulna and wrist.",
+      "description": "The thumb-side bone of the forearm.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — Bones of the Upper Limb",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/8-2-bones-of-the-upper-limb"
+        }
+      ]
+    },
+    {
+      "id": "ulna",
+      "aliases": [
+        "Ulna"
+      ],
+      "type": "Bone",
+      "location": "Medial forearm in anatomical position.",
+      "relations": "Humerus and radius.",
+      "description": "The forearm bone on the little-finger side.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — Bones of the Upper Limb",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/8-2-bones-of-the-upper-limb"
+        }
+      ]
+    },
+    {
+      "id": "clavicle",
+      "aliases": [
+        "Clavicle"
+      ],
+      "type": "Bone",
+      "location": "Front of the shoulder girdle.",
+      "relations": "Sternum and scapula.",
+      "description": "The collarbone links the shoulder girdle to the axial skeleton.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Pectoral Girdle",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/8-1-the-pectoral-girdle"
+        }
+      ]
+    },
+    {
+      "id": "scapula",
+      "aliases": [
+        "Scapula"
+      ],
+      "type": "Bone",
+      "location": "Posterior shoulder.",
+      "relations": "Clavicle and humerus.",
+      "description": "The shoulder blade provides the socket of the shoulder joint.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Pectoral Girdle",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/8-1-the-pectoral-girdle"
+        }
+      ]
+    },
+    {
+      "id": "femur",
+      "aliases": [
+        "Femur"
+      ],
+      "type": "Bone",
+      "location": "Thigh, between hip and knee.",
+      "relations": "Hip bone, tibia and patella.",
+      "description": "The thigh bone participates in both the hip and knee joints.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — Bones of the Lower Limb",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/8-4-bones-of-the-lower-limb"
+        }
+      ]
+    },
+    {
+      "id": "patella",
+      "aliases": [
+        "Patella"
+      ],
+      "type": "Bone",
+      "location": "Front of the knee.",
+      "relations": "Distal femur.",
+      "description": "The kneecap articulates with the femur.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — Bones of the Lower Limb",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/8-4-bones-of-the-lower-limb"
+        }
+      ]
+    },
+    {
+      "id": "tibia",
+      "aliases": [
+        "Tibia"
+      ],
+      "type": "Bone",
+      "location": "Medial side of the leg, between knee and ankle.",
+      "relations": "Femur, fibula and talus.",
+      "description": "The larger, weight-bearing bone of the leg.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — Bones of the Lower Limb",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/8-4-bones-of-the-lower-limb"
+        }
+      ]
+    },
+    {
+      "id": "fibula",
+      "aliases": [
+        "Fibula"
+      ],
+      "type": "Bone",
+      "location": "Lateral side of the leg, between knee and ankle.",
+      "relations": "Tibia and talus.",
+      "description": "The slender lateral bone contributes to the ankle.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — Bones of the Lower Limb",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/8-4-bones-of-the-lower-limb"
+        }
+      ]
+    },
+    {
+      "id": "median",
+      "aliases": [
+        "Median nerve"
+      ],
+      "type": "Peripheral nerve",
+      "location": "Upper limb.",
+      "relations": "Brachial plexus; neighboring radial and ulnar nerves.",
+      "description": "One of the major nerves supplying the upper limb.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Peripheral Nervous System",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/13-4-the-peripheral-nervous-system"
+        }
+      ]
+    },
+    {
+      "id": "radial",
+      "aliases": [
+        "Radial nerve"
+      ],
+      "type": "Peripheral nerve",
+      "location": "Upper limb.",
+      "relations": "Brachial plexus.",
+      "description": "Contains fibers for sensation and skeletal muscle control.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Peripheral Nervous System",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/13-4-the-peripheral-nervous-system"
+        }
+      ]
+    },
+    {
+      "id": "femoral_nerve",
+      "aliases": [
+        "Femoral nerve"
+      ],
+      "type": "Peripheral nerve",
+      "location": "Anterior thigh.",
+      "relations": "Lumbar plexus and saphenous branch.",
+      "description": "A major nerve arising from the lumbar plexus.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Peripheral Nervous System",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/13-4-the-peripheral-nervous-system"
+        }
+      ]
+    },
+    {
+      "id": "sciatic",
+      "aliases": [
+        "Sciatic nerve"
+      ],
+      "type": "Peripheral nerve",
+      "location": "Across the hip into the posterior lower limb.",
+      "relations": "Sacral plexus; tibial and common fibular components.",
+      "description": "A major nerve pathway from the lumbosacral region.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — The Peripheral Nervous System",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/13-4-the-peripheral-nervous-system"
+        }
+      ]
+    },
+    {
+      "id": "brachial_region",
+      "aliases": [
+        "Brachial region (arm)",
+        "Brachial region"
+      ],
+      "type": "Skin region",
+      "location": "Surface of the upper arm.",
+      "relations": "Shoulder proximally and elbow distally.",
+      "description": "Brachial refers to the arm between shoulder and elbow.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — Anatomical Terminology",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/1-6-anatomical-terminology"
+        }
+      ]
+    },
+    {
+      "id": "forearm_region",
+      "aliases": [
+        "Antebrachial region (forearm)",
+        "Antebrachial region"
+      ],
+      "type": "Skin region",
+      "location": "Surface of the forearm.",
+      "relations": "Elbow proximally and wrist distally.",
+      "description": "Antebrachial refers to the forearm.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — Anatomical Terminology",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/1-6-anatomical-terminology"
+        }
+      ]
+    },
+    {
+      "id": "cubital_region",
+      "aliases": [
+        "Cubital (antecubital) region (front of elbow)",
+        "Antecubital region"
+      ],
+      "type": "Skin region",
+      "location": "Front of the elbow.",
+      "relations": "Brachial and antebrachial regions.",
+      "description": "The antecubital region is the anterior elbow surface.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — Anatomical Terminology",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/1-6-anatomical-terminology"
+        }
+      ]
+    },
+    {
+      "id": "patellar_region",
+      "aliases": [
+        "Patellar region (front of knee)",
+        "Patellar region"
+      ],
+      "type": "Skin region",
+      "location": "Front of the knee.",
+      "relations": "Femoral and crural regions.",
+      "description": "The patellar region overlies the anterior knee.",
+      "status": "Source-checked summary; instructor review pending.",
+      "sources": [
+        {
+          "title": "OpenStax Anatomy and Physiology 2e — Anatomical Terminology",
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/1-6-anatomical-terminology"
+        }
+      ]
+    }
+  ]
+}

@@ -179,5 +179,13 @@
   layers.after(searchSection);
   searchSection.after(selection);
   selection.after(views);
+  if (document.documentElement.dataset.referenceCards === "review") {
+    var information = document.getElementById("muscleDetails");
+    var informationDetails = disclosure("Structure information", [information], selection);
+    information.querySelector("h3").classList.add("visually-hidden");
+    function syncInformation() { informationDetails.hidden = information.hidden; }
+    new MutationObserver(syncInformation).observe(information, {attributes:true,attributeFilter:["hidden"]});
+    syncInformation();
+  }
   document.querySelector(".app").classList.add("reference-layout");
 }());

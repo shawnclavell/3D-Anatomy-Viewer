@@ -265,6 +265,7 @@
     var hasMuscles = cfg.structureMembership && Object.keys(cfg.structureMembership).some(function (name) { return cfg.structureMembership[name] === "muscles"; });
     document.getElementById("muscleInformationCoverage").hidden = !hasMuscles;
     if (hasMuscles) loadMuscleInformation();
+    if (document.documentElement.dataset.referenceCards === "review") loadReferenceInformation();
     document.title = cfg.label ? cfg.label + " — Anatomy Viewer" : "Anatomy Viewer";
 
     viewer.setAttribute("alt", cfg.alt || (cfg.label || "Anatomy") + ": interactive 3D anatomy specimen. Select named structures using the structure index; use Text study & help for available descriptions.");
@@ -1224,20 +1225,50 @@
     });
   }
 
+  var referenceInformation = null;
+  var referenceInformationFailed = false;
+
+  function referenceKey(label) {
+    return label.replace(/^[^:]+::/, "").replace(/\s+\((left|right|source side unspecified)\)$/i, "").trim().toLowerCase();
+  }
+
+  function loadReferenceInformation() {
+    fetch("models/structure.details.json?v=1").then(function (response) {
+      if (!response.ok) throw new Error("Reference descriptions unavailable");
+      return response.json();
+    }).then(function (data) {
+      referenceInformation = {};
+      data.entries.forEach(function (entry) {
+        entry.aliases.forEach(function (alias) { referenceInformation[referenceKey(alias)] = entry; });
+      });
+      updateMuscleDetails(selectedName);
+    }).catch(function () {
+      referenceInformationFailed = true;
+      updateMuscleDetails(selectedName);
+    });
+  }
+
   function updateMuscleDetails(name) {
     var panel = document.getElementById("muscleDetails");
     var fields = document.getElementById("muscleDetailsFields");
     var note = document.getElementById("muscleDetailsNote");
     var sources = document.getElementById("muscleDetailsSources");
-    panel.hidden = !name || !config || !config.structureMembership || config.structureMembership[name] !== "muscles";
+    var muscle = config && config.structureMembership && config.structureMembership[name] === "muscles";
+    var referencePreview = document.documentElement.dataset.referenceCards === "review";
+    panel.hidden = !name || !config || (!muscle && !referencePreview);
     fields.textContent = "";
     sources.textContent = "";
     if (panel.hidden) return;
-    loadMuscleInformation();
-    var entry = muscleDetailsData && muscleDetailsData[name];
-    [["Name", prettifyName(name)], ["Origin", entry && entry.origin],
+    if (muscle) loadMuscleInformation();
+    var entry = muscle ? muscleDetailsData && muscleDetailsData[name]
+      : referenceInformation && referenceInformation[referenceKey(prettifyName(name))];
+    var informationFields = muscle ? [["Name", prettifyName(name)], ["Origin", entry && entry.origin],
      ["Insertion", entry && entry.insertion], ["Action", entry && entry.action],
-     ["Innervation", entry && entry.innervation]].forEach(function (field) {
+     ["Innervation", entry && entry.innervation]] : entry ? [["Name", prettifyName(name)],
+      ["Type", entry.type], ["Location", entry.location], ["Connections / nearby", entry.relations], ["Overview", entry.description]]
+      : [["Name", prettifyName(name)]];
+    panel.querySelector("h3").textContent = muscle ? "Muscle information" : "Structure information";
+    informationFields.forEach(function (field) {
       var term = document.createElement("dt");
       term.textContent = field[0];
       var definition = document.createElement("dd");
@@ -1248,6 +1279,10 @@
     note.textContent = muscleDetailsError ? "Information could not be loaded. Reload to retry." :
       entry ? entry.status + " Text descriptions do not certify the colored surface placements." :
       "This muscle's information has not yet been added. Attachment surface counts are shown separately.";
+    if (!muscle) note.textContent = entry ? entry.status : referenceInformationFailed
+      ? "Reference descriptions could not be loaded. Reload to retry."
+      : referenceInformation ? "A reference description has not yet been authored for this structure."
+      : "Loading reference descriptions…";
     (entry && entry.sources || []).forEach(function (source) {
       if (!/^https:\/\//.test(source.url)) return;
       var item = document.createElement("li");

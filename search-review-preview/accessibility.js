@@ -273,7 +273,7 @@
     destination.textContent = "";
     var panel = document.getElementById("muscleDetails");
     if (panel && !panel.hidden) {
-      el("h3", "Selected muscle information", destination);
+      el("h3", "Selected structure information", destination);
       var fields = document.getElementById("muscleDetailsFields").cloneNode(true);
       fields.removeAttribute("id");
       destination.appendChild(fields);
