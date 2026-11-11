@@ -135,14 +135,17 @@
     select.id = id;
     var apply = document.createElement("button");
     apply.type = "button"; apply.textContent = "Apply view";
+    apply.hidden = true;
     var help = document.createElement("p");
     help.className = "empty-note"; help.id = id + "Help";
-    help.textContent = "Choose a preset, then Apply view. This changes the camera, not which structures are removed.";
+    help.textContent = "Choosing a view moves the camera immediately. Removed structures stay removed.";
+    help.classList.add("visually-hidden");
     select.setAttribute("aria-describedby", help.id);
     section.appendChild(label); section.appendChild(select); section.appendChild(apply); section.appendChild(help);
     if (before) parent.insertBefore(section, before); else parent.appendChild(section);
     viewPickers.push({ select: select, apply: apply });
     select.addEventListener("change", updateViewAvailability);
+    select.addEventListener("change", function () { if (!apply.disabled) apply.click(); });
     apply.addEventListener("click", function () {
       if (select.disabled || select.value === "") return;
       var button = document.getElementById("presetList").querySelectorAll(".preset-btn")[Number(select.value)];
@@ -294,23 +297,25 @@
     el("h3", "Structures", content);
     var list = el("ul", "", content);
     var buttons = Array.prototype.slice.call(document.querySelectorAll("#boneList .bone-btn"));
+    if (query && window.rankAnatomyStructureQuery) buttons.sort(function (a, b) {
+      return window.rankAnatomyStructureQuery(a.textContent, query) -
+        window.rankAnatomyStructureQuery(b.textContent, query);
+    });
     buttons.forEach(function (source) {
-      if (source.textContent.toLowerCase().indexOf(query) === -1) return;
+      var matchesQuery = window.matchesAnatomyStructureQuery;
+      if (matchesQuery ? !matchesQuery(source.textContent, query) : source.textContent.toLowerCase().indexOf(query) === -1) return;
       matches++;
       var item = el("li", "", list);
-      // Ignore the sidebar's search query, but respect anatomy layer visibility.
       var manuallyHidden = source.dataset.dissectionHidden === "true";
-      var available = !manuallyHidden && (!config || !config.structureMembership || !config.structureGroups || config.structureGroups.every(function (group) {
-        if (config.structureMembership[source.dataset.mat] !== group.id) return true;
-        var layer = document.querySelector('#layerButtons [data-layer="' + group.id + '"]');
-        return !layer || layer.getAttribute("aria-pressed") !== "false";
-      }));
-      var button = el("button", source.textContent, item);
+      var hiddenLayer = source.dataset.hiddenLayer;
+      var reveal = hiddenLayer && !manuallyHidden;
+      var button = el("button", (reveal ? "Reveal and select " : "") + source.textContent, item);
       button.type = "button";
       button.setAttribute("data-study-key", "structure:" + source.dataset.mat);
-      button.disabled = !available;
+      button.disabled = manuallyHidden;
       button.setAttribute("aria-pressed", source.getAttribute("aria-pressed") || "false");
-      if (!available) el("span", manuallyHidden ? " — hidden; use Hide and restore structures to select again" : " — layer hidden; enable it in Anatomy Layers to select", item);
+      if (manuallyHidden) el("span", " — removed; use Hide and restore structures to select again", item);
+      else if (reveal) el("span", " — hidden layer: " + hiddenLayer, item);
       button.addEventListener("keydown", function (event) {
         if (event.ctrlKey && (event.key === "Enter" || event.key === " ")) {
           event.preventDefault();
@@ -325,7 +330,7 @@
           if (original) b.setAttribute("aria-pressed", original.getAttribute("aria-pressed") || "false");
         });
         var selected = source.getAttribute("aria-pressed") === "true";
-        announce((selected ? "Selected " : "Deselected ") + source.textContent + ". Close text study to examine the model.");
+        announce((reveal && selected ? "Revealed " + hiddenLayer + ". " : "") + (selected ? "Selected " : "Deselected ") + source.textContent + ". Close text study to examine the model.");
         count.textContent = (selected ? "Selected " : "Deselected ") + source.textContent + ".";
         updateSelectedDetails();
       });

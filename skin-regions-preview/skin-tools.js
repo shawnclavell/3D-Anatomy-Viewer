@@ -1,7 +1,7 @@
 /* Surface-model controls; use existing layer actions and preserve removed patches. */
 (function () {
   'use strict';
-  if (new URLSearchParams(location.search).get('model') !== 'skin-regions') return;
+  if ((new URLSearchParams(location.search).get('model') || document.documentElement.dataset.defaultModel) !== 'skin-regions') return;
   var viewer = document.getElementById('viewer');
   var picker = document.querySelector('.specimen-picker');
   var panel = document.createElement('section');
@@ -21,14 +21,19 @@
   help.id = 'skinSurfaceHelp'; help.className = 'empty-note';
   help.textContent = 'Turn off to reveal muscles and skeleton. Individual regions remain available under Anatomy Layers. Use Restore for separately removed patches.';
   var link = document.createElement('a');
-  link.href = 'skin-regions-guide.html'; link.className = 'btn skin-guide-link';
+  link.href = document.documentElement.dataset.skinGuide || 'skin-regions-guide.html'; link.className = 'btn skin-guide-link';
   link.textContent = 'Body regions study guide';
   document.getElementById('textStudyTitle').after(link.cloneNode(true));
   var status = document.createElement('p');
   status.className = 'empty-note'; status.id = 'skinSurfaceStatus';
   status.setAttribute('role', 'status'); status.setAttribute('aria-atomic', 'true');
+  previewNote.classList.add('visually-hidden'); help.classList.add('visually-hidden');
+  toggle.title = help.textContent;
   panel.append(previewNote, toggle, help, link, status);
-  (document.getElementById('loadModelBtn') || picker).insertAdjacentElement('afterend', panel);
+  var surfaceTools = document.createElement('details'); surfaceTools.className = 'sidebar-disclosure';
+  var summary = document.createElement('summary'); summary.textContent = 'Surface tools';
+  surfaceTools.append(summary, panel);
+  document.querySelector('.viewer-tools-body').appendChild(surfaceTools);
   var ids = ['head', 'trunk', 'upper', 'lower'];
   function controls() {
     return ids.map(function (id) { return document.querySelector('#layerButtons [data-layer="' + id + '"]'); }).filter(Boolean);

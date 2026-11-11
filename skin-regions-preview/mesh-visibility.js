@@ -25,6 +25,25 @@
       });
       if (states.some(function (state) { return !state.meshes.length; })) return null;
       return {
+        bounds: function (selectedStates) {
+          var bounds = null;
+          scene.currentGLTF.scene.updateWorldMatrix(true, true);
+          var toModel = scene.currentGLTF.scene.matrixWorld.clone().invert();
+          selectedStates.forEach(function (state) {
+            state.meshes.forEach(function (mesh) {
+              if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
+              var box = mesh.geometry.boundingBox.clone();
+              box.applyMatrix4(mesh.matrixWorld.clone().premultiply(toModel));
+              if (bounds) bounds.union(box);
+              else bounds = box;
+            });
+          });
+          if (!bounds || bounds.isEmpty()) return null;
+          return {
+            center: bounds.min.clone().add(bounds.max).multiplyScalar(0.5),
+            size: bounds.max.clone().sub(bounds.min)
+          };
+        },
         apply: function (state, visible) {
           state.meshes.forEach(function (mesh) { mesh.visible = visible; });
           scene.queueRender();

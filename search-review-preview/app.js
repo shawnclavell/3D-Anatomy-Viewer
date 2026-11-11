@@ -199,7 +199,7 @@
   /* ------------------------------------------------------------- Bootstrap */
 
   function getModelParam() {
-    return new URLSearchParams(window.location.search).get("model") || "layered";
+    return new URLSearchParams(window.location.search).get("model") || document.documentElement.dataset.defaultModel || "muscular";
   }
 
   function init() {
@@ -296,7 +296,7 @@
         });
         document.getElementById("layerButtons").appendChild(button);
       });
-      if (cfg.layerStudyViews) {
+      if (cfg.layerStudyViews || cfg.structureGroups.some(function (group) { return group.id === "muscles"; })) {
         buildLayerDepth();
       }
     }
@@ -331,12 +331,15 @@
   }
 
   var depthStages = ["Skin", "Fascia and connective tissue", "Bursae", "Tendon sheaths", "Muscles", "Tendons", "Skeleton with origins and insertions", "Nerves with skeleton"];
+  var depthGroups = [];
+  var skeletonDepth = 6;
+  var nerveDepth = 7;
 
   function depthOpacity(group, depth) {
-    var outer = ["skin", "fascia", "bursae", "sheaths", "muscles", "tendons"].indexOf(group);
-    if (outer !== -1) return Math.max(0, Math.min(1, outer + 1 - depth));
-    if (isAttachmentGroup(group)) return Math.max(0, Math.min(1, depth - 5));
-    if (["central", "peripheral", "meninges", "senses"].indexOf(group) !== -1) return Math.max(0, Math.min(1, depth - 6));
+    var stage = depthGroups.findIndex(function (groups) { return groups.indexOf(group) !== -1; });
+    if (stage !== -1 && stage !== skeletonDepth && stage !== nerveDepth) return Math.max(0, Math.min(1, stage + 1 - depth));
+    if (isAttachmentGroup(group)) return Math.max(0, Math.min(1, depth - (skeletonDepth - 1)));
+    if (stage !== -1 && stage === nerveDepth) return Math.max(0, Math.min(1, depth - (nerveDepth - 1)));
     return 1;
   }
 
@@ -358,7 +361,7 @@
     depthControls.range.disabled = disabled;
     depthControls.select.disabled = disabled;
     depthControls.back.disabled = disabled || layerDepth === 0;
-    depthControls.next.disabled = disabled || layerDepth === 7;
+    depthControls.next.disabled = disabled || layerDepth === depthStages.length - 1;
     if (layerDepth !== null) {
       depthControls.range.value = String(Math.round(layerDepth * 100));
       depthControls.select.value = String(Math.floor(layerDepth));
@@ -370,7 +373,7 @@
 
   function applyLayerDepth(value) {
     if (!materialStates.length || markupModeOn) return;
-    layerDepth = Math.max(0, Math.min(7, value));
+    layerDepth = Math.max(0, Math.min(depthStages.length - 1, value));
     config.structureGroups.forEach(function (group) {
       layerVisibility[group.id] = depthOpacity(group.id, layerDepth) > 0;
     });
@@ -390,6 +393,19 @@
   }
 
   function buildLayerDepth() {
+    var candidates = [
+      ["Skin", ["skin", "head", "trunk", "upper", "lower"]],
+      ["Fascia and connective tissue", ["fascia"]], ["Bursae", ["bursae"]],
+      ["Tendon sheaths", ["sheaths"]], ["Muscles", ["muscles"]], ["Tendons", ["tendons"]],
+      ["Skeleton with origins and insertions", ["skeleton"]],
+      ["Nerves with skeleton", ["central", "peripheral", "meninges", "senses", "eyes"]]
+    ].filter(function (stage) {
+      return config.structureGroups.some(function (group) { return stage[1].indexOf(group.id) !== -1; });
+    });
+    depthStages = candidates.map(function (stage) { return stage[0]; });
+    depthGroups = candidates.map(function (stage) { return stage[1]; });
+    skeletonDepth = depthGroups.findIndex(function (groups) { return groups.indexOf("skeleton") !== -1; });
+    nerveDepth = depthGroups.findIndex(function (groups) { return groups.indexOf("central") !== -1; });
     var field = document.createElement("fieldset");
     field.className = "layer-depth";
     var help = "Slide to fade skin, fascia and connective tissue, bursae, tendon sheaths, muscles, and tendons. The skeleton shows linked origins in red and insertions in blue; placement review is pending. Unmatched surfaces stay hidden. Arrow keys adjust depth. Individual switches customize the layers. Removed structures stay removed.";
@@ -405,6 +421,7 @@
       range:field.querySelector("input"), output:field.querySelector("output"),
       select:field.querySelector("select"), back:field.querySelector("#layerDepthBack"), next:field.querySelector("#layerDepthNext")
     };
+    depthControls.range.max = String((depthStages.length - 1) * 100);
     depthStages.forEach(function (label, index) {
       var option = document.createElement("option");
       option.value = String(index); option.textContent = label; depthControls.select.appendChild(option);
@@ -424,7 +441,7 @@
       if (layerDepth !== null) visibilityChanged("Layer depth: " + depthDescription(layerDepth) + ".");
     });
     depthControls.next.addEventListener("click", function () {
-      applyLayerDepth(layerDepth === null ? 0 : Math.min(7, Math.floor(layerDepth) + 1));
+      applyLayerDepth(layerDepth === null ? 0 : Math.min(depthStages.length - 1, Math.floor(layerDepth) + 1));
       if (layerDepth !== null) visibilityChanged("Layer depth: " + depthDescription(layerDepth) + ".");
     });
     document.addEventListener("anatomy-visibility", updateLayerDepthControls);
@@ -1147,7 +1164,7 @@
     if (!state || !config || !config.structureMembership) return true;
     var groupId = structureGroupId(state);
     if (isAttachmentGroup(groupId)) {
-      var linked = layerDepth !== null && layerDepth > 5
+      var linked = layerDepth !== null && layerDepth > skeletonDepth - 1
         ? config.attachmentOwners && config.attachmentOwners[state.name] && config.attachmentOwners[state.name].length
         : selectedAttachments(groupId).indexOf(state.name) !== -1;
       return layerVisibility[groupId] !== false && !!linked;

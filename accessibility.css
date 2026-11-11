@@ -1,7 +1,4 @@
 /* Interface remediation toward WCAG 2.2 AA. See ACCESSIBILITY-REVIEW.md. */
-.skip-links { position: fixed; top: 8px; left: 8px; z-index: 1000; }
-.skip-links a { position: absolute; transform: translateY(-200%); width: max-content; max-width: calc(100vw - 24px); padding: 12px; background: var(--panel); color: var(--ink); border: 2px solid var(--focus-ring); }
-.skip-links a:focus { position: relative; display: block; transform: none; }
 #presetList[hidden] { display: none; }
 .view-picker-panel { margin-block: 12px; min-width: 0; }
 .view-picker-panel label { display: block; margin-bottom: 6px; }

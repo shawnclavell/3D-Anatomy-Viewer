@@ -122,6 +122,9 @@
 
   var config         = null;
   var layerVisibility = {};
+  var layerDepth = null;
+  var depthControls = null;
+  var depthBefore = null;
   var meshVisibility = null;
   var defaultOrbit   = null;
   var defaultTarget  = null;
@@ -153,8 +156,11 @@
   var viewMode       = "all";   // "all" | "isolate" | "ghost"
   var hiddenStructures = new Set();
   var hideHistory = [];
+
+  // Do not export a poster/empty canvas or reset an unavailable specimen.
   resetBtn.disabled = true;
   downloadViewBtn.disabled = true;
+
   function visibilityChanged(message, selectionOnly) {
     updateAnnotationVisibility();
     filterStructureList();
@@ -165,7 +171,8 @@
   }
   function hideStructureByName(name) {
     if (!meshVisibility || !name || markupModeOn || !isStructureVisible(findState(name))) return;
-    hiddenStructures.add(name); hideHistory.push(name);
+    hiddenStructures.add(name);
+    hideHistory.push(name);
     selectedNames.delete(name);
     refreshSelection();
     visibilityChanged("Hidden " + prettifyName(name) + ". " + hiddenStructures.size + " structures hidden.");
@@ -183,7 +190,8 @@
       hidden: Array.from(hiddenStructures).map(function (name) { return { name: name, label: prettifyName(name) }; }),
       undoName: hideHistory[hideHistory.length - 1] || null
     }; },
-    hideSelected: hideSelectedStructure, restore: restoreHiddenStructure,
+    hideSelected: hideSelectedStructure,
+    restore: restoreHiddenStructure,
     undo: function () { if (hideHistory.length && !markupModeOn) restoreHiddenStructure(hideHistory[hideHistory.length - 1]); },
     restoreAll: function () { if (!markupModeOn) showAll(); }
   };
@@ -191,7 +199,7 @@
   /* ------------------------------------------------------------- Bootstrap */
 
   function getModelParam() {
-    return new URLSearchParams(window.location.search).get("model") || "muscular";
+    return new URLSearchParams(window.location.search).get("model") || document.documentElement.dataset.defaultModel || "muscular";
   }
 
   function init() {
@@ -254,6 +262,9 @@
   function applyConfig(cfg) {
     if (window.AnatomyAccessibility) window.AnatomyAccessibility.configure(cfg);
     modelTitle.textContent = cfg.label || "Untitled Specimen";
+    var hasMuscles = cfg.structureMembership && Object.keys(cfg.structureMembership).some(function (name) { return cfg.structureMembership[name] === "muscles"; });
+    document.getElementById("muscleInformationCoverage").hidden = !hasMuscles;
+    if (hasMuscles) loadMuscleInformation();
     document.title = cfg.label ? cfg.label + " — Anatomy Viewer" : "Anatomy Viewer";
 
     viewer.setAttribute("alt", cfg.alt || (cfg.label || "Anatomy") + ": interactive 3D anatomy specimen. Select named structures using the structure index; use Text study & help for available descriptions.");
@@ -278,28 +289,165 @@
         button.setAttribute("aria-pressed", String(layerVisibility[group.id]));
         button.classList.toggle("is-active", layerVisibility[group.id]);
         button.addEventListener("click", function () {
+          clearLayerDepth();
           layerVisibility[group.id] = !layerVisibility[group.id];
-          button.setAttribute("aria-pressed", String(layerVisibility[group.id]));
-          button.classList.toggle("is-active", layerVisibility[group.id]);
-          selectedNames.forEach(function (name) { if (!isStructureVisible(findState(name))) selectedNames.delete(name); });
-          selectedName = Array.from(selectedNames).pop() || null;
-          if (!selectedName) clearSelection();
-          restoreAll();
-          if (selectedName) selectByName(selectedName, { scrollIntoView: false, refresh: true });
-          filterStructureList();
-          visibilityChanged();
+          syncLayerButton(button);
+          applyLayerChange();
         });
         document.getElementById("layerButtons").appendChild(button);
       });
+      if (cfg.layerStudyViews || cfg.structureGroups.some(function (group) { return group.id === "muscles"; })) {
+        buildLayerDepth();
+      }
     }
 
     viewer.addEventListener("load", onModelLoaded, { once: true });
     viewer.addEventListener("error", onModelError, { once: true });
 
+    if (cfg.preloadModel) viewer.setAttribute("loading", "eager");
     viewer.src = cfg.glb;
 
     buildPresetList(cfg.cameraPresets || []);
     buildHotspots(cfg.hotspots || []);
+  }
+
+  function syncLayerButton(button) {
+    var visible = layerVisibility[button.dataset.layer] !== false;
+    button.setAttribute("aria-pressed", String(visible));
+    button.classList.toggle("is-active", visible);
+  }
+
+  function applyLayerChange(message, restoreNormalView) {
+    selectedNames.forEach(function (name) {
+      if (!isStructureVisible(findState(name))) selectedNames.delete(name);
+    });
+    selectedName = Array.from(selectedNames).pop() || null;
+    if (!selectedName) clearSelection();
+    if (restoreNormalView) restoreView();
+    else restoreAll();
+    if (selectedName) selectByName(selectedName, { scrollIntoView: false, refresh: true });
+    filterStructureList();
+    visibilityChanged(message);
+  }
+
+  var depthStages = ["Skin", "Fascia and connective tissue", "Bursae", "Tendon sheaths", "Muscles", "Tendons", "Skeleton with origins and insertions", "Nerves with skeleton"];
+  var depthGroups = [];
+  var skeletonDepth = 6;
+  var nerveDepth = 7;
+
+  function depthOpacity(group, depth) {
+    var stage = depthGroups.findIndex(function (groups) { return groups.indexOf(group) !== -1; });
+    if (stage !== -1 && stage !== skeletonDepth && stage !== nerveDepth) return Math.max(0, Math.min(1, stage + 1 - depth));
+    if (isAttachmentGroup(group)) return Math.max(0, Math.min(1, depth - (skeletonDepth - 1)));
+    if (stage !== -1 && stage === nerveDepth) return Math.max(0, Math.min(1, depth - (nerveDepth - 1)));
+    return 1;
+  }
+
+  function clearLayerDepth() {
+    layerDepth = null;
+    depthBefore = null;
+    updateLayerDepthControls();
+  }
+
+  function depthDescription(depth) {
+    var stage = Math.floor(depth);
+    return depth === stage ? depthStages[stage]
+      : "Removing " + depthStages[stage] + "; approaching " + depthStages[stage + 1];
+  }
+
+  function updateLayerDepthControls() {
+    if (!depthControls) return;
+    var disabled = !materialStates.length || markupModeOn;
+    depthControls.range.disabled = disabled;
+    depthControls.select.disabled = disabled;
+    depthControls.back.disabled = disabled || layerDepth === 0;
+    depthControls.next.disabled = disabled || layerDepth === depthStages.length - 1;
+    if (layerDepth !== null) {
+      depthControls.range.value = String(Math.round(layerDepth * 100));
+      depthControls.select.value = String(Math.floor(layerDepth));
+    } else depthControls.select.value = "";
+    var description = layerDepth === null ? "Custom layers. Move the slider to apply a depth stage." : depthDescription(layerDepth);
+    depthControls.output.textContent = layerDepth === null ? "Custom" : depthStages[Math.floor(layerDepth)];
+    depthControls.range.setAttribute("aria-valuetext", description);
+  }
+
+  function applyLayerDepth(value) {
+    if (!materialStates.length || markupModeOn) return;
+    layerDepth = Math.max(0, Math.min(depthStages.length - 1, value));
+    config.structureGroups.forEach(function (group) {
+      layerVisibility[group.id] = depthOpacity(group.id, layerDepth) > 0;
+    });
+    document.querySelectorAll('#layerButtons [data-layer]').forEach(syncLayerButton);
+    applyLayerChange("", true);
+    updateLayerDepthControls();
+  }
+
+  function commitLayerDepth() {
+    if (depthBefore && JSON.stringify(depthBefore) !== JSON.stringify(viewerSnapshot())) {
+      viewerUndoStack.push({state:depthBefore,label:"layer depth"});
+      if (viewerUndoStack.length > 40) viewerUndoStack.shift();
+      updateUndoButtons();
+    }
+    depthBefore = null;
+    if (layerDepth !== null) visibilityChanged("Layer depth: " + depthDescription(layerDepth) + ". Removed structures stay removed.");
+  }
+
+  function buildLayerDepth() {
+    var candidates = [
+      ["Skin", ["skin", "head", "trunk", "upper", "lower"]],
+      ["Fascia and connective tissue", ["fascia"]], ["Bursae", ["bursae"]],
+      ["Tendon sheaths", ["sheaths"]], ["Muscles", ["muscles"]], ["Tendons", ["tendons"]],
+      ["Skeleton with origins and insertions", ["skeleton"]],
+      ["Nerves with skeleton", ["central", "peripheral", "meninges", "senses", "eyes"]]
+    ].filter(function (stage) {
+      return config.structureGroups.some(function (group) { return stage[1].indexOf(group.id) !== -1; });
+    });
+    depthStages = candidates.map(function (stage) { return stage[0]; });
+    depthGroups = candidates.map(function (stage) { return stage[1]; });
+    skeletonDepth = depthGroups.findIndex(function (groups) { return groups.indexOf("skeleton") !== -1; });
+    nerveDepth = depthGroups.findIndex(function (groups) { return groups.indexOf("central") !== -1; });
+    var field = document.createElement("fieldset");
+    field.className = "layer-depth";
+    var help = "Slide to fade skin, fascia and connective tissue, bursae, tendon sheaths, muscles, and tendons. The skeleton shows linked origins in red and insertions in blue; placement review is pending. Unmatched surfaces stay hidden. Arrow keys adjust depth. Individual switches customize the layers. Removed structures stay removed.";
+    field.innerHTML = '<legend title="' + help + '">Layer depth</legend>' +
+      '<p id="layerDepthHelp" class="visually-hidden">' + help + '</p>' +
+      '<label for="layerDepth" class="visually-hidden">Surface to deeper anatomy</label>' +
+      '<output id="layerDepthStatus" for="layerDepth"></output>' +
+      '<input id="layerDepth" title="' + help + '" type="range" min="0" max="700" step="1" value="0" aria-describedby="layerDepthHelp">' +
+      '<div class="layer-depth-steps"><button type="button" id="layerDepthBack">Shallower</button><button type="button" id="layerDepthNext">Deeper</button></div>' +
+      '<label for="layerDepthStage" class="visually-hidden">Go to stage</label><select id="layerDepthStage"><option value="" disabled>Go to stage</option></select>';
+    (document.getElementById("customLayerControls") || document.getElementById("layerButtons")).before(field);
+    depthControls = {
+      range:field.querySelector("input"), output:field.querySelector("output"),
+      select:field.querySelector("select"), back:field.querySelector("#layerDepthBack"), next:field.querySelector("#layerDepthNext")
+    };
+    depthControls.range.max = String((depthStages.length - 1) * 100);
+    depthStages.forEach(function (label, index) {
+      var option = document.createElement("option");
+      option.value = String(index); option.textContent = label; depthControls.select.appendChild(option);
+    });
+    depthControls.range.addEventListener("input", function () {
+      if (!depthBefore) depthBefore = viewerSnapshot();
+      applyLayerDepth(Number(depthControls.range.value) / 100);
+    });
+    depthControls.range.addEventListener("change", commitLayerDepth);
+    depthControls.select.addEventListener("change", function () {
+      depthBefore = viewerSnapshot();
+      applyLayerDepth(Number(depthControls.select.value));
+      commitLayerDepth();
+    });
+    depthControls.back.addEventListener("click", function () {
+      applyLayerDepth(layerDepth === null ? 0 : Math.max(0, Math.ceil(layerDepth) - 1));
+      if (layerDepth !== null) visibilityChanged("Layer depth: " + depthDescription(layerDepth) + ".");
+    });
+    depthControls.next.addEventListener("click", function () {
+      applyLayerDepth(layerDepth === null ? 0 : Math.min(depthStages.length - 1, Math.floor(layerDepth) + 1));
+      if (layerDepth !== null) visibilityChanged("Layer depth: " + depthDescription(layerDepth) + ".");
+    });
+    document.addEventListener("anatomy-visibility", updateLayerDepthControls);
+    document.addEventListener("anatomy-markup", updateLayerDepthControls);
+    viewer.addEventListener("load", updateLayerDepthControls);
+    updateLayerDepthControls();
   }
 
   function onModelLoaded() {
@@ -427,6 +575,7 @@
 
   function updateFullscreenUi() {
     var active = isStageFullscreen();
+    fullscreenBtn.classList.toggle("is-active", active);
     fullscreenBtn.setAttribute("aria-pressed", active ? "true" : "false");
     fullscreenBtn.setAttribute("aria-label", active ? "Exit full screen model view" : "Full screen model view");
     fullscreenLabel.textContent = active ? "Exit full screen" : "Full screen";
@@ -434,7 +583,9 @@
       ? "Full screen model view opened. Press Escape or use Exit full screen to return."
       : "Full screen model view closed.";
 
-    if (markupModeOn) window.setTimeout(resizeMarkupCanvas, 0);
+    if (markupModeOn) {
+      window.setTimeout(resizeMarkupCanvas, 0);
+    }
   }
 
   function requestStageFullscreen() {
@@ -974,14 +1125,15 @@
     var groups = config && config.structureGroups || [];
     var id = structureGroupId(state);
     var group = groups.find(function (item) { return item.id === id; });
-    return group && typeof group.opacity === "number" ? group.opacity : 1;
+    var opacity = group && typeof group.opacity === "number" ? group.opacity : 1;
+    return opacity * (layerDepth === null ? 1 : depthOpacity(id, layerDepth));
   }
 
   function restoreMaterial(state) {
     var groupId = structureGroupId(state);
     if (isAttachmentGroup(groupId) && isStructureVisible(state)) {
       setEmissive(state, ATTACHMENT_EMISSIVE);
-      applyLook(state, groupId === "origin" ? ORIGIN_COLOR : INSERTION_COLOR, 1);
+      applyLook(state, groupId === "origin" ? ORIGIN_COLOR : INSERTION_COLOR, layerOpacity(state));
       return;
     }
     setEmissive(state, state.emissive);
@@ -1012,7 +1164,10 @@
     if (!state || !config || !config.structureMembership) return true;
     var groupId = structureGroupId(state);
     if (isAttachmentGroup(groupId)) {
-      return layerVisibility[groupId] !== false && selectedAttachments(groupId).indexOf(state.name) !== -1;
+      var linked = layerDepth !== null && layerDepth > skeletonDepth - 1
+        ? config.attachmentOwners && config.attachmentOwners[state.name] && config.attachmentOwners[state.name].length
+        : selectedAttachments(groupId).indexOf(state.name) !== -1;
+      return layerVisibility[groupId] !== false && !!linked;
     }
     return layerVisibility[groupId] !== false;
   }
@@ -1031,6 +1186,79 @@
 
   function restoreAll() {
     materialStates.forEach(restoreMaterial);
+  }
+
+  var muscleDetailsData = null;
+  var muscleDetailsError = false;
+  var muscleDetailsLoading = false;
+
+  function hasMuscleInformation(name) {
+    var entry = muscleDetailsData && muscleDetailsData[name];
+    return !!entry && ["origin", "insertion", "action", "innervation"].every(function (key) {
+      return typeof entry[key] === "string" && entry[key].trim() && !/pending review/i.test(entry[key]);
+    }) && Array.isArray(entry.sources) && entry.sources.length > 0;
+  }
+
+  function loadMuscleInformation() {
+    if (muscleDetailsData || muscleDetailsError || muscleDetailsLoading) return;
+    muscleDetailsLoading = true;
+    fetch("models/muscular.details.json?v=20261022").then(function (response) {
+      if (!response.ok) throw new Error("Muscle details unavailable");
+      return response.json();
+    }).then(function (data) {
+      muscleDetailsData = data.entries || {};
+      muscleDetailsLoading = false;
+      var membership = config.structureMembership || {};
+      var names = Object.keys(membership).filter(function (name) { return membership[name] === "muscles" && !(config.materialOwners && config.materialOwners[name]); });
+      var count = names.filter(hasMuscleInformation).length;
+      document.getElementById("muscleCoverageStatus").textContent = count + " of " + names.length +
+        " muscle meshes have origin, insertion, action and innervation text. Remaining entries are incomplete. Sourced text and colored attachment surfaces have separate review status.";
+      document.getElementById("muscleInformationOnly").disabled = false;
+      updateMuscleDetails(selectedName);
+      filterStructureList();
+    }).catch(function () {
+      muscleDetailsError = true;
+      muscleDetailsLoading = false;
+      document.getElementById("muscleCoverageStatus").textContent = "Muscle information could not be loaded. Reload to retry; the 3D model remains available.";
+      updateMuscleDetails(selectedName);
+    });
+  }
+
+  function updateMuscleDetails(name) {
+    var panel = document.getElementById("muscleDetails");
+    var fields = document.getElementById("muscleDetailsFields");
+    var note = document.getElementById("muscleDetailsNote");
+    var sources = document.getElementById("muscleDetailsSources");
+    panel.hidden = !name || !config || !config.structureMembership || config.structureMembership[name] !== "muscles";
+    fields.textContent = "";
+    sources.textContent = "";
+    if (panel.hidden) return;
+    loadMuscleInformation();
+    var entry = muscleDetailsData && muscleDetailsData[name];
+    [["Name", prettifyName(name)], ["Origin", entry && entry.origin],
+     ["Insertion", entry && entry.insertion], ["Action", entry && entry.action],
+     ["Innervation", entry && entry.innervation]].forEach(function (field) {
+      var term = document.createElement("dt");
+      term.textContent = field[0];
+      var definition = document.createElement("dd");
+      definition.textContent = field[1] || (muscleDetailsLoading ? "Loading…" : "Details pending review.");
+      fields.appendChild(term);
+      fields.appendChild(definition);
+    });
+    note.textContent = muscleDetailsError ? "Information could not be loaded. Reload to retry." :
+      entry ? entry.status + " Text descriptions do not certify the colored surface placements." :
+      "This muscle's information has not yet been added. Attachment surface counts are shown separately.";
+    (entry && entry.sources || []).forEach(function (source) {
+      if (!/^https:\/\//.test(source.url)) return;
+      var item = document.createElement("li");
+      var link = document.createElement("a");
+      link.href = source.url;
+      link.textContent = source.title;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      item.appendChild(link);
+      sources.appendChild(item);
+    });
   }
 
   /* -------------------------------------------------------- Selection API */
@@ -1129,6 +1357,7 @@
 
     selectedNames.forEach(highlightStructure);
 
+    updateMuscleDetails(name);
     selectionName.textContent = selectedNames.size > 1
       ? selectedNames.size + " muscles selected. Active: " + prettifyName(state.name)
       : prettifyName(state.name);
@@ -1183,6 +1412,7 @@
   function clearSelection() {
     selectedNames.clear();
     selectedName = null;
+    updateMuscleDetails(null);
     viewMode = "all";
     isolateBtn.classList.remove("btn--active");
     ghostBtn.classList.remove("btn--active");
@@ -1277,6 +1507,59 @@
 
   /* ------------------------------------------------------------ Bone index */
 
+  function structureSearchTerms(value) {
+    return value.toLowerCase()
+      .replace(/\bknee\s*cap\b/g, "patella")
+      .replace(/\bcollar\s*bone\b/g, "clavicle")
+      .match(/[a-z0-9]+/g) || [];
+  }
+
+  function matchesStructureQuery(label, query) {
+    var words = structureSearchTerms(label);
+    return structureSearchTerms(query).every(function (term) {
+      return words.some(function (word) { return word.indexOf(term) === 0; });
+    });
+  }
+  window.matchesAnatomyStructureQuery = matchesStructureQuery;
+
+  function rankStructureQuery(label, query) {
+    var terms = structureSearchTerms(query);
+    var words = structureSearchTerms(label);
+    return terms.filter(function (term) { return words.indexOf(term) === -1; }).length * 100 +
+      words.filter(function (word) { return word !== "left" && word !== "right"; }).length;
+  }
+  window.rankAnatomyStructureQuery = rankStructureQuery;
+
+  function selectIndexedStructure(state, additive) {
+    if (markupModeOn || hiddenStructures.has(state.name)) return;
+    var group = structureGroupId(state);
+    var revealed = layerVisibility[group] === false;
+    if (revealed) {
+      clearLayerDepth();
+      layerVisibility[group] = true;
+      var layerButton = document.querySelector('#layerButtons [data-layer="' + cssEscape(group) + '"]');
+      if (layerButton) syncLayerButton(layerButton);
+    }
+    selectByName(state.name, { scrollIntoView: false, additive: additive });
+    if (!additive) {
+      applyIsolate(true);
+      var bounds = meshVisibility && meshVisibility.bounds(materialStates.filter(function (item) {
+        return selectedNames.has(materialOwner(item.name));
+      }));
+      if (bounds) {
+        var orbit = viewer.getCameraOrbit();
+        var rect = viewer.getBoundingClientRect();
+        var fieldOfView = viewer.getFieldOfView() * Math.PI / 180;
+        var radius = Math.max(0.12, bounds.size.length() * 0.7 /
+          (Math.tan(fieldOfView / 2) * Math.min(1, rect.width / rect.height)));
+        applyCamera(orbit.theta + "rad " + orbit.phi + "rad " + radius + "m",
+          bounds.center.x + "m " + bounds.center.y + "m " + bounds.center.z + "m");
+      }
+      var layerLabel = layerButton ? layerButton.textContent : group;
+      visibilityChanged((revealed ? "Revealed " + layerLabel + ". " : "") + "Selected " + prettifyName(state.name) + ". Surrounding anatomy faded. Go back restores the previous view.");
+    }
+  }
+
   function buildBoneList() {
     boneList.innerHTML = "";
 
@@ -1304,15 +1587,19 @@
       btn.setAttribute("aria-pressed", "false");
       btn.textContent = prettifyName(state.name);
       btn.addEventListener("click", function (event) {
-        selectByName(state.name, { scrollIntoView: false, additive: event.ctrlKey });
+        selectIndexedStructure(state, event.ctrlKey);
       });
       btn.addEventListener("keydown", function (event) {
         if (event.ctrlKey && (event.key === "Enter" || event.key === " ")) {
           event.preventDefault();
-          selectByName(state.name, { scrollIntoView: false, additive: true });
+          selectIndexedStructure(state, true);
         }
       });
       li.appendChild(btn);
+      var layerNote = document.createElement("span");
+      layerNote.className = "empty-note";
+      layerNote.hidden = true;
+      li.appendChild(layerNote);
       boneList.appendChild(li);
     });
   }
@@ -1337,7 +1624,22 @@
       var btn = li.querySelector(".bone-btn");
       if (!btn) return;
       btn.dataset.dissectionHidden = String(hiddenStructures.has(btn.dataset.mat));
-      var match = btn.textContent.toLowerCase().indexOf(q) !== -1 && isStructureVisible(findState(btn.dataset.mat));
+      var state = findState(btn.dataset.mat);
+      var group = state && structureGroupId(state);
+      var layerHidden = layerVisibility[group] === false;
+      var layer = layerHidden && config.structureGroups.find(function (entry) { return entry.id === group; });
+      var layerLabel = layer ? layer.label : "";
+      if (btn.dataset.hiddenLayer !== layerLabel) {
+        btn.dataset.hiddenLayer = layerLabel;
+        var layerNote = li.querySelector("span");
+        layerNote.hidden = !layerLabel;
+        layerNote.textContent = layerLabel ? " — hidden layer: " + layerLabel : "";
+        if (layerLabel) btn.setAttribute("aria-label", "Reveal and select " + btn.textContent + " (" + layerLabel + ")");
+        else btn.removeAttribute("aria-label");
+      }
+      var match = !hiddenStructures.has(btn.dataset.mat) &&
+        (q ? matchesStructureQuery(btn.textContent, q) : isStructureVisible(state));
+      if (document.getElementById("muscleInformationOnly").checked) match = match && hasMuscleInformation(btn.dataset.mat);
       li.style.display = match ? "" : "none";
       if (match) shown++;
     });
@@ -1346,6 +1648,7 @@
     document.getElementById("searchStatus").textContent = shown + " matching structures" + (q ? " for " + boneSearch.value.trim() : "") + ".";
   }
   boneSearch.addEventListener("input", filterStructureList);
+  document.getElementById("muscleInformationOnly").addEventListener("change", filterStructureList);
 
   /* ------------------------------------------------- Click-to-select logic
      camera-controls means dragging orbits the model. We only treat a pointer
@@ -1381,7 +1684,7 @@
     var mat = viewer.materialFromPoint(event.clientX, event.clientY);
 
     if (!mat) {
-      // Deselect without restoring manually removed structures.
+      // Empty space deselects without undoing the student's dissection.
       clearSelection();
       visibilityChanged();
       return;
@@ -1428,7 +1731,7 @@
     structureActionButtons.forEach(function (b) { b.setAttribute('aria-expanded', String(b === opener)); });
     actionItems.querySelector('button').focus(); return true;
   }
-  ['Highlight', 'Isolate', 'Remove'].forEach(function (label) {
+  ['Highlight', 'Isolate', 'Ghost Others', 'Remove'].forEach(function (label) {
     var button = document.createElement('button'); button.type = 'button';
     button.setAttribute('role', 'menuitem'); button.textContent = label;
     actionItems.appendChild(button);
@@ -1439,6 +1742,7 @@
       else {
         selectByName(name, {scrollIntoView:false});
         if (label === 'Isolate') applyIsolate(false);
+        else if (label === 'Ghost Others') applyIsolate(true);
         visibilityChanged(label + ': ' + prettifyName(name) + '.', true);
       }
       closeStructureActions(true);
@@ -1899,9 +2203,11 @@
   var undoDepth = 0, undoBefore = null, undoLabel = '';
   var undoEvents = new WeakSet();
   function viewerSnapshot() {
+    var orbit = viewer.getCameraOrbit();
+    var target = viewer.getCameraTarget();
     return {selected:Array.from(selectedNames),primary:selectedName,hidden:Array.from(hiddenStructures),
-      hideHistory:hideHistory.slice(),layers:Object.assign({},layerVisibility),mode:viewMode,
-      orbit:viewer.getAttribute('camera-orbit'),target:viewer.getAttribute('camera-target'),
+      hideHistory:hideHistory.slice(),layers:Object.assign({},layerVisibility),depth:layerDepth,mode:viewMode,
+      orbit:orbit.theta + "rad " + orbit.phi + "rad " + orbit.radius + "m",target:target.x + "m " + target.y + "m " + target.z + "m",
       preset:Array.from(presetList.querySelectorAll('.preset-btn')).findIndex(function (b) { return b.classList.contains('is-active'); })};
   }
   function updateUndoButtons() {
@@ -1943,12 +2249,12 @@
       var s = entry.state;
       if (s.filters) {
         boneSearch.value = s.filters.search;
-        var informationOnly = document.getElementById('muscleInformationOnly');
-        if (informationOnly) informationOnly.checked = s.filters.informationOnly;
+        document.getElementById('muscleInformationOnly').checked = s.filters.informationOnly;
         var studySearch = document.getElementById('studySearch');
         if (studySearch) { studySearch.value = s.filters.study; studySearch.dispatchEvent(new Event('input',{bubbles:true})); }
       }
       hiddenStructures = new Set(s.hidden); hideHistory = s.hideHistory.slice();
+      layerDepth = s.depth === undefined ? null : s.depth;
       layerVisibility = Object.assign({},s.layers);
       document.querySelectorAll('#layerButtons [data-layer]').forEach(function (b) {
         var on = layerVisibility[b.dataset.layer] !== false;
@@ -1958,6 +2264,7 @@
       if (selectedName) selectByName(selectedName,{refresh:true,scrollIntoView:false});
       else clearSelection();
       if (s.mode === 'all') restoreView();
+      updateLayerDepthControls();
       showAllBtn.disabled = !selectedName && !hiddenStructures.size;
       if (s.orbit === null) viewer.removeAttribute('camera-orbit');
       if (s.target === null) viewer.removeAttribute('camera-target');
@@ -2010,19 +2317,16 @@
     // undo entry; ordinary actions retain the established history semantics.
     var studySearch = document.getElementById('studySearch');
     if (undoBefore) {
-      undoBefore.filters = {search:boneSearch.value,informationOnly:!!(document.getElementById('muscleInformationOnly') && document.getElementById('muscleInformationOnly').checked),study:studySearch ? studySearch.value : ''};
-      if (viewer.getCameraOrbit) undoBefore.orbit = viewer.getCameraOrbit().toString();
-      if (viewer.getCameraTarget) undoBefore.target = viewer.getCameraTarget().toString();
+      undoBefore.filters = {search:boneSearch.value,informationOnly:document.getElementById('muscleInformationOnly').checked,study:studySearch ? studySearch.value : ''};
     }
     hiddenStructures.clear(); hideHistory = [];
+    clearLayerDepth();
     (config.structureGroups || []).forEach(function (group) { layerVisibility[group.id] = group.visible !== false; });
     document.querySelectorAll('#layerButtons [data-layer]').forEach(function (b) {
       var on = layerVisibility[b.dataset.layer] !== false;
       b.setAttribute('aria-pressed',String(on)); b.classList.toggle('is-active',on);
     });
-    boneSearch.value = '';
-    var informationOnly = document.getElementById('muscleInformationOnly');
-    if (informationOnly) informationOnly.checked = false;
+    boneSearch.value = ''; document.getElementById('muscleInformationOnly').checked = false;
     if (studySearch) { studySearch.value = ''; studySearch.dispatchEvent(new Event('input',{bubbles:true})); }
     clearSelection(); restoreView();
     applyCamera(defaultOrbit,defaultTarget); setActivePreset(defaultPresetButton);

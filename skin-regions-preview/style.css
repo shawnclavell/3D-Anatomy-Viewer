@@ -417,7 +417,11 @@ body {
   cursor: wait;
 }
 
-.stage:fullscreen .stage__markup-btn,
+.stage:fullscreen .stage__markup-btn {
+  display: inline-flex;
+  align-items: center;
+}
+
 .stage:-webkit-full-screen .stage__markup-btn {
   display: inline-flex;
   align-items: center;
@@ -1007,3 +1011,21 @@ model-viewer {
   .spinner { animation: none; }
   * { transition-duration: 0.01ms !important; }
 }
+
+/* Keyboard bypass links stay above the model when focused. */
+.skip-links { position: fixed; top: 8px; left: 8px; z-index: 1000; }
+.skip-links a { position: absolute; transform: translateY(-200%); width: max-content; max-width: calc(100vw - 24px); padding: 12px; background: var(--panel); color: var(--ink); border: 2px solid var(--focus-ring); }
+.skip-links a:focus { position: relative; display: block; transform: none; }
+@supports (height: 100dvh) {
+  .app { height: 100dvh; }
+  .stage:fullscreen { height: 100dvh; min-height: 100dvh; }
+  .stage:-webkit-full-screen { height: 100dvh; min-height: 100dvh; }
+}
+
+.muscle-details { margin: 12px 0; padding: 12px; background: var(--panel-alt); border: 1px solid var(--border); }
+.muscle-details h3 { margin: 0 0 10px; font-size: 14px; }
+.muscle-details dl { margin: 0; font-size: 13px; line-height: 1.5; }
+.muscle-details dt { font-weight: 600; margin-top: 8px; color: var(--ink); }
+.muscle-details dd { margin: 2px 0 0; overflow-wrap: anywhere; }
+.muscle-details__sources { margin: 8px 0 0; padding-left: 16px; font-size: 12px; }
+.muscle-details a { color: var(--focus-ring); }

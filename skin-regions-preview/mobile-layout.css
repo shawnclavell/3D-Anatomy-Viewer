@@ -1,0 +1,20 @@
+/* Model first, compact actions, depth control, then anatomy search. */
+@media (max-width: 760px), (max-width: 1024px) and (any-pointer: coarse) {
+  body { overflow: auto; }
+  .app.reference-layout { flex-direction: column; height: auto; min-height: 100dvh; width: 100%; }
+  .reference-layout .sidebar { width: 100%; max-height: none; overflow: visible; border-right: 0; }
+  .reference-layout .stage.stage--compact { height: auto; min-height: 0; width: 100%; }
+  .reference-layout .stage--compact .stage__viewport { flex: none; height: clamp(270px, 49svh, 520px); }
+  .reference-layout .stage--compact.is-markup .stage__viewport { height: max(420px, 74svh); }
+  .reference-layout .stage--compact .access-controls:not([hidden]) { display: flex; position: relative; inset: auto; padding: 6px; gap: 6px; }
+  .reference-layout .reference-toolbar { flex-wrap: nowrap !important; }
+  .reference-layout .reference-toolbar > button { flex: 1 1 auto; font-size: .8rem; min-width: 0; }
+  .reference-layout .stage--compact #structureLayers { padding: 10px 16px; background: var(--panel); border-bottom: 1px solid #7d8992; }
+  .reference-layout .sidebar__header { padding-block: 8px; }
+  .reference-layout .sidebar__title { font-size: .85rem; }
+  .reference-layout :is(button:not(.hotspot), input, select, summary, .btn--link) { min-height: 44px; }
+  .reference-layout :is(input, select) { font-size: 1rem; }
+  .reference-layout .stage:is(:fullscreen, :-webkit-full-screen) { height: 100dvh; }
+  .reference-layout .stage:is(:fullscreen, :-webkit-full-screen) .stage__viewport { flex: 1; height: auto; }
+  .reference-layout .stage:is(:fullscreen, :-webkit-full-screen) .stage__viewport { min-height: 160px; }
+}

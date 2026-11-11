@@ -1,7 +1,7 @@
 /* Organize the combined model's existing controls without changing actions. */
 (function () {
   'use strict';
-  if ((new URLSearchParams(location.search).get('model') || 'layered') !== 'layered') return;
+  if ((new URLSearchParams(location.search).get('model') || document.documentElement.dataset.defaultModel) !== 'layered') return;
   var host = document.getElementById('layerButtons');
   if (!host) return;
   var groups = [

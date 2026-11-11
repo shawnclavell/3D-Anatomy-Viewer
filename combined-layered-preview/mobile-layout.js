@@ -1,51 +1,26 @@
-/* Match the reading and keyboard order to the narrow-screen layout. */
+/* Keep the model connected while adapting control order for narrow screens. */
 (function () {
-  'use strict';
-  var narrow = window.matchMedia('(max-width: 760px), (max-width: 1024px) and (any-pointer: coarse)');
-  var sidebar = document.querySelector('.sidebar');
-  var stage = document.querySelector('.stage');
-  var controls = stage.querySelector('.access-controls');
-  var search = document.getElementById('boneSearch');
-  var viewer = document.getElementById("viewer");
-  var jump = document.createElement('a');
-  jump.className = 'mobile-structure-link';
-  jump.href = '#boneSearch';
-  jump.textContent = 'Find a structure';
-  jump.addEventListener('click', function (event) {
-    event.preventDefault();
-    search.focus({ preventScroll: true });
-    search.scrollIntoView({ block: 'center' });
-  });
-  controls.insertBefore(jump, controls.querySelector('.viewer-history-controls'));
-  var back = document.createElement('a');
-  back.className = 'mobile-model-link';
-  back.href = '#viewer';
-  back.textContent = 'Back to 3D model';
-  back.addEventListener('click', function (event) {
-    event.preventDefault();
-    viewer.focus({ preventScroll: true });
-    viewer.scrollIntoView({ block: 'start' });
-  });
-  search.closest('.sidebar__section').appendChild(back);
-
+  "use strict";
+  var narrow = window.matchMedia("(max-width: 760px), (max-width: 1024px) and (any-pointer: coarse)");
+  var sidebar = document.querySelector(".sidebar");
+  var stage = document.querySelector(".stage");
+  var layers = document.getElementById("structureLayers");
+  var controls = stage.querySelector(".access-controls");
   function updateLayout() {
-    var compact = narrow.matches;
     var focused = document.activeElement;
-    stage.classList.toggle('stage--compact', compact);
-    // Move the sidebar so the WebGL element and fullscreen target stay connected.
-    if (compact && sidebar.nextElementSibling === stage) {
-      stage.after(sidebar);
-    } else if (!compact && stage.nextElementSibling === sidebar) {
-      stage.before(sidebar);
+    var fullscreen = (document.fullscreenElement || document.webkitFullscreenElement) === stage;
+    stage.classList.toggle("stage--compact", narrow.matches || fullscreen);
+    if (narrow.matches || fullscreen) {
+      if (sidebar.nextElementSibling === stage) stage.after(sidebar);
+      if (layers.parentElement !== stage) controls.after(layers);
+    } else {
+      if (stage.nextElementSibling === sidebar) stage.before(sidebar);
+      if (layers.parentElement !== sidebar) sidebar.querySelector(".sidebar__header").after(layers);
     }
-    if (sidebar.contains(focused) && focused !== back && document.activeElement !== focused) {
-      focused.focus({ preventScroll: true });
-    } else if (!compact && focused === back) {
-      viewer.focus();
-    } else if (!compact && focused === jump) {
-      search.focus();
-    }
+    if (focused && document.activeElement !== focused && focused.isConnected) focused.focus({preventScroll:true});
   }
-  narrow.addEventListener('change', updateLayout);
+  narrow.addEventListener("change", updateLayout);
+  document.addEventListener("fullscreenchange", updateLayout);
+  document.addEventListener("webkitfullscreenchange", updateLayout);
   updateLayout();
 }());

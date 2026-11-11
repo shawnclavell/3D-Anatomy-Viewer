@@ -1,13 +1,43 @@
-.sidebar-disclosure { margin-block: 8px; min-width: 0; }
+.reference-layout [hidden] { display: none !important; }
+.sidebar-disclosure { margin-block: 4px; min-width: 0; }
 .sidebar-disclosure > summary { cursor: pointer; min-height: 44px; padding: 10px 4px; box-sizing: border-box; color: var(--ink); font: inherit; overflow-wrap: anywhere; }
-.sidebar-disclosure > :not(summary) { margin-block: 10px; }
-.sidebar .sidebar__section { padding-block: 14px; flex-shrink: 0; }
-.structure-picker-panel label { display: block; margin-block: 8px; }
-#structurePicker { display: block; width: 100%; min-width: 0; min-height: 44px; padding: 8px; margin-bottom: 8px; background: #1b1f23; color: #e9e2d0; border: 1px solid #7d8992; font: inherit; }
-.structure-picker-panel .bone-list { max-height: 260px; overflow-y: auto; }
-.sidebar-disclosure .dissection-panel { margin: 0; padding: 0; border: 0; }
-.sidebar__footer { flex-wrap: wrap; }
-.sidebar__footer > details { width: 100%; }
-.sidebar__footer > details .btn { margin-block: 6px; }
-.study-dialog button[aria-pressed="true"]:not([data-study-key])::before { content: none; }
-@media (forced-colors: active) { #structurePicker { background: Field; color: FieldText; border-color: ButtonText; } }
+.sidebar-disclosure > :not(summary) { margin-block: 8px; }
+.reference-layout .sidebar__header { padding: 12px 16px; }
+.reference-layout .sidebar__title { font-size: 1rem; line-height: 1.3; margin: 0; }
+.reference-layout .sidebar .sidebar__section { padding: 10px 16px; flex-shrink: 0; }
+.reference-layout .sidebar .sidebar__section h2 { margin-bottom: 6px; }
+.structure-search-panel > label { display: block; font-weight: 600; margin-bottom: 6px; }
+.reference-layout .structure-search-panel .bone-list { display: flex; flex-direction: column; max-height: 230px; overflow-y: auto; flex: none; margin-top: 6px; }
+.reference-layout .structure-search-panel .bone-btn { min-height: 44px; width: 100%; }
+.reference-layout .structure-search-panel li > span { display: block; font-size: .75rem; padding-inline: 8px; }
+.reference-layout .selection__actions { flex-wrap: wrap; gap: 6px; }
+.reference-layout .selection__actions > button { min-height: 44px; flex: 1; }
+.reference-layout .stage { display: flex; flex-direction: column; min-width: 0; }
+.reference-layout .stage__viewport { display: block; flex: 1; min-height: 0; position: relative; }
+.reference-layout .access-controls:not([hidden]) { position: relative; inset: auto; max-width: none; display: flex; flex-direction: row; gap: 6px; align-items: center; padding: 8px; background: var(--panel); border-top: 1px solid #7d8992; flex-shrink: 0; }
+.reference-layout .reference-toolbar { flex: 1; gap: 6px; }
+.reference-layout .reference-toolbar > button { min-height: 44px; flex: 1; padding: 8px; }
+.reference-layout .reference-toolbar .stage__fullscreen-btn { position: static; inset: auto; display: inline-flex; justify-content: center; border-radius: 4px; }
+.reference-layout #viewerTools { margin: 0; }
+.reference-layout #viewerTools > summary { padding: 8px 10px; border: 1px solid #7d8992; border-radius: 4px; }
+.viewer-tools-body { position: fixed; z-index: 70; right: 12px; top: 12px; width: min(330px, calc(100vw - 32px)); max-height: 70svh; overflow: auto; padding: 12px; box-sizing: border-box; border: 1px solid #7d8992; border-radius: 6px; background: var(--panel); box-shadow: 0 4px 20px #0008; }
+.reference-layout .viewer-tools-body > button, .reference-layout .viewer-tools-body > a { display: block; width: 100%; min-height: 44px; margin-block: 6px; text-align: left; }
+.viewer-tools-body .camera-controls { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: none; }
+.viewer-tools-body .dissection-panel { margin: 0; padding: 0; border: 0; }
+.viewer-tools-body select { max-width: 100%; }
+.reference-layout .stage__hint { display: none; }
+.reference-layout .layer-depth { margin-bottom: 0; }
+@media (forced-colors: active) {
+  .reference-layout :focus-visible { outline: 3px solid Highlight; }
+  .viewer-tools-body { background: Canvas; border-color: CanvasText; }
+}
+
+.reference-layout .viewer-tools-body .close-viewer-tools { position: sticky; top: 0; z-index: 1; margin-top: 0; }
+
+.reference-layout .access-controls { flex-wrap: wrap; }
+.reference-layout .access-controls > .selection__actions { width: 100%; display: flex; margin: 0; gap: 6px; }
+.reference-layout .access-controls > .selection__actions button { flex: 1; min-height: 44px; }
+
+.reference-layout .stage > #structureLayers { padding: 8px 16px; background: var(--panel); border-top: 1px solid #7d8992; flex-shrink: 0; }
+.reference-layout .stage:is(:fullscreen, :-webkit-full-screen) { overflow: auto; }
+.reference-layout .stage:is(:fullscreen, :-webkit-full-screen) .stage__viewport { min-height: 200px; }

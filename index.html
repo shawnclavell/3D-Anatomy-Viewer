@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-skull-base-study="preview">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,12 +8,12 @@
 <!-- Google's <model-viewer> web component -->
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 
-<link rel="stylesheet" href="style.css?v=11">
-<link rel="stylesheet" href="accessibility.css?v=10">
-<link rel="stylesheet" href="sidebar-layout.css?v=1">
+<link rel="stylesheet" href="style.css?v=13">
+<link rel="stylesheet" href="accessibility.css?v=14">
+<link rel="stylesheet" href="sidebar-layout.css?v=2">
 <link rel="stylesheet" href="structure-actions.css?v=1">
-<link rel="stylesheet" href="muscle-information.css?v=1">
-</head>
+<link rel="stylesheet" href="mobile-layout.css?v=3">
+<link rel="stylesheet" href="skin-regions-preview/skin-tools.css?v=2"></head>
 <body>
 <nav class="skip-links" aria-label="Keyboard shortcuts">
   <a href="#boneSearch">Skip to structure search</a>
@@ -33,15 +33,17 @@
       <label class="specimen-picker">
         <span>Choose model</span>
         <select id="modelPicker" aria-label="Choose anatomy model" aria-describedby="modelPickerHelp">
-          <option value="muscular">Muscular system</option>
-          <option value="skeleton">Skeleton</option>
-          <option value="nervous">Nervous system (review preview)</option>
-          <option value="skull">Colored skull</option>
-          <option value="skull-exploded">Exploded skull</option>
-          <option value="skull-base">Base of skull</option>
-          <option value="upper-limb">Upper limbs</option>
-          <option value="lower-limb">Lower limbs</option>
-        </select>
+<option value="layered">Combined Layered Anatomy — Review Preview</option>
+<option value="lower-limb">Lower Limbs</option>
+<option value="muscular">Muscular System</option>
+<option value="nervous">Nervous System — Review Preview</option>
+<option value="skeleton">Skeleton (Overview)</option>
+<option value="skin-regions">Skin &amp; Body Regions — Review Preview</option>
+<option value="skull-base">Base of Skull</option>
+<option value="skull-exploded">Exploded Skull</option>
+<option value="skull">Colored Skull</option>
+<option value="upper-limb">Upper Limbs</option>
+</select>
         <small id="modelPickerHelp">Choosing a model loads a new page.</small>
       </label>
     </div>
@@ -62,7 +64,7 @@
         <button class="btn btn--sm" id="ghostBtn" type="button" disabled>Ghost Others</button>
       </div>
       <button class="btn btn--sm btn--wide" id="showAllBtn" type="button" disabled>Show All</button>
-      <button class="btn btn--sm btn--wide is-hidden" id="attachmentViewBtn" type="button" disabled>View Attachments on Skeleton</button>
+      <button class="btn btn--sm btn--wide is-hidden" id="attachmentViewBtn" type="button" aria-pressed="false" disabled>View Attachments on Skeleton</button>
     </div>
 
     <div class="sidebar__section is-hidden" id="structureLayers">
@@ -87,6 +89,10 @@
         placeholder="Search bones&hellip;"
         autocomplete="off"
         aria-label="Search bones">
+      <div id="muscleInformationCoverage" hidden>
+        <p id="muscleCoverageStatus" class="empty-note" role="status">Loading muscle information coverage…</p>
+        <label class="study-coverage-filter"><input id="muscleInformationOnly" type="checkbox" disabled> Show only muscles with all four information fields</label>
+      </div>
       <p class="visually-hidden" id="searchStatus" role="status" aria-atomic="true"></p>
       <ul class="bone-list" id="boneList" aria-label="Anatomical structures"></ul>
     </div>
@@ -116,6 +122,7 @@
   <!-- =============================================================== Stage -->
   <main class="stage" aria-label="Anatomy model and text study">
 
+    <div class="stage__viewport">
     <button
       class="stage__fullscreen-btn"
       id="fullscreenBtn"
@@ -185,6 +192,7 @@
           <label class="markup-field markup-position"><span>Horizontal position (%)</span><input id="markupX" type="number" min="0" max="100" value="50"></label>
           <label class="markup-field markup-position"><span>Vertical position (%)</span><input id="markupY" type="number" min="0" max="100" value="65"></label>
           <button class="markup-tool" id="placeMarkupTextBtn" type="button">Place typed label</button>
+
           <button class="markup-tool" id="markupUndoBtn" type="button" disabled>Undo</button>
           <button class="markup-tool" id="markupClearBtn" type="button" disabled>Clear</button>
           <button class="markup-tool markup-tool--download" id="downloadMarkupBtn" type="button">Download Marked View</button>
@@ -196,7 +204,6 @@
       </div>
     </section>
 
-    <div class="stage__hint" id="stageHint">Click any bone to select it</div>
 
     <div class="author-banner" id="authorBanner">
       Author Mode &mdash; complete the details, then click the model to place the annotation
@@ -243,15 +250,19 @@
       <div class="spinner"></div>
       <span id="loadingText">Loading specimen&hellip;</span>
     </div>
+    </div>
+    <div class="stage__hint" id="stageHint">Click any bone to select it</div>
 
   </main>
 
 </div>
 
-<script src="mesh-visibility.js?v=1"></script>
-<script src="accessibility.js?v=12"></script>
-<script src="muscle-information.js?v=1"></script>
-<script src="app.js?v=26"></script>
-<script src="sidebar-layout.js?v=3"></script>
-</body>
+<link rel="stylesheet" href="layered-controls.css?v=4">
+<script src="mesh-visibility.js?v=2"></script>
+<script src="accessibility.js?v=18"></script>
+<script src="app.js?v=41"></script>
+<script src="sidebar-layout.js?v=5"></script>
+<script src="layered-controls.js?v=1"></script>
+<script src="mobile-layout.js?v=3"></script>
+<script src="skin-regions-preview/skin-tools.js?v=4"></script></body>
 </html>
