@@ -1425,6 +1425,10 @@
     if (viewMode === "isolate") applyIsolate(false);
     else if (viewMode === "ghost") applyIsolate(true);
     else if (viewMode === "attachments") applyAttachmentView();
+    else if (viewMode === "endpoint") {
+      if (endpointPatches(attachmentEndpoint).length) showAttachmentEndpoint(attachmentEndpoint, false);
+      else restoreView();
+    }
 
     if (options.scrollIntoView !== false) {
       var el = boneList.querySelector('[data-mat="' + cssEscape(name) + '"]');
@@ -1507,6 +1511,75 @@
     attachmentViewBtn.setAttribute("aria-pressed", "false");
   }
 
+  var attachmentEndpoint = null;
+  var endpointControls = document.createElement("div");
+  endpointControls.id = "attachmentEndpointControls";
+  var endpointNote = document.createElement("p");
+  endpointNote.className = "empty-note";
+  endpointNote.id = "attachmentEndpointNote";
+  endpointNote.setAttribute("role", "status");
+  var endpointButtons = [];
+  ["origin", "insertion"].forEach(function (kind) {
+    var button = document.createElement("button");
+    button.type = "button"; button.className = "btn";
+    button.textContent = kind === "origin" ? "Origin" : "Insertion";
+    button.id = "attachment" + (kind === "origin" ? "Origin" : "Insertion") + "Btn";
+    button.setAttribute("aria-describedby", endpointNote.id);
+    button.style.minHeight = "44px";
+    button.disabled = true;
+    button.addEventListener("click", function () { showAttachmentEndpoint(kind, true); });
+    endpointControls.appendChild(button); endpointButtons.push(button);
+  });
+  endpointControls.appendChild(endpointNote);
+  attachmentViewBtn.insertAdjacentElement("afterend", endpointControls);
+  function endpointPatches(kind) {
+    var record = selectedName && config && config.attachmentsByStructure && config.attachmentsByStructure[selectedName];
+    return (record && record[kind] || []).filter(function (name) {
+      return findState(name) && !hiddenStructures.has(materialOwner(name));
+    });
+  }
+  function syncEndpointControls() {
+    endpointControls.hidden = !config || !config.attachmentsByStructure || !selectedName;
+    endpointButtons.forEach(function (button, i) {
+      var kind = i ? "insertion" : "origin";
+      button.disabled = markupModeOn || !meshVisibility || !endpointPatches(kind).length;
+      button.setAttribute("aria-label", (kind === "origin" ? "Origin" : "Insertion") + " close-up" + (selectedName ? " for " + prettifyName(selectedName) : ""));
+      button.setAttribute("aria-pressed", String(viewMode === "endpoint" && attachmentEndpoint === kind));
+    });
+    if (viewMode !== "endpoint") endpointNote.textContent = "Close-up source surfaces; skeleton faded. Placement review pending. Removed surfaces stay removed.";
+  }
+  document.addEventListener("anatomy-visibility", syncEndpointControls);
+  document.addEventListener("anatomy-markup", syncEndpointControls);
+  function showAttachmentEndpoint(kind, frame) {
+    if (markupModeOn) return;
+    var names = endpointPatches(kind);
+    var states = names.map(findState);
+    var bounds = meshVisibility && meshVisibility.bounds(states);
+    if (!bounds) return;
+    attachmentEndpoint = kind; viewMode = "endpoint";
+    materialStates.forEach(function (state) {
+      if (names.indexOf(state.name) !== -1) applyLook(state, null, 1);
+      else applyLook(state, null, structureGroupId(state) === "skeleton" && isStructureVisible(state) ? 0.14 : 0);
+    });
+    if (frame) {
+      var orbit = viewer.getCameraOrbit(), rect = viewer.getBoundingClientRect();
+      var fov = viewer.getFieldOfView() * Math.PI / 180;
+      var radius = Math.max(0.10, bounds.size.length() * 0.85 /
+        (Math.tan(fov / 2) * Math.min(1, rect.width / rect.height)));
+      applyCamera(orbit.theta + "rad " + orbit.phi + "rad " + radius + "m",
+        bounds.center.x + "m " + bounds.center.y + "m " + bounds.center.z + "m");
+      setActivePreset(null);
+    }
+    var owners = new Set();
+    names.forEach(function (name) { (config.attachmentOwners[name] || []).forEach(function (owner) { owners.add(prettifyName(owner)); }); });
+    endpointNote.textContent = prettifyName(selectedName) + ": " + kind + ". " + names.length +
+      " source surface(s). " + (owners.size > 1 ? "Shared surface owners: " + Array.from(owners).join("; ") + ". " : "") +
+      "Placement review pending. Go back restores the previous view.";
+    isolateBtn.classList.remove("btn--active"); ghostBtn.classList.remove("btn--active");
+    attachmentViewBtn.classList.remove("btn--active"); attachmentViewBtn.setAttribute("aria-pressed", "false");
+    syncEndpointControls();
+    if (frame) visibilityChanged(endpointNote.textContent, true);
+  }
   function applyAttachmentView() {
     if (!selectedName) return;
     materialStates.forEach(function (state) {
@@ -2241,7 +2314,7 @@
     var orbit = viewer.getCameraOrbit();
     var target = viewer.getCameraTarget();
     return {selected:Array.from(selectedNames),primary:selectedName,hidden:Array.from(hiddenStructures),
-      hideHistory:hideHistory.slice(),layers:Object.assign({},layerVisibility),depth:layerDepth,mode:viewMode,
+      hideHistory:hideHistory.slice(),layers:Object.assign({},layerVisibility),depth:layerDepth,mode:viewMode,endpoint:attachmentEndpoint,
       orbit:orbit.theta + "rad " + orbit.phi + "rad " + orbit.radius + "m",target:target.x + "m " + target.y + "m " + target.z + "m",
       preset:Array.from(presetList.querySelectorAll('.preset-btn')).findIndex(function (b) { return b.classList.contains('is-active'); })};
   }
@@ -2295,7 +2368,7 @@
         var on = layerVisibility[b.dataset.layer] !== false;
         b.setAttribute('aria-pressed',String(on)); b.classList.toggle('is-active',on);
       });
-      selectedNames = new Set(s.selected); selectedName = s.primary; viewMode = s.mode;
+      selectedNames = new Set(s.selected); selectedName = s.primary; viewMode = s.mode; attachmentEndpoint = s.endpoint || null;
       if (selectedName) selectByName(selectedName,{refresh:true,scrollIntoView:false});
       else clearSelection();
       if (s.mode === 'all') restoreView();

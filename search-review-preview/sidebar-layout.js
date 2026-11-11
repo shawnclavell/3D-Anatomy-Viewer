@@ -127,7 +127,7 @@
   document.getElementById("sidebarDissectionTitle").classList.add("visually-hidden");
   disclosure("Restore removed structures", [removal], toolsBody);
   var attachmentHelp = document.getElementById("attachmentStatus");
-  disclosure("Attachment details", [attachmentHelp, document.getElementById("attachmentViewBtn")], toolsBody);
+  disclosure("Attachment details", [attachmentHelp, document.getElementById("attachmentViewBtn"), document.getElementById("attachmentEndpointControls")], toolsBody);
 
   // The selected structure owns contextual actions and its information.
   document.getElementById("ghostBtn").textContent = "Fade others";
