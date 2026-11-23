@@ -1,0 +1,36 @@
+/* WCAG 2.2 AA foundation. No global fixed-height or minimum-width text controls. */
+* { box-sizing: border-box; }
+html { scroll-padding: 1rem; }
+body { overflow-wrap: anywhere; }
+button, input, select, summary { color: #f4f5f7; background: #202b39; border: 2px solid #9caebe; font: inherit; }
+button, select, input, summary, a { scroll-margin: 1rem; }
+button, input, select, summary { min-height: 44px; }
+button, select, input { max-width: 100%; }
+button { cursor: pointer; }
+button:disabled, input:disabled, select:disabled { color: #c4cdd6; border-color: #74879a; cursor: default; }
+button:hover:not(:disabled), summary:hover { background: #33485e; }
+button:active:not(:disabled) { background: #405a76; }
+.controls > * { min-width: 0; }
+.controls input { min-width: 0; max-width: 100%; }
+.controls label { max-width: 100%; }
+.controls select { width: auto; }
+#movement { width: min(100%, 35rem); }
+#scrub { accent-color: #8ecbff; width: min(100%, 18rem); }
+#seek-time { width: 7rem; }
+fieldset { min-width: 0; margin: 1rem 0; border: 1px solid #9caebe; }
+legend { padding: .25rem; }
+summary { padding: .5rem; cursor: pointer; }
+section { margin-block: 1.5rem; }
+#text-study { border-block: 1px solid #9caebe; padding-block: 1rem; }
+#text-study li { margin-block: .6rem; line-height: 1.6; }
+#all-movement-text article { border-top: 1px solid #9caebe; margin-block: 1rem; }
+:focus-visible { outline: 3px solid #8ecbff; outline-offset: 4px; }
+.skip-link { position: absolute; left: 1rem; top: -10rem; padding: 1rem; z-index: 100; background: #121821; }
+.skip-link:focus { top: 1rem; }
+.skip-link:focus + .skip-link:focus { top: 5rem; }
+video { width: 100%; max-width: 100%; }
+[hidden] { display: none !important; }
+@media (max-width: 600px) { .controls { align-items: stretch; } .controls label { width: 100%; } .controls select { max-width: 100%; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
+@media (forced-colors: active) { button, input, select, summary, fieldset { border-color: ButtonText; } :focus-visible { outline-color: Highlight; } a { color: LinkText; } }
+[aria-invalid="true"] { border: 3px solid #ffb4ab; }

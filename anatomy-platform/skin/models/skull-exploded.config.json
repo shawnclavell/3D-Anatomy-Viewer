@@ -1,0 +1,14 @@
+{
+  "label": "Exploded Skull",
+  "glb": "assets/overview-exploded-skull.glb?v=2",
+
+  "cameraPresets": [
+    { "name": "Anterior", "orbit": "0deg 90deg 1.30m", "target": "0m 1.58m 0.01m" },
+    { "name": "Posterior", "orbit": "180deg 90deg 1.30m", "target": "0m 1.58m 0.01m" },
+    { "name": "Left Lateral", "orbit": "90deg 90deg 1.40m", "target": "0m 1.58m 0.01m" },
+    { "name": "Right Lateral", "orbit": "-90deg 90deg 1.40m", "target": "0m 1.58m 0.01m" },
+    { "name": "Superior Oblique", "orbit": "35deg 40deg 1.40m", "target": "0m 1.58m 0.01m" }
+  ],
+
+  "hotspots": []
+}

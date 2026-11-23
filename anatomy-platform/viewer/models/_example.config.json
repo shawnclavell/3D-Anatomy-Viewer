@@ -1,0 +1,39 @@
+{
+  "_comment": "Template only — copy this file, rename it to match your model key (e.g. skull.config.json becomes index.html?model=skull), and fill in real values. Delete this _comment field in real configs.",
+
+  "label": "Model Display Name",
+  "glb": "../assets/your-model-file.glb",
+
+  "cameraPresets": [
+    { "name": "Anterior", "orbit": "0deg 90deg 2.5m", "target": "0m 1.4m 0m" },
+    { "name": "Posterior", "orbit": "180deg 90deg 2.5m", "target": "0m 1.4m 0m" },
+    { "name": "Lateral (Right)", "orbit": "90deg 90deg 2.5m", "target": "0m 1.4m 0m" }
+  ],
+
+  "hotspots": [
+    {
+      "id": "landmark-example",
+      "type": "landmark",
+      "label": "Bone Landmark",
+      "position": "0.02 1.62 0.08",
+      "normal": "0 0 1"
+    },
+    {
+      "id": "origin-example",
+      "type": "origin",
+      "label": "Attachment Area",
+      "muscle": "Muscle Name",
+      "description": "Optional instructional note about the attachment.",
+      "position": "0.04 1.58 0.06",
+      "normal": "0 0 1"
+    },
+    {
+      "id": "insertion-example",
+      "type": "insertion",
+      "label": "Attachment Area",
+      "muscle": "Muscle Name",
+      "position": "0.06 1.54 0.04",
+      "normal": "0 0 1"
+    }
+  ]
+}

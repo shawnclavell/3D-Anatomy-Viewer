@@ -1,0 +1,35 @@
+#layerButtons.layered-groups { display: block; }
+#layerButtons .layered-group {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1rem;
+  min-inline-size: 0;
+}
+#layerButtons .layered-group legend {
+  color: inherit;
+  font-size: .85rem;
+  font-weight: 600;
+  padding: 0 0 .5rem;
+}
+.layered-group__buttons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem; }
+#layerButtons .layered-group button { min-height: 44px; width: 100%; margin: 0; overflow-wrap: anywhere; }
+#layerButtons .layered-group:first-child .layered-group__buttons { grid-template-columns: 1fr; }
+@media (forced-colors: active) {
+  #layerButtons .layered-group button { border: 1px solid ButtonText; }
+  #layerButtons .layered-group button[aria-pressed="true"] { border: 3px solid Highlight; }
+}
+
+.layer-depth { min-inline-size: 0; margin: 0 0 .75rem; padding: 0; border: 0; }
+.layer-depth legend { font-weight: 600; }
+
+.layer-depth output { display: block; margin-block: .25rem; font-size: .85rem; }
+.layer-depth input, .layer-depth select { box-sizing: border-box; width: 100%; min-height: 44px; }
+.layer-depth input { accent-color: #49c5d6; }
+.layer-depth select { background: #20282d; color: #f1f4f5; padding: .5rem; }
+.layer-depth-steps { display: flex; gap: .5rem; margin-block: .5rem; }
+.layer-depth button { min-height: 44px; flex: 1; background: #20282d; color: #f1f4f5; border: 1px solid #9ca9b0; }
+.layer-depth :focus-visible { outline: 3px solid #70d4f0; outline-offset: 3px; }
+@media (forced-colors: active) {
+  .layer-depth select, .layer-depth button { background: Canvas; color: CanvasText; border: 1px solid ButtonText; }
+  .layer-depth :focus-visible { outline-color: Highlight; }
+}

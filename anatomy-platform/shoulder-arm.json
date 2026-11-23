@@ -1,0 +1,603 @@
+{
+  "id": "muscular-shoulder-arm",
+  "title": "Shoulder and arm muscles",
+  "side": "right",
+  "courseSource": "BIO201_Muscle_Atlas_Entries.json",
+  "targets": [
+    {
+      "id": "MUSC-029",
+      "name": "Pectoralis major",
+      "region": "Shoulder joint",
+      "location": "Large superficial muscle of the anterior chest.",
+      "recognition": "Broad fan from the anterior chest to the humerus; forms the anterior axillary fold.",
+      "origin": "Clavicle — medial half; Sternum — anterior surface; Costal cartilages — upper ribs; Abdominal aponeurosis — adjacent fibers.",
+      "insertion": "Humerus — lateral lip of intertubercular sulcus.",
+      "action": "Shoulder adduction; Medial rotation; Shoulder flexion (clavicular fibers)",
+      "source": "https://med.libretexts.org/Bookshelves/Anatomy_and_Physiology/Human_Anatomy_(Lange_et_al.)/09:_Muscular_System/9.06:_Appendicular_Muscles_of_the_Pectoral_Girdle_and_Upper_Limbs",
+      "movementConnections": [
+        "shoulder"
+      ],
+      "parts": [
+        {
+          "id": "structure-5b6bc3c090d774ce",
+          "name": "(Abdominal part of pectoralis major muscle).r",
+          "details": {
+            "origin": "Aponeurosis of external abdominal oblique.",
+            "insertion": "Lateral lip of intertubercular sulcus of humerus.",
+            "action": "Assists arm adduction and extension from flexion.",
+            "innervation": "Medial and lateral pectoral nerves; distribution varies by part.",
+            "sources": [
+              {
+                "title": "Pectoralis major (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK525991/"
+              }
+            ],
+            "status": "Sourced educational summary; instructor review pending.",
+            "checkedOn": "2026-10-22"
+          }
+        },
+        {
+          "id": "structure-9ac365e0905b0b22",
+          "name": "Clavicular head of pectoralis major muscle.r",
+          "details": {
+            "origin": "Anterior medial half of clavicle.",
+            "insertion": "Lateral lip of intertubercular sulcus of humerus.",
+            "action": "Adducts and medially rotates arm; helps flex shoulder.",
+            "innervation": "Medial and lateral pectoral nerves; distribution varies by part.",
+            "sources": [
+              {
+                "title": "Pectoralis major (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK525991/"
+              }
+            ],
+            "status": "Sourced educational summary; instructor review pending.",
+            "checkedOn": "2026-10-22"
+          }
+        },
+        {
+          "id": "structure-33f3d0951bf3f448",
+          "name": "Sternocostal head of pectoralis major muscle.r",
+          "details": {
+            "origin": "Anterior sternum and upper costal cartilages.",
+            "insertion": "Lateral lip of intertubercular sulcus of humerus.",
+            "action": "Adducts and medially rotates arm; extends a flexed shoulder.",
+            "innervation": "Medial and lateral pectoral nerves; distribution varies by part.",
+            "sources": [
+              {
+                "title": "Pectoralis major (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK525991/"
+              }
+            ],
+            "status": "Sourced educational summary; instructor review pending.",
+            "checkedOn": "2026-10-22"
+          }
+        }
+      ],
+      "reviewStatus": "course-level attachments and actions reviewed; instructor approval pending"
+    },
+    {
+      "id": "MUSC-030",
+      "name": "Latissimus dorsi",
+      "region": "Shoulder joint",
+      "location": "Broad superficial muscle of the lower posterior trunk.",
+      "recognition": "Broad lower-back sheet converges toward the axilla; helps form the posterior axillary fold.",
+      "origin": "Thoracic vertebrae — lower spinous processes; Ilium — iliac crest; Ribs — lower ribs; Thoracolumbar fascia.",
+      "insertion": "Humerus — floor of intertubercular sulcus.",
+      "action": "Shoulder extension; Shoulder adduction; Medial rotation",
+      "source": "https://med.libretexts.org/Bookshelves/Anatomy_and_Physiology/Human_Anatomy_(Lange_et_al.)/09:_Muscular_System/9.06:_Appendicular_Muscles_of_the_Pectoral_Girdle_and_Upper_Limbs",
+      "movementConnections": [
+        "shoulder"
+      ],
+      "parts": [
+        {
+          "id": "structure-bc7dbad5f9689a32",
+          "name": "Latissimus dorsi muscle.r",
+          "details": {
+            "origin": "Lower thoracic spinous processes, thoracolumbar fascia, iliac crest and lower ribs.",
+            "insertion": "Floor of humeral intertubercular sulcus.",
+            "action": "Extends, adducts and medially rotates arm.",
+            "innervation": "Thoracodorsal nerve.",
+            "sources": [
+              {
+                "title": "Extrinsic back muscles — NCBI Bookshelf",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK537216/"
+              }
+            ],
+            "checkedOn": "2026-10-22",
+            "status": "Sourced educational summary; instructor review pending."
+          }
+        }
+      ],
+      "reviewStatus": "course-level attachments and actions reviewed; instructor approval pending"
+    },
+    {
+      "id": "MUSC-031",
+      "name": "Deltoid",
+      "region": "Shoulder joint",
+      "location": "Superficial muscle covering the shoulder.",
+      "recognition": "Triangular shoulder cap; trace its distal attachment to the lateral humeral shaft.",
+      "origin": "Clavicle — lateral third; Scapula — acromion and spine.",
+      "insertion": "Humerus — deltoid tuberosity.",
+      "action": "Shoulder abduction (middle fibers); Shoulder flexion (anterior fibers); Shoulder extension (posterior fibers); Medial rotation (anterior fibers); Lateral rotation (posterior fibers)",
+      "source": "https://med.libretexts.org/Bookshelves/Anatomy_and_Physiology/Human_Anatomy_(Lange_et_al.)/09:_Muscular_System/9.06:_Appendicular_Muscles_of_the_Pectoral_Girdle_and_Upper_Limbs",
+      "movementConnections": [
+        "shoulder"
+      ],
+      "parts": [
+        {
+          "id": "structure-dfbfb91949824f13",
+          "name": "Acromial part of deltoid muscle.r",
+          "details": {
+            "origin": "Acromion of scapula.",
+            "insertion": "Deltoid tuberosity of humerus.",
+            "action": "Abducts arm.",
+            "innervation": "Axillary nerve.",
+            "sources": [
+              {
+                "title": "Shoulder and upper-limb muscles (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK482410/"
+              }
+            ],
+            "status": "Sourced educational summary; instructor review pending.",
+            "checkedOn": "2026-10-22"
+          }
+        },
+        {
+          "id": "structure-bc88f0f42d616eeb",
+          "name": "Clavicular part of deltoid muscle.r",
+          "details": {
+            "origin": "Lateral third of clavicle.",
+            "insertion": "Deltoid tuberosity of humerus.",
+            "action": "Flexes and medially rotates arm.",
+            "innervation": "Axillary nerve.",
+            "sources": [
+              {
+                "title": "Shoulder and upper-limb muscles (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK482410/"
+              }
+            ],
+            "status": "Sourced educational summary; instructor review pending.",
+            "checkedOn": "2026-10-22"
+          }
+        },
+        {
+          "id": "structure-3d3652cd3db07f18",
+          "name": "Scapular spinal part of deltoid muscle.r",
+          "details": {
+            "origin": "Spine of scapula.",
+            "insertion": "Deltoid tuberosity of humerus.",
+            "action": "Extends and laterally rotates arm.",
+            "innervation": "Axillary nerve.",
+            "sources": [
+              {
+                "title": "Shoulder and upper-limb muscles (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK482410/"
+              }
+            ],
+            "status": "Sourced educational summary; instructor review pending.",
+            "checkedOn": "2026-10-22"
+          }
+        }
+      ],
+      "reviewStatus": "course-level attachments and actions reviewed; instructor approval pending"
+    },
+    {
+      "id": "MUSC-032",
+      "name": "Supraspinatus",
+      "region": "Shoulder joint",
+      "location": "Supraspinous fossa of the scapula, deep to trapezius.",
+      "recognition": "Small rotator-cuff muscle above the scapular spine; tendon passes beneath the acromion.",
+      "origin": "Scapula — supraspinous fossa.",
+      "insertion": "Humerus — superior facet of greater tubercle.",
+      "action": "Shoulder abduction",
+      "source": "https://med.libretexts.org/Bookshelves/Anatomy_and_Physiology/Human_Anatomy_(Lange_et_al.)/09:_Muscular_System/9.06:_Appendicular_Muscles_of_the_Pectoral_Girdle_and_Upper_Limbs",
+      "movementConnections": [
+        "shoulder"
+      ],
+      "parts": [
+        {
+          "id": "structure-01cb75938da65be0",
+          "name": "Supraspinatus muscle.r",
+          "details": {
+            "origin": "Supraspinous fossa of scapula.",
+            "insertion": "Superior facet of greater tubercle of humerus.",
+            "action": "Initiates arm abduction; stabilizes humeral head.",
+            "innervation": "Suprascapular nerve.",
+            "sources": [
+              {
+                "title": "Rotator cuff anatomy (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK441844/"
+              }
+            ],
+            "status": "Sourced educational summary; instructor review pending.",
+            "checkedOn": "2026-10-22"
+          }
+        }
+      ],
+      "reviewStatus": "course-level attachments and actions reviewed; instructor approval pending"
+    },
+    {
+      "id": "MUSC-033",
+      "name": "Infraspinatus",
+      "region": "Shoulder joint",
+      "location": "Posterior scapula, below the scapular spine.",
+      "recognition": "Broad triangular rotator-cuff muscle fills the fossa inferior to the scapular spine.",
+      "origin": "Scapula — infraspinous fossa.",
+      "insertion": "Humerus — middle facet of greater tubercle.",
+      "action": "Lateral rotation",
+      "source": "https://med.libretexts.org/Bookshelves/Anatomy_and_Physiology/Human_Anatomy_(Lange_et_al.)/09:_Muscular_System/9.06:_Appendicular_Muscles_of_the_Pectoral_Girdle_and_Upper_Limbs",
+      "movementConnections": [
+        "shoulder"
+      ],
+      "parts": [
+        {
+          "id": "structure-3eade513dbf4cded",
+          "name": "Infraspinatus muscle.r",
+          "details": {
+            "origin": "Infraspinous fossa of scapula.",
+            "insertion": "Middle facet of greater tubercle of humerus.",
+            "action": "Laterally rotates arm; stabilizes humeral head.",
+            "innervation": "Suprascapular nerve.",
+            "sources": [
+              {
+                "title": "Rotator cuff anatomy (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK441844/"
+              }
+            ],
+            "status": "Sourced educational summary; instructor review pending.",
+            "checkedOn": "2026-10-22"
+          }
+        }
+      ],
+      "reviewStatus": "course-level attachments and actions reviewed; instructor approval pending"
+    },
+    {
+      "id": "MUSC-034",
+      "name": "Subscapularis",
+      "region": "Shoulder joint",
+      "location": "Anterior or costal surface of the scapula, against the thoracic wall.",
+      "recognition": "Rotator-cuff muscle on the front of the scapula; its humeral attachment is the lesser tubercle.",
+      "origin": "Scapula — subscapular fossa.",
+      "insertion": "Humerus — lesser tubercle.",
+      "action": "Medial rotation",
+      "source": "https://med.libretexts.org/Bookshelves/Anatomy_and_Physiology/Human_Anatomy_(Lange_et_al.)/09:_Muscular_System/9.06:_Appendicular_Muscles_of_the_Pectoral_Girdle_and_Upper_Limbs",
+      "movementConnections": [
+        "shoulder"
+      ],
+      "parts": [
+        {
+          "id": "structure-bb19dc35992bc59a",
+          "name": "Subscapularis muscle.r",
+          "details": {
+            "origin": "Subscapular fossa of scapula.",
+            "insertion": "Lesser tubercle of humerus.",
+            "action": "Medially rotates arm; stabilizes humeral head.",
+            "innervation": "Upper and lower subscapular nerves.",
+            "sources": [
+              {
+                "title": "Rotator cuff anatomy (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK441844/"
+              }
+            ],
+            "status": "Sourced educational summary; instructor review pending.",
+            "checkedOn": "2026-10-22"
+          }
+        }
+      ],
+      "reviewStatus": "course-level attachments and actions reviewed; instructor approval pending"
+    },
+    {
+      "id": "MUSC-035",
+      "name": "Teres major",
+      "region": "Shoulder joint",
+      "location": "Posterior inferior scapular region.",
+      "recognition": "Thicker inferior band from scapula to humerus; it is not a rotator-cuff muscle.",
+      "origin": "Scapula — posterior surface near the inferior angle.",
+      "insertion": "Humerus — medial lip of intertubercular sulcus.",
+      "action": "Shoulder extension; Shoulder adduction; Medial rotation",
+      "source": "https://med.libretexts.org/Bookshelves/Anatomy_and_Physiology/Human_Anatomy_(Lange_et_al.)/09:_Muscular_System/9.06:_Appendicular_Muscles_of_the_Pectoral_Girdle_and_Upper_Limbs",
+      "movementConnections": [
+        "shoulder"
+      ],
+      "parts": [
+        {
+          "id": "structure-74df36823559349e",
+          "name": "Teres major muscle.r",
+          "details": {
+            "origin": "Posterior inferior angle of scapula.",
+            "insertion": "Medial lip of humeral intertubercular sulcus.",
+            "action": "Adducts, extends and medially rotates arm.",
+            "innervation": "Lower subscapular nerve.",
+            "sources": [
+              {
+                "title": "Individual muscle anatomy reference",
+                "url": "https://en.wikipedia.org/wiki/Teres_major_muscle"
+              }
+            ],
+            "checkedOn": "2026-10-22",
+            "status": "Sourced educational summary; instructor review pending."
+          }
+        }
+      ],
+      "reviewStatus": "course-level attachments and actions reviewed; instructor approval pending"
+    },
+    {
+      "id": "MUSC-036",
+      "name": "Teres minor",
+      "region": "Shoulder joint",
+      "location": "Posterior shoulder along the lateral scapular border.",
+      "recognition": "Narrow band below infraspinatus and above teres major; it belongs to the rotator cuff.",
+      "origin": "Scapula — lateral border.",
+      "insertion": "Humerus — inferior facet of greater tubercle.",
+      "action": "Lateral rotation",
+      "source": "https://med.libretexts.org/Bookshelves/Anatomy_and_Physiology/Human_Anatomy_(Lange_et_al.)/09:_Muscular_System/9.06:_Appendicular_Muscles_of_the_Pectoral_Girdle_and_Upper_Limbs",
+      "movementConnections": [
+        "shoulder"
+      ],
+      "parts": [
+        {
+          "id": "structure-fd5c02294b475427",
+          "name": "Teres minor muscle.r",
+          "details": {
+            "origin": "Lateral border of scapula.",
+            "insertion": "Inferior facet of greater tubercle of humerus.",
+            "action": "Laterally rotates arm; stabilizes humeral head.",
+            "innervation": "Axillary nerve.",
+            "sources": [
+              {
+                "title": "Rotator cuff anatomy (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK441844/"
+              }
+            ],
+            "status": "Sourced educational summary; instructor review pending.",
+            "checkedOn": "2026-10-22"
+          }
+        }
+      ],
+      "reviewStatus": "course-level attachments and actions reviewed; instructor approval pending"
+    },
+    {
+      "id": "MUSC-037",
+      "name": "Coracobrachialis",
+      "region": "Shoulder joint",
+      "location": "Medial proximal arm, deep to the superficial biceps region.",
+      "recognition": "Short slender strap runs from the coracoid process to the humeral shaft and does not cross the elbow.",
+      "origin": "Scapula — coracoid process.",
+      "insertion": "Humerus — middle of medial shaft.",
+      "action": "Shoulder flexion; Shoulder adduction",
+      "source": "https://med.libretexts.org/Bookshelves/Anatomy_and_Physiology/Human_Anatomy_(Lange_et_al.)/09:_Muscular_System/9.06:_Appendicular_Muscles_of_the_Pectoral_Girdle_and_Upper_Limbs",
+      "movementConnections": [
+        "shoulder"
+      ],
+      "parts": [
+        {
+          "id": "structure-355be994aa4e57ea",
+          "name": "Coracobrachialis muscle.r",
+          "details": {
+            "origin": "Coracoid process of scapula.",
+            "insertion": "Medial middle humeral shaft.",
+            "action": "Flexes and adducts arm.",
+            "innervation": "Musculocutaneous nerve.",
+            "sources": [
+              {
+                "title": "Individual muscle anatomy reference",
+                "url": "https://en.wikipedia.org/wiki/Coracobrachialis_muscle"
+              }
+            ],
+            "checkedOn": "2026-10-22",
+            "status": "Sourced educational summary; instructor review pending."
+          }
+        }
+      ],
+      "reviewStatus": "course-level attachments and actions reviewed; instructor approval pending"
+    },
+    {
+      "id": "MUSC-038",
+      "name": "Brachialis",
+      "region": "Elbow and forearm rotation",
+      "location": "Anterior distal arm, deep to biceps brachii.",
+      "recognition": "Broad muscle under biceps; its tendon attaches to the ulna rather than the radius.",
+      "origin": "Humerus — distal half of anterior shaft.",
+      "insertion": "Ulna — tuberosity and coronoid process.",
+      "action": "Elbow flexion",
+      "source": "https://med.libretexts.org/Bookshelves/Anatomy_and_Physiology/Human_Anatomy_(Lange_et_al.)/09:_Muscular_System/9.06:_Appendicular_Muscles_of_the_Pectoral_Girdle_and_Upper_Limbs",
+      "movementConnections": [
+        "elbow"
+      ],
+      "parts": [
+        {
+          "id": "structure-96ab3ac3accfa505",
+          "name": "Brachialis muscle.r",
+          "details": {
+            "origin": "Distal anterior humerus.",
+            "insertion": "Coronoid process and tuberosity of ulna.",
+            "action": "Flexes elbow.",
+            "innervation": "Primarily musculocutaneous nerve.",
+            "sources": [
+              {
+                "title": "Anatomy reference (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK482410/"
+              }
+            ],
+            "status": "Sourced summary; instructor review pending."
+          }
+        },
+        {
+          "id": "structure-355be994aa4e57ea",
+          "name": "Coracobrachialis muscle.r",
+          "details": {
+            "origin": "Coracoid process of scapula.",
+            "insertion": "Medial middle humeral shaft.",
+            "action": "Flexes and adducts arm.",
+            "innervation": "Musculocutaneous nerve.",
+            "sources": [
+              {
+                "title": "Individual muscle anatomy reference",
+                "url": "https://en.wikipedia.org/wiki/Coracobrachialis_muscle"
+              }
+            ],
+            "checkedOn": "2026-10-22",
+            "status": "Sourced educational summary; instructor review pending."
+          }
+        }
+      ],
+      "reviewStatus": "course-level attachments and actions reviewed; instructor approval pending"
+    },
+    {
+      "id": "MUSC-039",
+      "name": "Brachioradialis",
+      "region": "Elbow and forearm rotation",
+      "location": "Superficial lateral or radial side of the forearm.",
+      "recognition": "Long lateral forearm muscle ending on the distal radius; it does not attach to the hand.",
+      "origin": "Humerus — lateral supracondylar ridge.",
+      "insertion": "Radius — distal shaft near styloid process.",
+      "action": "Elbow flexion",
+      "source": "https://med.libretexts.org/Bookshelves/Anatomy_and_Physiology/Human_Anatomy_(Lange_et_al.)/09:_Muscular_System/9.06:_Appendicular_Muscles_of_the_Pectoral_Girdle_and_Upper_Limbs",
+      "movementConnections": [
+        "elbow"
+      ],
+      "parts": [
+        {
+          "id": "structure-2d3c7dfd5f1b9230",
+          "name": "Brachioradialis muscle.r",
+          "details": {
+            "origin": "Lateral supracondylar ridge of humerus.",
+            "insertion": "Distal radius near styloid.",
+            "action": "Flexes elbow, particularly in neutral forearm position.",
+            "innervation": "Radial nerve.",
+            "sources": [
+              {
+                "title": "Wrist extensor muscles (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK534805/"
+              }
+            ],
+            "status": "Sourced educational summary; instructor review pending.",
+            "checkedOn": "2026-10-22"
+          }
+        }
+      ],
+      "reviewStatus": "course-level attachments and actions reviewed; instructor approval pending"
+    },
+    {
+      "id": "MUSC-040",
+      "name": "Biceps brachii",
+      "region": "Elbow and forearm rotation",
+      "location": "Superficial anterior arm.",
+      "recognition": "Two proximal heads converge into an anterior-arm belly with a distal tendon to the radius.",
+      "origin": "Scapula — coracoid process (short head); Scapula — supraglenoid tubercle (long head).",
+      "insertion": "Radius — radial tuberosity; Forearm fascia — through bicipital aponeurosis.",
+      "action": "Elbow flexion; Forearm supination",
+      "source": "https://med.libretexts.org/Bookshelves/Anatomy_and_Physiology/Human_Anatomy_(Lange_et_al.)/09:_Muscular_System/9.06:_Appendicular_Muscles_of_the_Pectoral_Girdle_and_Upper_Limbs",
+      "movementConnections": [
+        "elbow",
+        "forearm"
+      ],
+      "parts": [
+        {
+          "id": "structure-9c0235353a40cca2",
+          "name": "Long head of biceps brachii.r",
+          "details": {
+            "origin": "Supraglenoid tubercle of scapula.",
+            "insertion": "Radial tuberosity and forearm fascia through bicipital aponeurosis.",
+            "action": "Flexes elbow and supinates forearm.",
+            "innervation": "Musculocutaneous nerve (C5–C6).",
+            "sources": [
+              {
+                "title": "Anatomy reference (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK482410/"
+              }
+            ],
+            "status": "Sourced summary; instructor review pending."
+          }
+        },
+        {
+          "id": "structure-b13d4b0e56fad4b1",
+          "name": "Short head of biceps brachii.r",
+          "details": {
+            "origin": "Coracoid process of scapula.",
+            "insertion": "Radial tuberosity and forearm fascia through bicipital aponeurosis.",
+            "action": "Flexes elbow and supinates forearm.",
+            "innervation": "Musculocutaneous nerve (C5–C6).",
+            "sources": [
+              {
+                "title": "Anatomy reference (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK482410/"
+              }
+            ],
+            "status": "Sourced summary; instructor review pending."
+          }
+        }
+      ],
+      "reviewStatus": "course-level attachments and actions reviewed; instructor approval pending"
+    },
+    {
+      "id": "MUSC-041",
+      "name": "Triceps brachii",
+      "region": "Elbow and forearm rotation",
+      "location": "Posterior arm.",
+      "recognition": "Three heads on the posterior arm converge on the olecranon; only the long head crosses the shoulder.",
+      "origin": "Scapula — infraglenoid tubercle (long head); Humerus — posterior shaft (lateral and medial heads).",
+      "insertion": "Ulna — olecranon process.",
+      "action": "Elbow extension; Shoulder extension (long head)",
+      "source": "https://med.libretexts.org/Bookshelves/Anatomy_and_Physiology/Human_Anatomy_(Lange_et_al.)/09:_Muscular_System/9.06:_Appendicular_Muscles_of_the_Pectoral_Girdle_and_Upper_Limbs",
+      "movementConnections": [
+        "shoulder",
+        "elbow"
+      ],
+      "parts": [
+        {
+          "id": "structure-8969933cb597044f",
+          "name": "Lateral head of triceps brachii.r",
+          "details": {
+            "origin": "Posterior humerus above radial groove.",
+            "insertion": "Olecranon of ulna and forearm fascia.",
+            "action": "Extends elbow.",
+            "innervation": "Radial nerve (C6–C8).",
+            "sources": [
+              {
+                "title": "Anatomy reference (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK482410/"
+              }
+            ],
+            "status": "Sourced summary; instructor review pending."
+          }
+        },
+        {
+          "id": "structure-2b9227516bdcec60",
+          "name": "Long head of triceps brachii.r",
+          "details": {
+            "origin": "Infraglenoid tubercle of scapula.",
+            "insertion": "Olecranon of ulna and forearm fascia.",
+            "action": "Extends elbow.",
+            "innervation": "Radial nerve (C6–C8).",
+            "sources": [
+              {
+                "title": "Anatomy reference (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK482410/"
+              }
+            ],
+            "status": "Sourced summary; instructor review pending."
+          }
+        },
+        {
+          "id": "structure-57697192a9eac6bf",
+          "name": "Medial head of triceps brachii.r",
+          "details": {
+            "origin": "Posterior humerus below radial groove.",
+            "insertion": "Olecranon of ulna and forearm fascia.",
+            "action": "Extends elbow.",
+            "innervation": "Radial nerve (C6–C8).",
+            "sources": [
+              {
+                "title": "Anatomy reference (NCBI Bookshelf)",
+                "url": "https://www.ncbi.nlm.nih.gov/sites/books/NBK482410/"
+              }
+            ],
+            "status": "Sourced summary; instructor review pending."
+          }
+        }
+      ],
+      "reviewStatus": "course-level attachments and actions reviewed; instructor approval pending"
+    }
+  ]
+}

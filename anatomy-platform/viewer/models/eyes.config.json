@@ -1,0 +1,144 @@
+{
+  "label": "Eyes - Review Preview",
+  "glb": "assets/overview-eyes.glb?v=1",
+  "alt": "Paired source-derived eye structures with individually selectable parts, optional tear apparatus and optic nerves. Use the structure index and Isolate to expose internal structures.",
+  "reviewNote": "Review preview: eye anatomy, source subdivisions and teaching equivalence await instructor review. No cut surfaces or missing structures invented. Internal layers may overlap; use Isolate or Ghost Others.",
+  "defaultPreset": 0,
+  "cameraPresets": [
+    {
+      "name": "Both eyes - Anterior",
+      "orbit": "0deg 90deg 0.30303m",
+      "target": "0.00000m 1.58323m 0.04852m"
+    },
+    {
+      "name": "Both eyes - Superior",
+      "orbit": "0deg 5deg 0.30303m",
+      "target": "0.00000m 1.58323m 0.04852m"
+    },
+    {
+      "name": "Both eyes - Posterior",
+      "orbit": "180deg 90deg 0.30303m",
+      "target": "0.00000m 1.58323m 0.04852m"
+    },
+    {
+      "name": "Right eye - Anterior",
+      "orbit": "0deg 90deg 0.12000m",
+      "target": "-0.03057m 1.59070m 0.06449m"
+    },
+    {
+      "name": "Right eye - Lateral",
+      "orbit": "90deg 90deg 0.12000m",
+      "target": "-0.03057m 1.59070m 0.06449m"
+    },
+    {
+      "name": "Right eye - Posterior",
+      "orbit": "180deg 90deg 0.12000m",
+      "target": "-0.03057m 1.59070m 0.06449m"
+    },
+    {
+      "name": "Left eye - Anterior",
+      "orbit": "0deg 90deg 0.12000m",
+      "target": "0.03057m 1.59070m 0.06449m"
+    },
+    {
+      "name": "Left eye - Lateral",
+      "orbit": "-90deg 90deg 0.12000m",
+      "target": "0.03057m 1.59070m 0.06449m"
+    },
+    {
+      "name": "Left eye - Posterior",
+      "orbit": "180deg 90deg 0.12000m",
+      "target": "0.03057m 1.59070m 0.06449m"
+    }
+  ],
+  "structureGroups": [
+    {
+      "id": "eye",
+      "label": "Eye structures (22)",
+      "visible": true
+    },
+    {
+      "id": "lacrimal",
+      "label": "Tear apparatus (10)",
+      "visible": false
+    },
+    {
+      "id": "optic",
+      "label": "Optic nerves (2)",
+      "visible": false
+    }
+  ],
+  "structureMembership": {
+    "Nervous::Ampulla of lacrimal canaliculus.l": "lacrimal",
+    "Nervous::Ampulla of lacrimal canaliculus.r": "lacrimal",
+    "Nervous::Anterior chamber of eyeball.l": "eye",
+    "Nervous::Anterior chamber of eyeball.r": "eye",
+    "Nervous::Anterior segment of eyeball.l": "eye",
+    "Nervous::Anterior segment of eyeball.r": "eye",
+    "Nervous::Cornea.l": "eye",
+    "Nervous::Cornea.r": "eye",
+    "Nervous::Iris.l": "eye",
+    "Nervous::Iris.r": "eye",
+    "Nervous::Lacrimal canaliculus.l": "lacrimal",
+    "Nervous::Lacrimal canaliculus.r": "lacrimal",
+    "Nervous::Lacrimal gland.l": "lacrimal",
+    "Nervous::Lacrimal gland.r": "lacrimal",
+    "Nervous::Lacrimal sac.l": "lacrimal",
+    "Nervous::Lacrimal sac.r": "lacrimal",
+    "Nervous::Lens.l": "eye",
+    "Nervous::Lens.r": "eye",
+    "Nervous::Nasolacrimal duct.l": "lacrimal",
+    "Nervous::Nasolacrimal duct.r": "lacrimal",
+    "Nervous::Optic nerve (II).l": "optic",
+    "Nervous::Optic nerve (II).r": "optic",
+    "Nervous::Posterior segment of eyeball.l": "eye",
+    "Nervous::Posterior segment of eyeball.r": "eye",
+    "Nervous::Retina.l": "eye",
+    "Nervous::Retina.r": "eye",
+    "Nervous::Sclera.l": "eye",
+    "Nervous::Sclera.r": "eye",
+    "Nervous::Suspensory ligament of eyeball.l": "eye",
+    "Nervous::Suspensory ligament of eyeball.r": "eye",
+    "Nervous::Vitreous body.l": "eye",
+    "Nervous::Vitreous body.r": "eye",
+    "Nervous::Zonular fibres.l": "eye",
+    "Nervous::Zonular fibres.r": "eye"
+  },
+  "structureLabels": {
+    "Nervous::Ampulla of lacrimal canaliculus.l": "Ampulla of lacrimal canaliculus (left)",
+    "Nervous::Ampulla of lacrimal canaliculus.r": "Ampulla of lacrimal canaliculus (right)",
+    "Nervous::Anterior chamber of eyeball.l": "Anterior chamber of eyeball (left)",
+    "Nervous::Anterior chamber of eyeball.r": "Anterior chamber of eyeball (right)",
+    "Nervous::Anterior segment of eyeball.l": "Anterior segment of eyeball (left)",
+    "Nervous::Anterior segment of eyeball.r": "Anterior segment of eyeball (right)",
+    "Nervous::Cornea.l": "Cornea (left)",
+    "Nervous::Cornea.r": "Cornea (right)",
+    "Nervous::Iris.l": "Iris (left)",
+    "Nervous::Iris.r": "Iris (right)",
+    "Nervous::Lacrimal canaliculus.l": "Lacrimal canaliculus (left)",
+    "Nervous::Lacrimal canaliculus.r": "Lacrimal canaliculus (right)",
+    "Nervous::Lacrimal gland.l": "Lacrimal gland (left)",
+    "Nervous::Lacrimal gland.r": "Lacrimal gland (right)",
+    "Nervous::Lacrimal sac.l": "Lacrimal sac (left)",
+    "Nervous::Lacrimal sac.r": "Lacrimal sac (right)",
+    "Nervous::Lens.l": "Lens (left)",
+    "Nervous::Lens.r": "Lens (right)",
+    "Nervous::Nasolacrimal duct.l": "Nasolacrimal duct (left)",
+    "Nervous::Nasolacrimal duct.r": "Nasolacrimal duct (right)",
+    "Nervous::Optic nerve (II).l": "Optic nerve (II) (left)",
+    "Nervous::Optic nerve (II).r": "Optic nerve (II) (right)",
+    "Nervous::Posterior segment of eyeball.l": "Posterior segment of eyeball (left)",
+    "Nervous::Posterior segment of eyeball.r": "Posterior segment of eyeball (right)",
+    "Nervous::Retina.l": "Retina (left)",
+    "Nervous::Retina.r": "Retina (right)",
+    "Nervous::Sclera.l": "Sclera (left)",
+    "Nervous::Sclera.r": "Sclera (right)",
+    "Nervous::Suspensory ligament of eyeball.l": "Suspensory ligament of eyeball (left)",
+    "Nervous::Suspensory ligament of eyeball.r": "Suspensory ligament of eyeball (right)",
+    "Nervous::Vitreous body.l": "Vitreous body (left)",
+    "Nervous::Vitreous body.r": "Vitreous body (right)",
+    "Nervous::Zonular fibres.l": "Zonular fibres (left)",
+    "Nervous::Zonular fibres.r": "Zonular fibres (right)"
+  },
+  "hotspots": []
+}
